@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MW75 EEG WebSocket Test Client</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 20px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .controls {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status.connected { background-color: #2d5a27; }
+        .status.disconnected { background-color: #5a2727; }
+        .status.connecting { background-color: #5a4a27; }
+        
+        .data-display {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        
+        .packet {
+            border: 1px solid #444;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #333;
+        }
+        
+        .packet-header {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* New: persistent channels overview */
+        .panel {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .channels-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+        }
+
+        .channels-extras {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .channels-group {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .channel-card {
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .channel-name {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #9cdcfe;
+        }
+        
+        .channel-value {
+            font-size: 1.1em;
+            color: #4CAF50;
+        }
+        
+        .channel-card.disconnected .channel-value {
+            color: #ffd166;
+        }
+        
+        /* New: electrode map */
+        .electrode-map-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+        
+        .headset-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+        
+        #electrodeOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            display: none;
+        }
+        
+        .electrode-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            background-color: rgba(20, 20, 20, 0.75);
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 6px 8px;
+            min-width: 54px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+        
+        .electrode-marker .label {
+            font-size: 0.75em;
+            color: #9cdcfe;
+        }
+        
+        .electrode-marker .value {
+            font-size: 0.95em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .electrode-marker.disconnected .value {
+            color: #ffd166;
+        }
+        
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        
+        button.disconnect {
+            background-color: #f44336;
+        }
+        
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 3px;
+            background-color: #333;
+            color: white;
+            width: 300px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .stat-box {
+            background-color: #444;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .instructions {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+            overflow: hidden;
+        }
+
+        .instructions-header {
+            padding: 15px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease;
+        }
+
+        .instructions-header:hover {
+            background-color: #3a3a3a;
+        }
+
+        .instructions-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .instructions.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .instructions-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 15px;
+        }
+
+        .instructions.expanded .instructions-content {
+            max-height: 300px;
+            padding: 0 15px 15px 15px;
+        }
+
+        .instructions code {
+            background-color: #333;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* EEG Chart Styles */
+        .chart-container {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chart-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #3a3a3a;
+            border-radius: 8px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            color: #9cdcfe;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .control-group input, .control-group select {
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: white;
+        }
+
+        .chart-wrapper {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .channel-chart-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+        }
+
+        .time-axis {
+            height: 30px;
+            background-color: #1a1a1a;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 0 10px;
+        }
+
+        .time-ticker {
+            position: absolute;
+            color: #ffffff;
+            font-size: 11px;
+            text-align: center;
+            min-width: 30px;
+        }
+
+        .channel-chart {
+            height: 80px;
+            width: 100%;
+            background-color: #222;
+            border-radius: 4px;
+            position: relative;
+            border-left: 3px solid var(--channel-color);
+            flex-shrink: 0;
+        }
+
+        .channel-label {
+            position: absolute;
+            left: 8px;
+            top: 4px;
+            color: var(--channel-color);
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 10;
+            background-color: rgba(34, 34, 34, 0.9);
+            padding: 3px 6px;
+            border-radius: 3px;
+            min-width: 80px;
+        }
+
+        .channel-std {
+            font-size: 9px;
+            color: #ccc;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            color: #66BB6A;
+            text-decoration: underline;
+        }
+
+        .footer .logo {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        /* Chart Section Toggle Styles */
+        .chart-section {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+            overflow: hidden;
+        }
+
+        .chart-section-header {
+            padding: 15px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease;
+        }
+
+        .chart-section-header:hover {
+            background-color: #3a3a3a;
+        }
+
+        .chart-section-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .chart-section.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .chart-section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 15px;
+        }
+
+        .chart-section.expanded .chart-section-content {
+            max-height: 2000px;
+            padding: 0 15px 15px 15px;
+        }
+
+        /* Electrode Map Toggle Styles */
+        .electrode-map {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+            overflow: hidden;
+        }
+
+        .electrode-map-header {
+            padding: 15px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease;
+        }
+
+        .electrode-map-header:hover {
+            background-color: #3a3a3a;
+        }
+
+        .electrode-map-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .electrode-map.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .electrode-map-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 15px;
+        }
+
+        .electrode-map.expanded .electrode-map-content {
+            max-height: 500px;
+            padding: 0 15px 15px 15px;
+        }
+
+        /* Logs Section Toggle Styles */
+        .logs-section {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+            overflow: hidden;
+        }
+
+        .logs-section-header {
+            padding: 15px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease;
+        }
+
+        .logs-section-header:hover {
+            background-color: #3a3a3a;
+        }
+
+        .logs-section-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .logs-section.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .logs-section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 15px;
+        }
+
+        .logs-section.expanded .logs-section-content {
+            max-height: 500px;
+            padding: 0 15px 15px 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MW75 EEG Streamer</h1>
+            <p>Real-time panel for MW75 headphones</p>
+        </div>
+
+        <div class="instructions" id="instructions">
+            <div class="instructions-header" onclick="toggleInstructions()">
+                <h3>Quick Start Instructions</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="instructions-content">
+                <ol>
+                    <li><strong>Start EEG Streaming: (if not already running)</strong> <code>python -m mw75_streamer -b</code></li>
+                    <li><strong>Connect Browser:</strong> Click "Connect" below (URL should auto-fill)</li>
+                    <li><strong>View Data:</strong> Real-time EEG data will appear in the display area</li>
+                    <li><strong>View Logs:</strong> Real-time logs will appear in the logs area</li>
+                </ol>
+                <p><strong>Note:</strong> Make sure your MW75 headphones are paired and ready before starting the streamer.</p>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h3>Connection</h3>
+            <div>
+                <input type="text" id="wsUrl" value="ws://localhost:8090/panel" placeholder="WebSocket URL">
+                <button id="connectBtn" onclick="connectWebSocket()">Connect</button>
+                <button id="disconnectBtn" onclick="disconnectWebSocket()" disabled class="disconnect">Disconnect</button>
+            </div>
+            <div id="status" class="status disconnected">Disconnected</div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="packetCount">0</div>
+                    <div>Packets</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="dataRate">0</div>
+                    <div>Packets/sec</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="lastCounter">-</div>
+                    <div>Counter</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="droppedPackets">0</div>
+                    <div>Dropped</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="checksumInvalid">0</div>
+                    <div>Checksum Errors</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="checksumRate">0%</div>
+                    <div>Error Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Channels Overview</h3>
+            <div id="channelOverview" class="channels-overview"></div>
+        </div>
+
+        <div class="chart-section" id="chartSection">
+            <div class="chart-section-header" onclick="toggleChartSection()">
+                <h3>EEG Signal Chart</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="chart-section-content">
+                <div class="chart-container">
+                    <div class="chart-controls">
+                        <div class="control-group">
+                            <label for="timeScale">Time Window (seconds)</label>
+                            <select id="timeScale" onchange="updateTimeScale()">
+                                <option value="5" selected>5 seconds</option>
+                                <option value="10">10 seconds</option>
+                                <option value="30">30 seconds</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="voltageScale">Voltage Scale (µV)</label>
+                            <select id="voltageScale" onchange="updateVoltageScale()">
+                                <option value="200">±200 µV</option>
+                                <option value="500">±500 µV</option>
+                                <option value="1000" selected>±1K µV</option>
+                                <option value="2000">±2K µV</option>
+                                <option value="5000">±5K µV</option>
+                                <option value="10000">±10K µV</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="channelHeight">Channel Height</label>
+                            <select id="channelHeight" onchange="updateChannelHeight()">
+                                <option value="60">Compact (60px)</option>
+                                <option value="80" selected>Normal (80px)</option>
+                                <option value="120">Tall (120px)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>&nbsp;</label>
+                            <button onclick="clearChart()">Clear Chart</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-wrapper">
+                        <div id="channelCharts" class="channel-chart-container">
+                            <!-- Individual channel charts will be inserted here by JavaScript -->
+                        </div>
+                        <div class="time-axis" id="timeAxis">
+                            <!-- Time tickers will be inserted here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="electrode-map" id="electrodeMapSection">
+            <div class="electrode-map-header" onclick="toggleElectrodeMap()">
+                <h3>Electrode Map</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="electrode-map-content">
+                <div class="electrode-map-container">
+                    <img src="../assets/mw75.webp" alt="MW75 Headphones" class="headset-image">
+                </div>
+            </div>
+        </div>
+        
+        <div class="logs-section expanded" id="logsSection">
+            <div class="logs-section-header" onclick="toggleLogsSection()">
+                <h3>Logs</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="logs-section-content">
+                <div class="data-display" id="dataDisplay"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State variables
+        let ws = null, packetCount = 0, lastCounter = null, droppedPackets = 0;
+        let checksumInvalid = 0, checksumRate = 0, packetTimestamps = [];
+        let isLogsSectionExpanded = true, isChartSectionExpanded = false, chartsInitialized = false;
+        
+        // Chart variables
+        let channelCharts = {}, channelRanges = {}, pendingUpdates = {}, updateInterval = null;
+        let chartConfig = { timeWindow: 10, voltageScale: 50000, sampleRate: 500, updateFrequency: 50 };
+        
+        // Constants
+        const channelColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'];
+        const channelNames = Array.from({length: 12}, (_, i) => `ch${i+1}`);
+        const channelValues = Object.fromEntries(channelNames.map(n => [n, 'N/A']));
+        const SENTINEL = 8388607;
+        let refValue = 'N/A', drlValue = 'N/A';
+        
+        // Utility Functions
+        const updateElement = (id, value, transform = v => v) => {
+            const el = document.getElementById(id);
+            const newValue = transform(value).toString();
+            if (el && el.textContent !== newValue) el.textContent = newValue;
+        };
+        
+        const throttle = (func, delay) => {
+            let timeoutId, lastExecTime = 0;
+            return function(...args) {
+                const currentTime = Date.now();
+                if (currentTime - lastExecTime > delay) {
+                    func.apply(this, args);
+                    lastExecTime = currentTime;
+                } else {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => func.apply(this, args), delay - (currentTime - lastExecTime));
+                }
+            };
+        };
+        
+        // DOM Updates
+        const updateStats = throttle(() => {
+            const now = Date.now();
+            packetTimestamps = packetTimestamps.filter(t => t > now - 5000);
+            const rate = Math.round(packetTimestamps.length / 5);
+            
+            updateElement('packetCount', packetCount);
+            updateElement('dataRate', rate);
+            updateElement('lastCounter', lastCounter ?? '-');
+            updateElement('droppedPackets', droppedPackets);
+            updateElement('checksumInvalid', checksumInvalid);
+            updateElement('checksumRate', checksumRate, v => `${v.toFixed?.(1) ?? v}%`);
+        }, 100);
+        
+        const updateChannelDisplay = throttle(() => {
+            channelNames.forEach(name => {
+                const val = channelValues[name];
+                const isNum = typeof val === 'number';
+                const isDisc = isNum && Math.abs(val - SENTINEL) < 1;
+                const displayVal = isNum && !isDisc ? `${val.toFixed(1)} µV` : (isDisc ? 'DISCONNECTED' : 'N/A');
+                updateElement(`co-${name}-val`, displayVal);
+                
+                const card = document.getElementById(`co-${name}`);
+                if (card) card.classList.toggle('disconnected', isDisc);
+            });
+            updateElement('co-ref-val', typeof refValue === 'number' ? `${refValue.toFixed(1)} µV` : 'N/A');
+            updateElement('co-drl-val', typeof drlValue === 'number' ? `${drlValue.toFixed(1)} µV` : 'N/A');
+        }, 33);
+        
+        // Generic Toggle System
+        const createToggle = (sectionId, stateVar) => () => {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('expanded');
+            if (stateVar) window[stateVar] = section.classList.contains('expanded');
+        };
+        
+        const toggleInstructions = createToggle('instructions');
+        const toggleLogsSection = createToggle('logsSection', 'isLogsSectionExpanded');
+        const toggleElectrodeMap = createToggle('electrodeMapSection');
+        
+        function toggleChartSection() {
+            const section = document.getElementById('chartSection');
+            section.classList.toggle('expanded');
+            isChartSectionExpanded = section.classList.contains('expanded');
+            console.log('Chart section toggled:', isChartSectionExpanded, 'Charts initialized:', chartsInitialized);
+            
+            if (isChartSectionExpanded && !chartsInitialized) {
+                console.log('Initializing charts...');
+                initializeCharts();
+                chartsInitialized = true;
+            }
+            isChartSectionExpanded ? startBatchUpdates() : stopBatchUpdates();
+        }
+        
+        // WebSocket Management
+        const updateStatus = (status, message) => {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${status}`;
+            statusDiv.textContent = message;
+        };
+        
+        const processMessage = {
+            log: msg => displayLog(msg.level || 'INFO', msg.logger || 'app', msg.message || ''),
+            stats: msg => {
+                if (typeof msg.total_packets === 'number') packetCount = msg.total_packets;
+                if (typeof msg.invalid_packets === 'number') checksumInvalid = msg.invalid_packets;
+                if (typeof msg.error_rate === 'number') checksumRate = msg.error_rate;
+                if (typeof msg.dropped_packets === 'number') droppedPackets = msg.dropped_packets;
+                updateStats();
+            },
+            default: eegData => {
+                packetCount++;
+                packetTimestamps.push(Date.now());
+                
+                if (lastCounter !== null && eegData.counter !== undefined) {
+                    const expectedCounter = (lastCounter + 1) % 256;
+                    if (eegData.counter !== expectedCounter) {
+                        droppedPackets += (eegData.counter - expectedCounter + 256) % 256;
+                    }
+                }
+                lastCounter = eegData.counter || 0;
+                
+                if (eegData.channels) {
+                    updateChannels(eegData.channels);
+                    addDataToChart(eegData.channels, eegData.timestamp);
+                }
+                if (eegData.ref !== undefined) refValue = eegData.ref;
+                if (eegData.drl !== undefined) drlValue = eegData.drl;
+                updateChannelDisplay();
+                updateStats();
+            }
+        };
+        
+        function connectWebSocket() {
+            const url = document.getElementById('wsUrl').value;
+            if (ws) ws.close();
+            
+            updateStatus('connecting', 'Connecting...');
+            document.getElementById('connectBtn').disabled = true;
+            
+            ws = new WebSocket(url);
+            
+            ws.onopen = () => {
+                updateStatus('connected', `Connected to ${url}`);
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('disconnectBtn').disabled = false;
+                
+                // Reset state
+                [packetCount, droppedPackets, checksumInvalid, checksumRate] = [0, 0, 0, 0];
+                [lastCounter, packetTimestamps] = [null, []];
+                resetChannelDisplays();
+                
+                if (isChartSectionExpanded && chartsInitialized) {
+                    clearChart();
+                    startBatchUpdates();
+                }
+                
+                if (isLogsSectionExpanded) {
+                    document.getElementById('dataDisplay').innerHTML = '<p>🎯 Connected! Waiting for EEG data...</p>';
+                }
+            };
+            
+            ws.onmessage = event => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    const handler = processMessage[msg.type] || processMessage.default;
+                    handler(msg);
+                } catch (e) {
+                    console.error('Error processing message:', e);
+                }
+            };
+            
+            ws.onerror = () => updateStatus('disconnected', 'Connection error');
+            ws.onclose = () => {
+                updateStatus('disconnected', 'Disconnected');
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('disconnectBtn').disabled = true;
+                ws = null;
+                stopBatchUpdates();
+            };
+        }
+        
+        const disconnectWebSocket = () => ws?.close();
+        
+        // Display Functions
+        function displayLog(level, loggerName, message) {
+            const display = document.getElementById('dataDisplay');
+            const div = document.createElement('div');
+            div.className = 'packet';
+            const ts = new Date();
+            div.innerHTML = `<div class="packet-header">[${level}] ${loggerName} - ${ts.toLocaleTimeString()}.${ts.getMilliseconds().toString().padStart(3, '0')}</div><div>${message}</div>`;
+            display.insertBefore(div, display.firstChild);
+            while (display.children.length > 10) display.removeChild(display.lastChild);
+        }
+        
+        // Channel Management
+        function resetChannelDisplays() {
+            channelNames.forEach(n => channelValues[n] = 'N/A');
+            [refValue, drlValue] = ['N/A', 'N/A'];
+            renderChannelsOverview();
+        }
+        
+        function renderChannelsOverview() {
+            const container = document.getElementById('channelOverview');
+            if (!container || container.childElementCount > 0) return;
+            
+            const createGroup = (className, id) => Object.assign(document.createElement('div'), {className, id});
+            const extras = createGroup('channels-extras', 'co-extras');
+            const leftGroup = createGroup('channels-group', 'co-left');
+            const rightGroup = createGroup('channels-group', 'co-right');
+            
+            [extras, leftGroup, rightGroup].forEach(el => container.appendChild(el));
+            
+            // Create REF/DRL cards
+            ['ref', 'drl'].forEach(type => {
+                const card = createGroup('channel-card', `co-${type}`);
+                card.innerHTML = `<div class="channel-name">${type.toUpperCase()}</div><div class="channel-value" id="co-${type}-val">N/A</div>`;
+                extras.appendChild(card);
+            });
+            
+            // Create channel cards
+            channelNames.forEach(name => {
+                const card = createGroup('channel-card', `co-${name}`);
+                card.innerHTML = `<div class="channel-name">${name.toUpperCase()}</div><div class="channel-value" id="co-${name}-val">N/A</div>`;
+                const idx = parseInt(name.replace('ch', ''));
+                (idx <= 6 ? leftGroup : rightGroup).appendChild(card);
+            });
+        }
+        
+        const updateChannels = chObj => {
+            channelNames.forEach(name => {
+                if (chObj.hasOwnProperty(name)) channelValues[name] = chObj[name];
+            });
+        };
+        
+        // Chart Functions
+        function initializeCharts() {
+            channelNames.forEach(channel => {
+                channelRanges[channel] = { min: null, max: null, std: 0, lastUpdate: 0 };
+                pendingUpdates[channel] = [];
+            });
+            createCharts();
+            createTimeAxis();
+            startBatchUpdates();
+        }
+        
+        function createCharts() {
+            const container = document.getElementById('channelCharts');
+            if (!container) {
+                console.error('channelCharts container not found');
+                return;
+            }
+            container.innerHTML = '';
+            console.log('Creating charts for channels:', channelNames);
+            
+            channelNames.forEach((channel, index) => {
+                const div = Object.assign(document.createElement('div'), {className: 'channel-chart'});
+                div.style.setProperty('--channel-color', channelColors[index]);
+                div.innerHTML = `<div class="channel-label"><div>${channel.toUpperCase()}</div><div class="channel-std" id="std-${channel}">STD: --</div></div><canvas id="chart-${channel}" style="width:100%;height:100%"></canvas>`;
+                container.appendChild(div);
+                
+                const ctx = div.querySelector('canvas').getContext('2d');
+                channelCharts[channel] = new Chart(ctx, {
+                    type: 'line',
+                    data: { datasets: [{ label: channel.toUpperCase(), data: [], borderColor: channelColors[index], backgroundColor: 'transparent', borderWidth: 1.5, pointRadius: 0, tension: 0 }] },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, animation: false, interaction: { intersect: false },
+                        plugins: { legend: { display: false }, tooltip: { enabled: true, backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#fff' } },
+                        scales: { x: { type: 'linear', display: false, grid: { display: false } }, y: { display: false, min: -chartConfig.voltageScale / 2, max: chartConfig.voltageScale / 2 } }
+                    }
+                });
+                console.log(`Created chart for ${channel}`);
+            });
+            console.log('Charts created:', Object.keys(channelCharts));
+        }
+        
+        function createTimeAxis() {
+            const container = document.getElementById('timeAxis');
+            container.innerHTML = '';
+            const tickerCount = Math.min(11, chartConfig.timeWindow + 1);
+            const tickerInterval = chartConfig.timeWindow / (tickerCount - 1);
+            
+            for (let i = 0; i < tickerCount; i++) {
+                const ticker = Object.assign(document.createElement('div'), {className: 'time-ticker'});
+                const timeValue = -chartConfig.timeWindow + (i * tickerInterval);
+                ticker.textContent = timeValue === 0 ? '0' : `${timeValue.toFixed(0)}s`;
+                ticker.style.left = `calc(${(i / (tickerCount - 1)) * 100}% - 15px)`;
+                container.appendChild(ticker);
+            }
+        }
+        
+        const startBatchUpdates = () => {
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(processBatchedUpdates, chartConfig.updateFrequency);
+        };
+        
+        const stopBatchUpdates = () => {
+            if (updateInterval) { clearInterval(updateInterval); updateInterval = null; }
+        };
+        
+        function processBatchedUpdates() {
+            const now = Date.now();
+            channelNames.forEach(channel => {
+                const pending = pendingUpdates[channel];
+                if (pending.length === 0) return;
+                
+                const chart = channelCharts[channel];
+                if (!chart) return;
+                
+                pending.forEach(point => chart.data.datasets[0].data.push(point));
+                
+                const maxPoints = chartConfig.timeWindow * chartConfig.sampleRate;
+                const dataset = chart.data.datasets[0].data;
+                if (dataset.length > maxPoints) {
+                    chart.data.datasets[0].data = dataset.slice(dataset.length - maxPoints);
+                }
+                
+                if (pending.length > 0) {
+                    const latestTime = pending[pending.length - 1].x;
+                    chart.options.scales.x.min = latestTime - chartConfig.timeWindow;
+                    chart.options.scales.x.max = latestTime;
+                    
+                    if (now - channelRanges[channel].lastUpdate > 500) {
+                        updateChannelYRange(channel, chart);
+                        channelRanges[channel].lastUpdate = now;
+                    }
+                }
+                
+                pendingUpdates[channel] = [];
+                chart.update('none');
+            });
+        }
+        
+        function updateChannelYRange(channel, chart) {
+            const dataset = chart.data.datasets[0].data;
+            if (dataset.length === 0) return;
+            
+            const values = dataset.map(d => d.y);
+            const sum = values.reduce((a, b) => a + b);
+            const mean = sum / values.length;
+            const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / values.length;
+            const std = Math.sqrt(variance);
+            
+            channelRanges[channel].std = std;
+            updateElement(`std-${channel}`, `STD: ${std.toFixed(0)} µV`);
+            
+            const min = Math.min(...values), max = Math.max(...values);
+            const dataCenter = (min + max) / 2, halfRange = chartConfig.voltageScale / 2;
+            chart.options.scales.y.min = dataCenter - halfRange;
+            chart.options.scales.y.max = dataCenter + halfRange;
+        }
+        
+        const addDataToChart = (channels, timestamp = Date.now() / 1000) => {
+            if (!isChartSectionExpanded || !chartsInitialized) return;
+            channelNames.forEach(channel => {
+                if (channels[channel] !== undefined && Math.abs(channels[channel] - SENTINEL) >= 1) {
+                    pendingUpdates[channel].push({ x: timestamp, y: channels[channel] });
+                }
+            });
+        };
+        
+        // Chart Controls
+        const updateTimeScale = () => {
+            chartConfig.timeWindow = parseInt(document.getElementById('timeScale').value);
+            createTimeAxis();
+            Object.values(channelCharts).forEach(chart => {
+                const maxPoints = chartConfig.timeWindow * chartConfig.sampleRate;
+                const dataset = chart.data.datasets[0].data;
+                if (dataset.length > maxPoints) chart.data.datasets[0].data = dataset.slice(-maxPoints);
+                chart.update('none');
+            });
+        };
+        
+        const updateVoltageScale = () => {
+            chartConfig.voltageScale = parseInt(document.getElementById('voltageScale').value);
+            channelNames.forEach(channel => { if (channelCharts[channel]) channelRanges[channel].lastUpdate = 0; });
+        };
+        
+        const updateChannelHeight = () => {
+            const height = parseInt(document.getElementById('channelHeight').value);
+            document.querySelectorAll('.channel-chart').forEach(chart => chart.style.height = height + 'px');
+            Object.values(channelCharts).forEach(chart => chart.resize());
+        };
+        
+        const clearChart = () => {
+            channelNames.forEach(channel => {
+                pendingUpdates[channel] = [];
+                channelRanges[channel] = { min: null, max: null, std: 0, lastUpdate: 0 };
+                if (channelCharts[channel]) {
+                    channelCharts[channel].data.datasets[0].data = [];
+                    channelCharts[channel].options.scales.y.min = -chartConfig.voltageScale / 2;
+                    channelCharts[channel].options.scales.y.max = chartConfig.voltageScale / 2;
+                    channelCharts[channel].update('none');
+                    updateElement(`std-${channel}`, 'STD: --');
+                }
+            });
+        };
+        
+        // Cleanup
+        const cleanupCharts = () => {
+            stopBatchUpdates();
+            Object.values(channelCharts).forEach(chart => chart?.destroy());
+            channelCharts = {};
+        };
+        
+        window.addEventListener('beforeunload', () => { ws?.close(); cleanupCharts(); });
+        
+        // Initialize
+        renderChannelsOverview();
+        updateStats();
+    </script>
+
+    <footer class="footer">
+        <div class="logo">Arctop</div>
+        <div>Powered by <a href="https://arctop.com" target="_blank" rel="noopener">Arctop</a> - Real-time Brain Data Intelligence</div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MW75 EEG WebSocket Test Client</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 20px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .controls {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status.connected { background-color: #2d5a27; }
+        .status.disconnected { background-color: #5a2727; }
+        .status.connecting { background-color: #5a4a27; }
+        
+        .data-display {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        
+        .packet {
+            border: 1px solid #444;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #333;
+        }
+        
+        .packet-header {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .channels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        /* New: persistent channels overview */
+        .panel {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .channels-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+        }
+
+        .channels-extras {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .channels-group {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .channel-card {
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .channel-name {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #9cdcfe;
+        }
+        
+        .channel-value {
+            font-size: 1.1em;
+            color: #4CAF50;
+        }
+        
+        .channel-card.disconnected .channel-value {
+            color: #ffd166;
+        }
+        
+        /* New: electrode map */
+        .electrode-map-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+        
+        .headset-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+        
+        #electrodeOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            display: none;
+        }
+        
+        .electrode-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            background-color: rgba(20, 20, 20, 0.75);
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 6px 8px;
+            min-width: 54px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+        
+        .electrode-marker .label {
+            font-size: 0.75em;
+            color: #9cdcfe;
+        }
+        
+        .electrode-marker .value {
+            font-size: 0.95em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .electrode-marker.disconnected .value {
+            color: #ffd166;
+        }
+        
+        .channel {
+            background-color: #444;
+            padding: 5px;
+            border-radius: 3px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        
+        button.disconnect {
+            background-color: #f44336;
+        }
+        
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 3px;
+            background-color: #333;
+            color: white;
+            width: 300px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .stat-box {
+            background-color: #444;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .instructions {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+            overflow: hidden;
+        }
+
+        .instructions-header {
+            padding: 15px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease;
+        }
+
+        .instructions-header:hover {
+            background-color: #3a3a3a;
+        }
+
+        .instructions-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .instructions.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .instructions-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 15px;
+        }
+
+        .instructions.expanded .instructions-content {
+            max-height: 300px;
+            padding: 0 15px 15px 15px;
+        }
+
+        .instructions code {
+            background-color: #333;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* EEG Chart Styles */
+        .chart-container {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chart-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #3a3a3a;
+            border-radius: 8px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            color: #9cdcfe;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .control-group input, .control-group select {
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: white;
+        }
+
+        .chart-wrapper {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .channel-chart-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+        }
+
+        .time-axis {
+            height: 30px;
+            background-color: #1a1a1a;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 0 10px;
+        }
+
+        .time-ticker {
+            position: absolute;
+            color: #ffffff;
+            font-size: 11px;
+            text-align: center;
+            min-width: 30px;
+        }
+
+        .channel-chart {
+            height: 80px;
+            width: 100%;
+            background-color: #222;
+            border-radius: 4px;
+            position: relative;
+            border-left: 3px solid var(--channel-color);
+            flex-shrink: 0;
+        }
+
+        .channel-label {
+            position: absolute;
+            left: 8px;
+            top: 4px;
+            color: var(--channel-color);
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 10;
+            background-color: rgba(34, 34, 34, 0.9);
+            padding: 3px 6px;
+            border-radius: 3px;
+            min-width: 80px;
+        }
+
+        .channel-std {
+            font-size: 9px;
+            color: #ccc;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .fft-wrapper {
+            height: 400px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        .chart-tabs {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .chart-tab {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 2px;
+        }
+
+        .chart-tab.active {
+            background-color: #4CAF50;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            color: #66BB6A;
+            text-decoration: underline;
+        }
+
+        .footer .logo {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        /* Electrode Map Toggle Styles */
+        .electrode-map {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+            overflow: hidden;
+        }
+
+        .electrode-map-header {
+            padding: 15px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease;
+        }
+
+        .electrode-map-header:hover {
+            background-color: #3a3a3a;
+        }
+
+        .electrode-map-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .electrode-map.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .electrode-map-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 15px;
+        }
+
+        .electrode-map.expanded .electrode-map-content {
+            max-height: 500px;
+            padding: 0 15px 15px 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MW75 EEG WebSocket Test Client</h1>
+            <p>Real-time EEG data visualization from MW75 headphones</p>
+        </div>
+
+        <div class="instructions" id="instructions">
+            <div class="instructions-header" onclick="toggleInstructions()">
+                <h3>Quick Start Instructions</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="instructions-content">
+                <ol>
+                    <li><strong>Start Test Server (if it's not already running):</strong> <code>python -m mw75_streamer.testing --advanced</code></li>
+                    <li><strong>Start EEG Streaming:</strong> <code>python -m mw75_streamer -ws ws://localhost:8080</code></li>
+                    <li><strong>Connect Browser:</strong> Click "Connect" below (URL should auto-fill)</li>
+                    <li><strong>View Data:</strong> Real-time EEG data will appear in the display area</li>
+                </ol>
+                <p><strong>Note:</strong> Make sure your MW75 headphones are paired and ready before starting the streamer.</p>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h3>Connection</h3>
+            <div>
+                <input type="text" id="wsUrl" value="ws://localhost:8080/browser" placeholder="WebSocket URL">
+                <button id="connectBtn" onclick="connectWebSocket()">Connect</button>
+                <button id="disconnectBtn" onclick="disconnectWebSocket()" disabled class="disconnect">Disconnect</button>
+            </div>
+            <div id="status" class="status disconnected">Disconnected</div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="packetCount">0</div>
+                    <div>Packets</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="dataRate">0</div>
+                    <div>Packets/sec</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="lastCounter">-</div>
+                    <div>Counter</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="droppedPackets">0</div>
+                    <div>Dropped</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Channels Overview</h3>
+            <div id="channelOverview" class="channels-overview"></div>
+        </div>
+
+        <div class="chart-container">
+            <h3>EEG Signal Chart</h3>
+            <div class="chart-controls">
+                <div class="control-group">
+                    <label for="timeScale">Time Window (seconds)</label>
+                    <select id="timeScale" onchange="updateTimeScale()">
+                        <option value="5" selected>5 seconds</option>
+                        <option value="10">10 seconds</option>
+                        <option value="30">30 seconds</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="voltageScale">Voltage Scale (µV)</label>
+                    <select id="voltageScale" onchange="updateVoltageScale()">
+                        <option value="200">±200 µV</option>
+                        <option value="500">±500 µV</option>
+                        <option value="1000" selected>±1K µV</option>
+                        <option value="2000">±2K µV</option>
+                        <option value="5000">±5K µV</option>
+                        <option value="10000">±10K µV</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="channelHeight">Channel Height</label>
+                    <select id="channelHeight" onchange="updateChannelHeight()">
+                        <option value="60">Compact (60px)</option>
+                        <option value="80" selected>Normal (80px)</option>
+                        <option value="120">Tall (120px)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>&nbsp;</label>
+                    <button onclick="clearChart()">Clear Chart</button>
+                </div>
+            </div>
+            
+            <div class="chart-tabs">
+                <button class="chart-tab active" onclick="switchTab('timeseries')">Time Series</button>
+                <button class="chart-tab" onclick="switchTab('fft')">FFT Analysis</button>
+            </div>
+            
+            <div id="timeseriesTab">
+                <div class="chart-wrapper">
+                    <div id="channelCharts" class="channel-chart-container">
+                        <!-- Individual channel charts will be inserted here by JavaScript -->
+                    </div>
+                    <div class="time-axis" id="timeAxis">
+                        <!-- Time tickers will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="fftTab" style="display: none;">
+                <div class="fft-wrapper">
+                    <canvas id="fftChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="electrode-map" id="electrodeMapSection">
+            <div class="electrode-map-header" onclick="toggleElectrodeMap()">
+                <h3>Electrode Map</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="electrode-map-content">
+                <div class="electrode-map-container">
+                    <img src="../assets/mw75.webp" alt="MW75 Headphones" class="headset-image">
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions" id="dataDisplaySection">
+            <div class="instructions-header" onclick="toggleDataDisplay()">
+                <h3>Data Display (packet log)</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="instructions-content">
+                <div class="data-display" id="dataDisplay">
+                    <p>Connect to WebSocket to see EEG data stream...</p>
+                    <p>Follow the quick start instructions above to get started!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let packetCount = 0;
+        let startTime = null;
+        let lastCounter = null;
+        let droppedPackets = 0;
+        let maxDisplayPackets = 10;
+        let packetTimestamps = []; // Array to track packet arrival times for rate calculation
+        let isDataDisplayExpanded = false; // collapsed by default
+
+        // Chart variables
+        let channelCharts = {}; // Object to store individual channel chart instances
+        let fftChart = null;
+        let chartData = {};
+        let channelRanges = {}; // Track min/max for each channel
+        let pendingUpdates = {}; // Batch data points before updating charts
+        let lastUpdateTime = 0;
+        let updateInterval = null;
+        let chartConfig = {
+            timeWindow: 10, // seconds
+            voltageScale: 50000, // µV (total range, will be centered around data)
+            channelSpacing: 'normal', // Not used anymore with separate charts
+            sampleRate: 500, // Hz from MW75
+            maxDataPoints: 5000, // Will be calculated based on timeWindow * sampleRate
+            activeTab: 'timeseries',
+            updateFrequency: 50 // Update charts every 50ms instead of every data point
+        };
+        
+        // Color palette for 12 EEG channels
+        const channelColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+            '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
+            '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'
+        ];
+
+        // Optimized in-place FFT implementation with pre-calculated coefficients
+        const FFTCache = {
+            twiddle: new Map(),
+            bitReverse: new Map()
+        };
+
+        function getBitReverseTable(n) {
+            if (FFTCache.bitReverse.has(n)) return FFTCache.bitReverse.get(n);
+            
+            const table = new Uint32Array(n);
+            const bits = Math.log2(n);
+            for (let i = 0; i < n; i++) {
+                let reversed = 0;
+                let temp = i;
+                for (let j = 0; j < bits; j++) {
+                    reversed = (reversed << 1) | (temp & 1);
+                    temp >>= 1;
+                }
+                table[i] = reversed;
+            }
+            FFTCache.bitReverse.set(n, table);
+            return table;
+        }
+
+        function getTwiddleFactors(n) {
+            if (FFTCache.twiddle.has(n)) return FFTCache.twiddle.get(n);
+            
+            const factors = new Float32Array(n);
+            for (let i = 0; i < n; i += 2) {
+                const angle = -2 * Math.PI * (i / 2) / n;
+                factors[i] = Math.cos(angle);     // Real
+                factors[i + 1] = Math.sin(angle); // Imaginary
+            }
+            FFTCache.twiddle.set(n, factors);
+            return factors;
+        }
+
+        function optimizedFFT(x) {
+            const N = x.length;
+            if (N <= 1) return x.map(v => [v, 0]);
+            if ((N & (N - 1)) !== 0) return x.map(v => [v, 0]); // Must be power of 2
+            
+            // Convert to complex format and bit-reverse
+            const data = new Float32Array(N * 2);
+            const bitReverse = getBitReverseTable(N);
+            for (let i = 0; i < N; i++) {
+                const j = bitReverse[i];
+                data[i * 2] = x[j];     // Real
+                data[i * 2 + 1] = 0;    // Imaginary
+            }
+            
+            // In-place FFT
+            const twiddle = getTwiddleFactors(N);
+            for (let size = 2; size <= N; size <<= 1) {
+                const halfSize = size >> 1;
+                const step = N / size;
+                
+                for (let i = 0; i < N; i += size) {
+                    for (let j = 0; j < halfSize; j++) {
+                        const k = j * step;
+                        const wReal = twiddle[k * 2];
+                        const wImag = twiddle[k * 2 + 1];
+                        
+                        const u = i + j;
+                        const v = i + j + halfSize;
+                        
+                        const tReal = wReal * data[v * 2] - wImag * data[v * 2 + 1];
+                        const tImag = wReal * data[v * 2 + 1] + wImag * data[v * 2];
+                        
+                        data[v * 2] = data[u * 2] - tReal;
+                        data[v * 2 + 1] = data[u * 2 + 1] - tImag;
+                        data[u * 2] += tReal;
+                        data[u * 2 + 1] += tImag;
+                    }
+                }
+            }
+            
+            // Convert back to array format
+            const result = [];
+            for (let i = 0; i < N; i++) {
+                result.push([data[i * 2], data[i * 2 + 1]]);
+            }
+            return result;
+        }
+
+        // Circular buffer implementation for efficient data management
+        class CircularBuffer {
+            constructor(capacity) {
+                this.capacity = capacity;
+                this.buffer = new Float32Array(capacity);
+                this.head = 0;
+                this.size = 0;
+            }
+            
+            push(value) {
+                this.buffer[this.head] = value;
+                this.head = (this.head + 1) % this.capacity;
+                if (this.size < this.capacity) {
+                    this.size++;
+                }
+            }
+            
+            getArray() {
+                if (this.size === 0) return [];
+                
+                const result = new Array(this.size);
+                let bufferIndex = (this.head - this.size + this.capacity) % this.capacity;
+                
+                for (let i = 0; i < this.size; i++) {
+                    result[i] = this.buffer[bufferIndex];
+                    bufferIndex = (bufferIndex + 1) % this.capacity;
+                }
+                return result;
+            }
+            
+            clear() {
+                this.head = 0;
+                this.size = 0;
+            }
+        }
+
+        // New: channel names and UI state
+        const channelNames = Array.from({length: 12}, (_, i) => `ch${i+1}`);
+        const channelValues = Object.fromEntries(channelNames.map(n => [n, 'N/A']));
+        const SENTINEL = 8388607;
+        let refValue = 'N/A';
+        let drlValue = 'N/A';
+        
+        // DOM update throttling
+        const DOMUpdateManager = {
+            stats: { lastUpdate: 0, interval: 100, pending: false, data: {} },      // 10fps
+            channels: { lastUpdate: 0, interval: 33, pending: false, data: {} },   // 30fps
+            
+            scheduleStatsUpdate(data) {
+                this.stats.data = { ...this.stats.data, ...data };
+                if (!this.stats.pending && Date.now() - this.stats.lastUpdate > this.stats.interval) {
+                    this.stats.pending = true;
+                    requestAnimationFrame(() => this.flushStatsUpdate());
+                }
+            },
+            
+            scheduleChannelsUpdate(data) {
+                this.channels.data = { ...this.channels.data, ...data };
+                if (!this.channels.pending && Date.now() - this.channels.lastUpdate > this.channels.interval) {
+                    this.channels.pending = true;
+                    requestAnimationFrame(() => this.flushChannelsUpdate());
+                }
+            },
+            
+            flushStatsUpdate() {
+                const data = this.stats.data;
+                if (data.packetCount !== undefined) {
+                    const el = document.getElementById('packetCount');
+                    if (el && el.textContent !== data.packetCount.toString()) {
+                        el.textContent = data.packetCount;
+                    }
+                }
+                if (data.dataRate !== undefined) {
+                    const el = document.getElementById('dataRate');
+                    const rate = Math.round(data.dataRate);
+                    if (el && el.textContent !== rate.toString()) {
+                        el.textContent = rate;
+                    }
+                }
+                if (data.lastCounter !== undefined) {
+                    const el = document.getElementById('lastCounter');
+                    if (el && el.textContent !== data.lastCounter.toString()) {
+                        el.textContent = data.lastCounter;
+                    }
+                }
+                if (data.droppedPackets !== undefined) {
+                    const el = document.getElementById('droppedPackets');
+                    if (el && el.textContent !== data.droppedPackets.toString()) {
+                        el.textContent = data.droppedPackets;
+                    }
+                }
+                this.stats.lastUpdate = Date.now();
+                this.stats.pending = false;
+                this.stats.data = {};
+            },
+            
+            flushChannelsUpdate() {
+                const data = this.channels.data;
+                Object.keys(data).forEach(key => {
+                    if (key.startsWith('ch')) {
+                        const el = document.getElementById(`co-${key}-val`);
+                        if (el && el.textContent !== data[key]) {
+                            el.textContent = data[key];
+                        }
+                    } else if (key === 'ref') {
+                        const el = document.getElementById('co-ref-val');
+                        if (el && el.textContent !== data[key]) {
+                            el.textContent = data[key];
+                        }
+                    } else if (key === 'drl') {
+                        const el = document.getElementById('co-drl-val');
+                        if (el && el.textContent !== data[key]) {
+                            el.textContent = data[key];
+                        }
+                    }
+                });
+                this.channels.lastUpdate = Date.now();
+                this.channels.pending = false;
+                this.channels.data = {};
+            }
+        };
+        
+        function updateStatus(status, message) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${status}`;
+            statusDiv.textContent = message;
+        }
+
+        function updateStats() {
+            try {
+                // Calculate rate based on packets in the last 5 seconds
+                const now = Date.now();
+                const fiveSecondsAgo = now - 5000;
+                
+                // Remove timestamps older than 5 seconds
+                packetTimestamps = packetTimestamps.filter(timestamp => timestamp > fiveSecondsAgo);
+                
+                // Calculate rate as packets per second over the last 5 seconds
+                const rate = packetTimestamps.length > 0 ? (packetTimestamps.length / 5) : 0;
+                
+                // Schedule throttled DOM update
+                DOMUpdateManager.scheduleStatsUpdate({
+                    packetCount: packetCount,
+                    dataRate: rate,
+                    lastCounter: lastCounter !== null ? lastCounter : '-',
+                    droppedPackets: droppedPackets
+                });
+                
+            } catch (e) {
+                console.error('Error in updateStats:', e);
+            }
+        }
+
+        function connectWebSocket() {
+            const url = document.getElementById('wsUrl').value;
+            
+            if (ws) {
+                ws.close();
+            }
+            
+            updateStatus('connecting', 'Connecting...');
+            document.getElementById('connectBtn').disabled = true;
+            
+            try {
+                ws = new WebSocket(url);
+                
+                ws.onopen = function(event) {
+                    updateStatus('connected', `Connected to ${url}`);
+                    document.getElementById('connectBtn').disabled = true;
+                    document.getElementById('disconnectBtn').disabled = false;
+                    
+                    // Reset stats
+                    packetCount = 0;
+                    startTime = Date.now();
+                    lastCounter = null;
+                    droppedPackets = 0;
+                    packetTimestamps = []; // Reset packet timestamps
+                    resetChannelDisplays();
+                    clearChart(); // Clear chart data on new connection
+                    startBatchUpdates(); // Restart batch updates on reconnection
+                    updateStats();
+                    
+                    // Clear display
+                    if (isDataDisplayExpanded) {
+                        const display = document.getElementById('dataDisplay');
+                        display.innerHTML = '<p>Connected! Waiting for EEG data...</p>';
+                    }
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const eegData = JSON.parse(event.data);
+                        
+                        packetCount++;
+                        
+                        // Record packet timestamp for rate calculation
+                        packetTimestamps.push(Date.now());
+                        
+                        // Check for dropped packets
+                        if (lastCounter !== null && eegData.counter !== undefined) {
+                            const expectedCounter = (lastCounter + 1) % 256;
+                            if (eegData.counter !== expectedCounter) {
+                                droppedPackets += (eegData.counter - expectedCounter + 256) % 256;
+                            }
+                        }
+                        lastCounter = eegData.counter || 0;
+                        
+                        if (eegData.channels && typeof eegData.channels === 'object') {
+                            updateChannels(eegData.channels);
+                            // Add data to chart with timestamp
+                            addDataToChart(eegData.channels, eegData.timestamp);
+                        }
+                        if (eegData.ref !== undefined) {
+                            refValue = eegData.ref;
+                        }
+                        if (eegData.drl !== undefined) {
+                            drlValue = eegData.drl;
+                        }
+                        // ensure extras row updates too
+                        renderChannelsOverview();
+                        
+                        // Update FFT less frequently (every 50 packets to reduce CPU load)
+                        if (packetCount % 50 === 0 && chartConfig.activeTab === 'fft') {
+                            updateFFTChart();
+                        }
+                        
+                        if (isDataDisplayExpanded) {
+                            displayEEGPacket(eegData);
+                        }
+                        updateStats();
+                        
+                    } catch (e) {
+                        console.error('Error processing EEG data:', e);
+                        console.error('Raw message:', event.data);
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    updateStatus('disconnected', 'Connection error');
+                    console.error('WebSocket error:', error);
+                };
+                
+                ws.onclose = function(event) {
+                    updateStatus('disconnected', 'Disconnected');
+                    document.getElementById('connectBtn').disabled = false;
+                    document.getElementById('disconnectBtn').disabled = true;
+                    ws = null;
+                    
+                    // Stop batch updates when disconnected to save resources
+                    if (updateInterval) {
+                        clearInterval(updateInterval);
+                        updateInterval = null;
+                    }
+                };
+                
+            } catch (e) {
+                updateStatus('disconnected', 'Connection failed');
+                document.getElementById('connectBtn').disabled = false;
+                console.error('Connection error:', e);
+            }
+        }
+
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+            }
+        }
+
+        function displayEEGPacket(data) {
+            try {
+                const display = document.getElementById('dataDisplay');
+                
+                // Create packet element
+                const packetDiv = document.createElement('div');
+                packetDiv.className = 'packet';
+                
+                // Safe timestamp handling
+                const timestamp = data.timestamp ? new Date(data.timestamp * 1000) : new Date();
+                const timeStr = timestamp.toLocaleTimeString() + '.' + String(timestamp.getMilliseconds()).padStart(3, '0');
+                
+                // Safe data access with fallbacks
+                const ref = (data.ref !== undefined) ? data.ref.toFixed(2) : 'N/A';
+                const drl = (data.drl !== undefined) ? data.drl.toFixed(2) : 'N/A';
+                const counter = data.counter !== undefined ? data.counter : 'N/A';
+                const featureStatus = data.feature_status !== undefined ? data.feature_status : 'N/A';
+                
+                // Safe channels handling
+                let channelsHtml = '';
+                if (data.channels && typeof data.channels === 'object') {
+                    channelsHtml = Object.keys(data.channels).map(ch => {
+                        const value = data.channels[ch];
+                        const displayValue = (typeof value === 'number') ? value.toFixed(1) : 'N/A';
+                        
+                        // Highlight disconnected electrodes (sentinel values)
+                        const isDisconnected = Math.abs(value - 8388607) < 1;
+                        const style = isDisconnected ? 'background-color: #8b2635; color: #fff;' : '';
+                        
+                        return `<div class="channel" style="${style}">${ch.toUpperCase()}<br>${displayValue} µV</div>`;
+                    }).join('');
+                } else {
+                    channelsHtml = '<div class="channel">No channel data</div>';
+                }
+                
+                packetDiv.innerHTML = `
+                    <div class="packet-header">
+                        Packet #${packetCount} - ${timeStr} - Counter: ${counter}
+                    </div>
+                    <div><strong>REF:</strong> ${ref} µV | <strong>DRL:</strong> ${drl} µV | <strong>Status:</strong> ${featureStatus}</div>
+                    <div class="channels">
+                        ${channelsHtml}
+                    </div>
+                `;
+                
+                // Add to top of display
+                display.insertBefore(packetDiv, display.firstChild);
+                
+                // Keep only the most recent packets
+                while (display.children.length > maxDisplayPackets) {
+                    display.removeChild(display.lastChild);
+                }
+                
+            } catch (e) {
+                console.error('Error in displayEEGPacket:', e);
+                console.error('Data causing error:', data);
+            }
+        }
+
+        function toggleInstructions() {
+            const instructions = document.getElementById('instructions');
+            instructions.classList.toggle('expanded');
+        }
+
+        function toggleDataDisplay() {
+            const section = document.getElementById('dataDisplaySection');
+            const content = section.querySelector('.instructions-content');
+            section.classList.toggle('expanded');
+            // expanded class controls max-height via existing CSS
+            isDataDisplayExpanded = section.classList.contains('expanded');
+        }
+
+        function toggleElectrodeMap() {
+            const section = document.getElementById('electrodeMapSection');
+            section.classList.toggle('expanded');
+        }
+
+        // ---- New: Persistent Channels Overview + Electrode Map ----
+        function resetChannelDisplays() {
+            channelNames.forEach(n => { channelValues[n] = 'N/A'; });
+            refValue = 'N/A';
+            drlValue = 'N/A';
+            renderChannelsOverview();
+        }
+
+        function renderChannelsOverview() {
+            const container = document.getElementById('channelOverview');
+            if (!container) return;
+            if (container.childElementCount === 0) {
+                // initial render with extras row and two groups: 1-6 (left), 7-12 (right)
+                const extras = document.createElement('div');
+                extras.className = 'channels-extras';
+                extras.id = 'co-extras';
+                const leftGroup = document.createElement('div');
+                leftGroup.className = 'channels-group';
+                leftGroup.id = 'co-left';
+                const rightGroup = document.createElement('div');
+                rightGroup.className = 'channels-group';
+                rightGroup.id = 'co-right';
+
+                container.appendChild(extras);
+                container.appendChild(leftGroup);
+                container.appendChild(rightGroup);
+
+                // REF card
+                const refCard = document.createElement('div');
+                refCard.className = 'channel-card';
+                refCard.id = 'co-ref';
+                refCard.innerHTML = `
+                    <div class="channel-name">REF</div>
+                    <div class="channel-value" id="co-ref-val">N/A</div>`;
+                // DRL card
+                const drlCard = document.createElement('div');
+                drlCard.className = 'channel-card';
+                drlCard.id = 'co-drl';
+                drlCard.innerHTML = `
+                    <div class="channel-name">DRL</div>
+                    <div class="channel-value" id="co-drl-val">N/A</div>`;
+                extras.appendChild(refCard);
+                extras.appendChild(drlCard);
+
+                channelNames.forEach(name => {
+                    const card = document.createElement('div');
+                    card.className = 'channel-card';
+                    card.id = `co-${name}`;
+                    card.innerHTML = `
+                        <div class="channel-name">${name.toUpperCase()}</div>
+                        <div class="channel-value" id="co-${name}-val">N/A</div>
+                    `;
+                    const idx = parseInt(name.replace('ch', ''), 10);
+                    if (idx >= 1 && idx <= 6) {
+                        leftGroup.appendChild(card);
+                    } else {
+                        rightGroup.appendChild(card);
+                    }
+                });
+            }
+            // update values using throttled DOM updates
+            const channelUpdates = {};
+            channelNames.forEach(name => {
+                const val = channelValues[name];
+                const isNum = typeof val === 'number';
+                const isDisc = isNum && Math.abs(val - SENTINEL) < 1;
+                const displayVal = isNum && !isDisc ? val.toFixed(1) + ' µV' : (isDisc ? 'DISCONNECTED' : 'N/A');
+                channelUpdates[name] = displayVal;
+                
+                // Handle disconnected state immediately for visual feedback
+                const card = document.getElementById(`co-${name}`);
+                if (card) card.classList.toggle('disconnected', isDisc);
+            });
+            
+            // Add ref and drl values
+            channelUpdates.ref = (typeof refValue === 'number') ? refValue.toFixed(1) + ' µV' : 'N/A';
+            channelUpdates.drl = (typeof drlValue === 'number') ? drlValue.toFixed(1) + ' µV' : 'N/A';
+            
+            // Schedule throttled update
+            DOMUpdateManager.scheduleChannelsUpdate(channelUpdates);
+        }
+
+        function updateChannels(chObj) {
+            try {
+                channelNames.forEach(name => {
+                    if (Object.prototype.hasOwnProperty.call(chObj, name)) {
+                        channelValues[name] = chObj[name];
+                    }
+                });
+                renderChannelsOverview();
+            } catch (e) {
+                console.error('Error updating channels:', e);
+            }
+        }
+
+        // ---- Chart Functions ----
+        function initializeCharts() {
+            // Initialize chart data structure with circular buffers
+            channelNames.forEach(channel => {
+                const bufferSize = Math.max(10000, chartConfig.timeWindow * chartConfig.sampleRate * 2); // 2x for safety
+                chartData[channel] = {
+                    timeBuffer: new CircularBuffer(bufferSize),
+                    dataBuffer: new CircularBuffer(bufferSize),
+                    // Keep small arrays for Chart.js compatibility
+                    time: [],
+                    data: []
+                };
+                channelRanges[channel] = {
+                    min: null,
+                    max: null,
+                    std: 0,
+                    lastUpdate: 0
+                };
+                pendingUpdates[channel] = [];
+            });
+            
+            // Start batch update timer
+            startBatchUpdates();
+            
+            initializeTimeSeriesChart();
+            createTimeAxis();
+            initializeFFTChart();
+        }
+        
+        function initializeTimeSeriesChart() {
+            const container = document.getElementById('channelCharts');
+            container.innerHTML = ''; // Clear existing charts
+            
+            // Create individual chart for each channel
+            channelNames.forEach((channel, index) => {
+                // Create div for this channel
+                const channelDiv = document.createElement('div');
+                channelDiv.className = 'channel-chart';
+                channelDiv.style.setProperty('--channel-color', channelColors[index]);
+                
+                // Add channel label with STD
+                const label = document.createElement('div');
+                label.className = 'channel-label';
+                label.innerHTML = `
+                    <div>${channel.toUpperCase()}</div>
+                    <div class="channel-std" id="std-${channel}">STD: --</div>
+                `;
+                channelDiv.appendChild(label);
+                
+                // Create canvas for chart
+                const canvas = document.createElement('canvas');
+                canvas.id = `chart-${channel}`;
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                channelDiv.appendChild(canvas);
+                
+                container.appendChild(channelDiv);
+                
+                // Initialize chart for this channel
+                const ctx = canvas.getContext('2d');
+                channelCharts[channel] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: channel.toUpperCase(),
+                            data: [],
+                            borderColor: channelColors[index],
+                            backgroundColor: 'transparent',
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            tension: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        interaction: { intersect: false },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                display: false, // Hide X-axis on all individual channels
+                                grid: { display: false }
+                            },
+                            y: {
+                                display: false, // Hide y-axis labels to save space
+                                min: -chartConfig.voltageScale / 2,
+                                max: chartConfig.voltageScale / 2
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        
+        function createTimeAxis() {
+            const container = document.getElementById('timeAxis');
+            container.innerHTML = ''; // Clear existing tickers
+            
+            // Create static time tickers
+            const tickerCount = Math.min(11, chartConfig.timeWindow + 1); // Max 11 tickers for readability
+            const tickerInterval = chartConfig.timeWindow / (tickerCount - 1);
+            
+            for (let i = 0; i < tickerCount; i++) {
+                const ticker = document.createElement('div');
+                ticker.className = 'time-ticker';
+                
+                // Time value (0 at right, negative going left)
+                const timeValue = -chartConfig.timeWindow + (i * tickerInterval);
+                ticker.textContent = timeValue === 0 ? '0' : `${timeValue.toFixed(0)}s`;
+                
+                // Position (percentage from left)
+                const position = (i / (tickerCount - 1)) * 100;
+                ticker.style.left = `calc(${position}% - 15px)`; // -15px to center text
+                
+                container.appendChild(ticker);
+            }
+        }
+        
+        function initializeFFTChart() {
+            const ctx = document.getElementById('fftChart').getContext('2d');
+            
+            const datasets = channelNames.map((channel, index) => ({
+                label: channel.toUpperCase(),
+                data: [],
+                borderColor: channelColors[index],
+                backgroundColor: channelColors[index] + '20',
+                borderWidth: 1.5,
+                pointRadius: 0,
+                fill: false
+            }));
+            
+            fftChart = new Chart(ctx, {
+                type: 'line',
+                data: { datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: { color: '#ffffff', fontSize: 10 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Frequency (Hz)', color: '#ffffff' },
+                            grid: { color: '#333333' },
+                            ticks: { color: '#ffffff' },
+                            min: 0.1,
+                            max: 48 // Focus on 0.1-48Hz for EEG
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Power (log scale)', color: '#ffffff' },
+                            grid: { color: '#333333' },
+                            ticks: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Efficient batch update system
+        function startBatchUpdates() {
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(processBatchedUpdates, chartConfig.updateFrequency);
+        }
+        
+        function processBatchedUpdates() {
+            const now = Date.now();
+            let hasUpdates = false;
+            
+            channelNames.forEach(channel => {
+                const pending = pendingUpdates[channel];
+                if (pending.length === 0) return;
+                
+                hasUpdates = true;
+                const chart = channelCharts[channel];
+                if (!chart) return;
+                
+                // Add all pending data points at once
+                pending.forEach(point => {
+                    chart.data.datasets[0].data.push(point);
+                });
+                
+                // Clean up old data points efficiently - keep full time window
+                const maxPoints = chartConfig.timeWindow * chartConfig.sampleRate;
+                const dataset = chart.data.datasets[0].data;
+                if (dataset.length > maxPoints) {
+                    // More efficient: create new array instead of splice
+                    const keepStart = dataset.length - maxPoints;
+                    chart.data.datasets[0].data = dataset.slice(keepStart);
+                }
+                
+                // Update time window
+                if (pending.length > 0) {
+                    const latestTime = pending[pending.length - 1].x;
+                    chart.options.scales.x.min = latestTime - chartConfig.timeWindow;
+                    chart.options.scales.x.max = latestTime;
+                    
+                    // No need to update static time axis - it's already positioned correctly
+                    
+                    // Update Y-axis less frequently (every 500ms)
+                    if (now - channelRanges[channel].lastUpdate > 500) {
+                        updateChannelYRange(channel, chart);
+                        channelRanges[channel].lastUpdate = now;
+                    }
+                }
+                
+                // Clear pending updates
+                pendingUpdates[channel] = [];
+                
+                // Single batch update per chart
+                chart.update('none');
+            });
+        }
+        
+        function calculateStandardDeviation(values) {
+            if (values.length === 0) return 0;
+            
+            // Calculate mean
+            let sum = 0;
+            for (let i = 0; i < values.length; i++) {
+                sum += values[i];
+            }
+            const mean = sum / values.length;
+            
+            // Calculate variance
+            let variance = 0;
+            for (let i = 0; i < values.length; i++) {
+                const diff = values[i] - mean;
+                variance += diff * diff;
+            }
+            variance /= values.length;
+            
+            return Math.sqrt(variance);
+        }
+        
+        function updateChannelYRange(channel, chart) {
+            const dataset = chart.data.datasets[0].data;
+            if (dataset.length === 0) return;
+            
+            // Efficient min/max calculation on visible data only
+            let min = dataset[0].y;
+            let max = dataset[0].y;
+            const values = [];
+            
+            for (let i = 0; i < dataset.length; i++) {
+                const value = dataset[i].y;
+                values.push(value);
+                if (value < min) min = value;
+                if (value > max) max = value;
+            }
+            
+            // Calculate standard deviation
+            const std = calculateStandardDeviation(values);
+            channelRanges[channel].std = std;
+            
+            // Update STD display
+            const stdElement = document.getElementById(`std-${channel}`);
+            if (stdElement) {
+                stdElement.textContent = `STD: ${std.toFixed(0)} µV`;
+            }
+            
+            const dataCenter = (min + max) / 2;
+            const halfRange = chartConfig.voltageScale / 2;
+            
+            chart.options.scales.y.min = dataCenter - halfRange;
+            chart.options.scales.y.max = dataCenter + halfRange;
+        }
+        
+        function addDataToChart(channels, timestamp) {
+            if (!channels) return;
+            
+            const currentTime = timestamp || (Date.now() / 1000);
+            
+            // Lightweight data queuing - no heavy operations here
+            channelNames.forEach((channel) => {
+                if (channels[channel] !== undefined) {
+                    const microvoltValue = channels[channel];
+                    
+                    // Skip sentinel values (disconnected electrodes)
+                    if (Math.abs(microvoltValue - SENTINEL) < 1) return;
+                    
+                    // Queue for batch processing (very fast)
+                    pendingUpdates[channel].push({
+                        x: currentTime,
+                        y: microvoltValue
+                    });
+                    
+                    // Store data in circular buffers for efficient management
+                    if (chartConfig.activeTab === 'fft') {
+                        chartData[channel].timeBuffer.push(currentTime);
+                        chartData[channel].dataBuffer.push(microvoltValue);
+                    }
+                }
+            });
+        }
+        
+        function updateFFTChart() {
+            if (!fftChart || chartConfig.activeTab !== 'fft') return;
+            
+            // Update FFT less frequently for better performance
+            const now = Date.now();
+            if (now - lastUpdateTime < 500) return; // Increased to 500ms
+            lastUpdateTime = now;
+            
+            let hasData = false;
+            
+            channelNames.forEach((channel, index) => {
+                const dataArray = chartData[channel].dataBuffer.getArray();
+                if (dataArray.length < 64) return; // Reduced minimum for faster processing
+                
+                hasData = true;
+                
+                // Use fixed smaller FFT size for consistent performance
+                const fftSize = 128; // Fixed size for speed
+                const samples = dataArray.slice(-fftSize);
+                
+                // Pad with zeros if needed
+                while (samples.length < fftSize) {
+                    samples.push(0);
+                }
+                
+                // Simplified Hann windowing (pre-calculated for speed)
+                for (let i = 0; i < fftSize; i++) {
+                    samples[i] *= 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (fftSize - 1));
+                }
+                
+                // Compute FFT
+                const fftResult = optimizedFFT(samples);
+                const fftData = [];
+                
+                // Calculate frequency bounds (0.1Hz to 48Hz only)
+                const minBin = Math.max(1, Math.ceil(0.1 * fftSize / chartConfig.sampleRate));
+                const maxBin = Math.min(Math.floor(48 * fftSize / chartConfig.sampleRate), fftSize / 2);
+                
+                // Only calculate power for relevant frequencies
+                for (let i = minBin; i <= maxBin; i++) {
+                    const freq = (i * chartConfig.sampleRate) / fftSize;
+                    if (freq >= 0.1 && freq <= 48) {
+                        const real = fftResult[i][0];
+                        const imag = fftResult[i][1];
+                        const power = real * real + imag * imag; // Skip sqrt for speed
+                        fftData.push({ x: freq, y: power });
+                    }
+                }
+                
+                // Update FFT chart data
+                fftChart.data.datasets[index].data = fftData;
+            });
+            
+            if (hasData) {
+                fftChart.update('none');
+            }
+        }
+        
+        function switchTab(tab) {
+            const previousTab = chartConfig.activeTab;
+            chartConfig.activeTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.chart-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide tab content
+            document.getElementById('timeseriesTab').style.display = tab === 'timeseries' ? 'block' : 'none';
+            document.getElementById('fftTab').style.display = tab === 'fft' ? 'block' : 'none';
+            
+            // Memory optimization: clear FFT data when switching away
+            if (previousTab === 'fft' && tab === 'timeseries') {
+                channelNames.forEach(channel => {
+                    chartData[channel].timeBuffer.clear();
+                    chartData[channel].dataBuffer.clear();
+                });
+            }
+            
+            if (tab === 'fft') {
+                updateFFTChart();
+            }
+        }
+        
+        function updateTimeScale() {
+            chartConfig.timeWindow = parseInt(document.getElementById('timeScale').value);
+            // Calculate correct data points for the time window
+            chartConfig.maxDataPoints = chartConfig.timeWindow * chartConfig.sampleRate;
+            
+            // Recreate time axis with new scale
+            createTimeAxis();
+            
+            // Clear excess chart data efficiently
+            Object.values(channelCharts).forEach(chart => {
+                const dataset = chart.data.datasets[0].data;
+                const maxPoints = chartConfig.maxDataPoints;
+                if (dataset.length > maxPoints) {
+                    // More efficient: create new array instead of splice
+                    chart.data.datasets[0].data = dataset.slice(dataset.length - maxPoints);
+                }
+                chart.update('none');
+            });
+        }
+        
+        function updateVoltageScale() {
+            chartConfig.voltageScale = parseInt(document.getElementById('voltageScale').value);
+            
+            // Force Y-axis range update for all channels
+            channelNames.forEach(channel => {
+                if (channelCharts[channel]) {
+                    channelRanges[channel].lastUpdate = 0; // Force update on next batch
+                }
+            });
+        }
+        
+        function updateChannelHeight() {
+            const height = parseInt(document.getElementById('channelHeight').value);
+            
+            // Update height of all channel chart containers
+            document.querySelectorAll('.channel-chart').forEach(chart => {
+                chart.style.height = height + 'px';
+            });
+            
+            // Trigger chart resize
+            Object.values(channelCharts).forEach(chart => {
+                chart.resize();
+            });
+        }
+        
+        function clearChart() {
+            // Efficient cleanup
+            channelNames.forEach(channel => {
+                // Clear all data structures
+                if (chartData[channel]) {
+                    chartData[channel].timeBuffer.clear();
+                    chartData[channel].dataBuffer.clear();
+                    chartData[channel].time = [];
+                    chartData[channel].data = [];
+                }
+                pendingUpdates[channel] = [];
+                channelRanges[channel] = { min: null, max: null, std: 0, lastUpdate: 0 };
+                
+                // Clear chart data and STD display
+                if (channelCharts[channel]) {
+                    channelCharts[channel].data.datasets[0].data = [];
+                    channelCharts[channel].options.scales.y.min = -chartConfig.voltageScale / 2;
+                    channelCharts[channel].options.scales.y.max = chartConfig.voltageScale / 2;
+                    channelCharts[channel].update('none');
+                    
+                    // Reset STD display
+                    const stdElement = document.getElementById(`std-${channel}`);
+                    if (stdElement) {
+                        stdElement.textContent = 'STD: --';
+                    }
+                }
+            });
+            
+            // Clear FFT chart
+            if (fftChart) {
+                fftChart.data.datasets.forEach(dataset => {
+                    dataset.data = [];
+                });
+                fftChart.update('none');
+            }
+            
+            // Time axis is static - no need to reset
+        }
+        
+        function cleanupCharts() {
+            // Stop batch updates
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+            
+            // Destroy chart instances to prevent memory leaks
+            Object.values(channelCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            channelCharts = {};
+            
+            // Time axis is static HTML - no chart to destroy
+            
+            if (fftChart) {
+                fftChart.destroy();
+                fftChart = null;
+            }
+        }
+
+        // Cleanup on page unload to prevent memory leaks
+        window.addEventListener('beforeunload', () => {
+            if (ws) ws.close();
+            cleanupCharts();
+        });
+        
+        // Initialize
+        updateStats();
+        // Build static UI once at load
+        resetChannelDisplays();
+        initializeCharts();
+    </script>
+
+    <footer class="footer">
+        <div class="logo">Arctop</div>
+        <div>Powered by <a href="https://arctop.com" target="_blank" rel="noopener">Arctop</a> - Real-time Brain Data Intelligence</div>
+    </footer>
+
+</body>
+</html>
