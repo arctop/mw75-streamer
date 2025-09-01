@@ -1,0 +1,67 @@
+# Jekyll configuration for GitHub Pages
+title: MW75 EEG Streamer
+description: Python package for streaming real-time EEG data from MW75 Neuro headphones at 500Hz
+url: "https://arctop.github.io"
+baseurl: "/mw75-streamer"
+
+# Author information
+author:
+  name: MW75 EEG Streamer Team
+
+# SEO settings
+lang: en_US
+twitter:
+  card: summary_large_image
+
+# Social links
+github_username: arctop
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Include/Exclude
+include:
+  - _pages
+
+exclude:
+  - .venv/
+  - __pycache__/
+  - .mypy_cache/
+  - .pytest_cache/
+  - node_modules/
+  - vendor/
+  - README.md
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "page"
+
+# SEO plugin settings
+seo:
+  type: WebSite
+  name: MW75 EEG Streamer
+  links:
+    - https://github.com/arctop/mw75-streamer
