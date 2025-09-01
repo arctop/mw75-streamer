@@ -89,6 +89,22 @@ export DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
 ```
 
 
+## Performance Optimization
+
+For improved real-time performance and reduced packet drops, run with elevated priority:
+
+```bash
+# Run with high priority (requires sudo for optimal performance)
+sudo uv run -m mw75_streamer --csv eeg.csv
+
+# The streamer automatically sets:
+# - Process priority (niceness -10)
+# - Thread real-time scheduling policy
+# - Optimized RFCOMM event loop timing (1ms intervals)
+```
+
+**Note**: Running without `sudo` will still work but may have higher packet drop rates under system load.
+
 ## Troubleshooting
 
 - **MW75 not found**: Ensure headphones are powered on and paired
