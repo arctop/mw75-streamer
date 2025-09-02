@@ -50,7 +50,7 @@ class CSVWriter:
         self.extra_path = extra_path
         self.logger = get_logger(__name__)
 
-        if eeg_path and extra_path:
+        if eeg_path or extra_path:
             self._open_files()
 
     def _open_files(self) -> bool:
