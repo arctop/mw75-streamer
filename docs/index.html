@@ -396,6 +396,9 @@ pip install -e ".[all]"
 brew install labstreaminglayer/tap/lsl
 export DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
                 </div>
+                <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="{{ site.baseurl }}/assets/installation.gif" alt="Installation demo" style="max-width: 100%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);" />
+                </div>
                 
                 <h3 style="margin-top: 2rem; text-align: center;">Basic Usage</h3>
                 <div class="code-block">
@@ -410,6 +413,10 @@ python -m mw75_streamer --lsl MW75_EEG
 
 # Combined outputs with verbose logging
 python -m mw75_streamer --verbose --csv eeg.csv --ws ws://localhost:8080 --lsl MW75_EEG
+                </div>
+                <h3 style="margin-top: 2rem; text-align: center;">Browser Visualization</h3>
+                <div style="text-align: center; margin: 1rem 0;">
+                    <img src="{{ site.baseurl }}/assets/browser.gif" alt="Browser visualization demo" style="max-width: 100%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);" />
                 </div>
             </div>
         </section>

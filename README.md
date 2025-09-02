@@ -21,6 +21,8 @@ git clone https://github.com/arctop/mw75-streamer.git
 cd mw75_streamer
 ```
 
+![Installation Demo](docs/assets/installation.gif)
+
 **Option 1: Using uv (recommended)**
 ```bash
 # install uv if you don't have it already
@@ -48,6 +50,8 @@ uv run -m mw75_streamer --lsl MW75_EEG
 # Combined outputs
 uv run -m mw75_streamer --csv eeg.csv --ws ws://localhost:8080
 ```
+![Browser Visualization](docs/assets/browser.gif)
+
 
 ## Testing
 
