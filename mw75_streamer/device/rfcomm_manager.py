@@ -217,8 +217,10 @@ class RFCOMMManager:
             except Exception as e:
                 self.logger.debug(f"Could not set thread priority: {e}")
 
-        except Exception as e:
-            self.logger.warning(f"Priority adjustment failed: {e}")
+        except Exception:
+            self.logger.warning(
+                "Priority adjustment failed (you can run with sudo to optimize performance)"
+            )
 
     def run_until_stopped(self) -> None:
         """Run the RFCOMM event loop until stop is requested"""

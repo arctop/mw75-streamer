@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: null
 title: MW75 EEG Streamer - Real-time EEG Data Streaming
 description: Python package for streaming real-time EEG data from MW75 Neuro headphones. Supports WebSocket, CSV, and LSL outputs for neuroscience research and BCI applications.
 keywords: EEG, MW75, Neuro headphones, brain-computer interface, BCI, neuroscience, real-time streaming, Python, LSL, WebSocket, RFCOMM, Bluetooth, brainwave, electroencephalography
@@ -36,6 +36,8 @@ image: /assets/mw75-preview.png
     <meta name="twitter:description" content="Python package for streaming real-time EEG data from MW75 Neuro headphones.">
     <meta name="twitter:image" content="https://arctop.github.io/mw75-streamer/assets/mw75-preview.png">
     
+    <meta name="google-site-verification" content="f0SMtLrrFeWsyV0cPO991RpCXhslyGJKjzIR1gpYyyg" />
+
     <!-- Enhanced Structured Data -->
     <script type="application/ld+json">
     {
@@ -89,7 +91,8 @@ image: /assets/mw75-preview.png
     </script>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="{{ site.baseurl }}/favicon.svg">
+    <link rel="alternate icon" href="{{ site.baseurl }}/favicon.ico">
     
     <style>
         * {
@@ -287,6 +290,20 @@ image: /assets/mw75-preview.png
             color: white;
         }
         
+        /* Media frame for gifs/screenshots */
+        .media-frame {
+            max-width: 900px;
+            margin: 1.5rem auto;
+        }
+        
+        .media-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
@@ -396,6 +413,9 @@ pip install -e ".[all]"
 brew install labstreaminglayer/tap/lsl
 export DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
                 </div>
+                <div class="media-frame">
+                    <img src="{{ site.baseurl }}/assets/installation.gif" alt="Installation demo" />
+                </div>
                 
                 <h3 style="margin-top: 2rem; text-align: center;">Basic Usage</h3>
                 <div class="code-block">
@@ -410,6 +430,10 @@ python -m mw75_streamer --lsl MW75_EEG
 
 # Combined outputs with verbose logging
 python -m mw75_streamer --verbose --csv eeg.csv --ws ws://localhost:8080 --lsl MW75_EEG
+                </div>
+                <h3 style="margin-top: 2rem; text-align: center;">Browser Visualization</h3>
+                <div class="media-frame">
+                    <img src="{{ site.baseurl }}/assets/browser.gif" alt="Browser visualization demo" />
                 </div>
             </div>
         </section>

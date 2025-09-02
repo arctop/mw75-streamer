@@ -47,11 +47,13 @@ plugins:
 # Include/Exclude
 include:
   - _pages
+  - mw75_streamer/assets/
 
 exclude:
   - README.md
   - node_modules/
   - vendor/
+  - mw75_streamer/
 
 # Collections
 collections:

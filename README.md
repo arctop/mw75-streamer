@@ -4,7 +4,7 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Stream 12-channel EEG data from MW75 Neuro headphones at 500Hz with WebSocket, CSV, and LSL output support.
+Stream 12-channel EEG data from MW75 Neuro headphones with WebSocket, CSV, and LSL output support.
 
 ## Features
 
@@ -20,6 +20,8 @@ Stream 12-channel EEG data from MW75 Neuro headphones at 500Hz with WebSocket, C
 git clone https://github.com/arctop/mw75-streamer.git
 cd mw75_streamer
 ```
+
+![Installation Demo](docs/assets/installation.gif)
 
 **Option 1: Using uv (recommended)**
 ```bash
@@ -48,6 +50,8 @@ uv run -m mw75_streamer --lsl MW75_EEG
 # Combined outputs
 uv run -m mw75_streamer --csv eeg.csv --ws ws://localhost:8080
 ```
+![Browser Visualization](docs/assets/browser.gif)
+
 
 ## Testing
 
