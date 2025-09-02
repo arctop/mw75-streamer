@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://arctop.github.io/mw75-streamer/sitemap.xml

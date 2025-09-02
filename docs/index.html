@@ -1,19 +1,31 @@
+---
+layout: default
+title: MW75 EEG Streamer - Real-time EEG Data Streaming
+description: Python package for streaming real-time EEG data from MW75 Neuro headphones. Supports WebSocket, CSV, and LSL outputs for neuroscience research and BCI applications.
+keywords: EEG, MW75, Neuro headphones, brain-computer interface, BCI, neuroscience, real-time streaming, Python, LSL, WebSocket, RFCOMM, Bluetooth, brainwave, electroencephalography
+image: /assets/mw75-preview.png
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MW75 EEG Streamer - Real-time EEG Data Streaming from MW75 Neuro Headphones</title>
     
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Python package for streaming real-time EEG data from MW75 Neuro headphones at 500Hz. Supports WebSocket, CSV, and LSL outputs for neuroscience research and BCI applications.">
-    <meta name="keywords" content="EEG, MW75, Neuro headphones, brain-computer interface, BCI, neuroscience, real-time streaming, Python, LSL, WebSocket">
-    <meta name="author" content="MW75 EEG Streamer">
-    <meta name="robots" content="index, follow">
+    <!-- Jekyll SEO Tag will inject meta tags here -->
+    {% seo %}
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+    <meta name="bingbot" content="index, follow">
+    <link rel="canonical" href="https://arctop.github.io/mw75-streamer/">
+    
+    <!-- Alternate URLs -->
+    <link rel="alternate" type="application/rss+xml" title="MW75 EEG Streamer" href="{{ site.url }}{{ site.baseurl }}/feed.xml">
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="MW75 EEG Streamer - Real-time EEG Data Streaming">
-    <meta property="og:description" content="Python package for streaming real-time EEG data from MW75 Neuro headphones at 500Hz. Supports WebSocket, CSV, and LSL outputs.">
+    <meta property="og:description" content="Python package for streaming real-time EEG data from MW75 Neuro headphones. Supports WebSocket, CSV, and LSL outputs.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://arctop.github.io/mw75-streamer/">
     <meta property="og:image" content="https://arctop.github.io/mw75-streamer/assets/mw75-preview.png">
@@ -21,29 +33,57 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MW75 EEG Streamer - Real-time EEG Data Streaming">
-    <meta name="twitter:description" content="Python package for streaming real-time EEG data from MW75 Neuro headphones at 500Hz.">
+    <meta name="twitter:description" content="Python package for streaming real-time EEG data from MW75 Neuro headphones.">
     <meta name="twitter:image" content="https://arctop.github.io/mw75-streamer/assets/mw75-preview.png">
     
-    <!-- Structured Data -->
+    <!-- Enhanced Structured Data -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
+        "@type": ["SoftwareApplication", "SoftwareSourceCode"],
         "name": "MW75 EEG Streamer",
-        "description": "Python package for streaming real-time EEG data from MW75 Neuro headphones",
-        "applicationCategory": "Neuroscience Software",
+        "alternateName": "mw75-streamer",
+        "description": "Python package for streaming real-time EEG data from MW75 Neuro headphones with support for WebSocket, CSV, and LSL outputs",
+        "applicationCategory": ["Neuroscience Software", "Medical Software", "Research Tool"],
         "operatingSystem": "macOS",
         "programmingLanguage": "Python",
+        "runtimePlatform": "Python 3.9+",
         "url": "https://arctop.github.io/mw75-streamer/",
         "downloadUrl": "https://github.com/arctop/mw75-streamer",
+        "codeRepository": "https://github.com/arctop/mw75-streamer",
         "author": {
             "@type": "Organization",
-            "name": "MW75 EEG Streamer Team"
+            "name": "Arctop",
+            "url": "https://arctop.com"
         },
+        "maintainer": {
+            "@type": "Organization",
+            "name": "Arctop"
+        },
+        "license": "https://github.com/arctop/mw75-streamer/blob/main/LICENSE",
+        "keywords": ["EEG", "MW75", "Neuro headphones", "brain-computer interface", "BCI", "neuroscience", "real-time streaming", "Python", "LSL", "WebSocket", "RFCOMM", "Bluetooth"],
         "offers": {
             "@type": "Offer",
             "price": "0",
             "priceCurrency": "USD"
+        },
+        "softwareRequirements": "macOS, Python 3.9+, MW75 Neuro headphones",
+        "releaseNotes": "Real-time EEG streaming with multiple output formats",
+        "featureList": [
+            "Real-time EEG data streaming",
+            "Multiple output formats (WebSocket, CSV, LSL)",
+            "BLE activation and RFCOMM data streaming",
+            "Packet validation and checksum verification",
+            "Modular architecture with type safety"
+        ],
+        "targetProduct": {
+            "@type": "Product",
+            "name": "MW75 Neuro Headphones",
+            "manufacturer": {
+                "@type": "Organization",
+                "name": "Master & Dynamic"
+            },
+            "url": "https://www.masterdynamic.com/products/mw75-neuro"
         }
     }
     </script>
@@ -307,7 +347,7 @@
                     <div class="feature-card">
                         <div class="feature-icon">⚡</div>
                         <h3>High-Speed Streaming</h3>
-                        <p>Real-time EEG data streaming at 500Hz with minimal latency for responsive brain-computer interface applications.</p>
+                        <p>Real-time EEG data streaming with minimal latency for responsive brain-computer interface applications.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🔄</div>
