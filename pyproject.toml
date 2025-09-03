@@ -13,12 +13,11 @@ maintainers = [
     {name = "Arctop", email = "opensource@arctop.com"}
 ]
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
 requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research", 
-    "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS :: MacOS X",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -74,9 +73,10 @@ mw75-streamer = "mw75_streamer.main:cli_main"
 mw75-test-server = "mw75_streamer.testing.__main__:main"
 
 [tool.setuptools]
-packages = ["mw75_streamer", "mw75_streamer.device", "mw75_streamer.data", "mw75_streamer.panel", "mw75_streamer.testing", "mw75_streamer.utils"]
+packages = ["mw75_streamer", "mw75_streamer.assets", "mw75_streamer.device", "mw75_streamer.data", "mw75_streamer.panel", "mw75_streamer.testing", "mw75_streamer.utils"]
 
 [tool.setuptools.package-data]
+"mw75_streamer.assets" = ["*.webp", "*.png", "*.jpg", "*.svg"]
 "mw75_streamer.testing" = ["*.html"]
 "mw75_streamer.panel" = ["*.html"]
 
