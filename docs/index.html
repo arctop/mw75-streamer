@@ -402,18 +402,28 @@ image: /assets/mw75-preview.png
                     <strong>macOS Only:</strong> Currently supported on macOS only. Linux and Windows support coming soon.
                 </p>
                 <div class="code-block">
+# Option 1: Install from PyPI (recommended)
+uv pip install mw75-streamer
+
+# For additional features (WebSocket, LSL support):
+uv pip install "mw75-streamer[all]"
+
+# Or directly (slower):
+pip install "mw75-streamer[all]"
+
+# Option 2: Install from source
 # Clone this repository
 git clone https://github.com/arctop/mw75-streamer.git
 cd mw75_streamer
 
-# Option 1: Using uv (recommended)
+# Option 2a: Using uv (recommended)
 # 1. Install uv if you need (see installation guide: https://docs.astral.sh/uv/getting-started/installation)
 brew install uv
 
 # 2. install python, the dependencies and this package
 uv venv && uv pip install -e ".[all]"
 
-# Option 2: Using pip
+# Option 2b: Using pip
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[all]"
