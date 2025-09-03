@@ -15,6 +15,24 @@ Stream 12-channel EEG data from MW75 Neuro headphones with WebSocket, CSV, and L
 
 ## Installation
 
+**Option 1: Install from PyPI (recommended)**
+
+```bash
+uv pip install mw75-streamer
+```
+
+For additional features (WebSocket, LSL support):
+```bash
+uv pip install "mw75-streamer[all]"
+```
+
+Or directly (slower):
+```bash
+pip install "mw75-streamer[all]"
+```
+
+**Option 2: Install from source**
+
 ```bash
 # Clone this repository
 git clone https://github.com/arctop/mw75-streamer.git
@@ -23,20 +41,19 @@ cd mw75_streamer
 
 ![Installation Demo](docs/assets/installation.gif)
 
-**Option 1: Using uv (recommended)**
+**Using uv (recommended)**
 
-1. Install uv if you need (see [installtion guide](https://docs.astral.sh/uv/getting-started/installation))
+1. Install uv if you need (see [installation guide](https://docs.astral.sh/uv/getting-started/installation))
 ```bash
 brew install uv
 ```
-
 
 2. install python, the dependencies and this package
 ```bash
 uv venv && uv pip install -e ".[all]"
 ```
 
-**Option 2: Using pip**
+**Using pip**
 ```bash
 python -m venv .venv
 source .venv/bin/activate
