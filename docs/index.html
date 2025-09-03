@@ -402,11 +402,20 @@ image: /assets/mw75-preview.png
                     <strong>macOS Only:</strong> Currently supported on macOS only. Linux and Windows support coming soon.
                 </p>
                 <div class="code-block">
-# Using uv (recommended)
-uv venv && source .venv/bin/activate
-uv pip install -e ".[all]"
+# Clone this repository
+git clone https://github.com/arctop/mw75-streamer.git
+cd mw75_streamer
 
-# Using pip
+# Option 1: Using uv (recommended)
+# 1. Install uv if you need (see installation guide: https://docs.astral.sh/uv/getting-started/installation)
+brew install uv
+
+# 2. install python, the dependencies and this package
+uv venv && uv pip install -e ".[all]"
+
+# Option 2: Using pip
+python -m venv .venv
+source .venv/bin/activate
 pip install -e ".[all]"
 
 # For LSL support on macOS
@@ -419,17 +428,14 @@ export DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
                 
                 <h3 style="margin-top: 2rem; text-align: center;">Basic Usage</h3>
                 <div class="code-block">
-# Stream EEG data to CSV
-python -m mw75_streamer --csv eeg.csv
+# Basic streaming
+uv run -m mw75_streamer --browser
+uv run -m mw75_streamer --csv eeg.csv
+uv run -m mw75_streamer --ws ws://localhost:8080
+uv run -m mw75_streamer --lsl MW75_EEG
 
-# Stream to WebSocket
-python -m mw75_streamer --ws ws://localhost:8080
-
-# Stream to Lab Streaming Layer
-python -m mw75_streamer --lsl MW75_EEG
-
-# Combined outputs with verbose logging
-python -m mw75_streamer --verbose --csv eeg.csv --ws ws://localhost:8080 --lsl MW75_EEG
+# Combined outputs
+uv run -m mw75_streamer --csv eeg.csv --ws ws://localhost:8080
                 </div>
                 <h3 style="margin-top: 2rem; text-align: center;">Browser Visualization</h3>
                 <div class="media-frame">
