@@ -24,10 +24,15 @@ cd mw75_streamer
 ![Installation Demo](docs/assets/installation.gif)
 
 **Option 1: Using uv (recommended)**
+
+1. Install uv if you need (see [installtion guide](https://docs.astral.sh/uv/getting-started/installation))
 ```bash
-# install uv if you don't have it already
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# install python, the dependencies and this package
+brew install uv
+```
+
+
+2. install python, the dependencies and this package
+```bash
 uv venv && uv pip install -e ".[all]"
 ```
 
