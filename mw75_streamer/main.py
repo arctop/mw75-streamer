@@ -106,7 +106,18 @@ class MW75Streamer:
         # Initialize device with data callback
         if _MW75Device is None:
             raise RuntimeError("MW75Device not available on this platform")
-        self.device: MW75Device = _MW75Device(self._handle_device_data)
+        self.device = _MW75Device(self._handle_device_data)
+
+    def set_verbose(self, verbose: bool) -> None:
+        """
+        Enable or disable verbose logging including checksum error messages
+        
+        Args:
+            verbose: True to enable verbose logging, False to suppress it
+        """
+        self.verbose = verbose
+        self.packet_processor.verbose = verbose
+        self.logger.debug(f"Verbose logging {'enabled' if verbose else 'disabled'}")
 
     def _handle_device_data(self, data: bytes) -> None:
         """Handle raw data received from MW75 device"""

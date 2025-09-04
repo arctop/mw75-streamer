@@ -17,8 +17,8 @@ import numpy as np
 from typing import List, Optional
 from dataclasses import dataclass
 
-from mw75_streamer import MW75Streamer, EEGPacket
-
+from mw75_streamer.main import MW75Streamer
+from mw75_streamer import EEGPacket
 
 @dataclass
 class ProcessingTask:
