@@ -6,6 +6,8 @@
 
 Stream 12-channel EEG data from MW75 Neuro headphones with WebSocket, CSV, and LSL output support.
 
+**About `uv`:** This project uses [uv](https://docs.astral.sh/uv/) for fast, reliable Python package management. Benefits include faster installs, better dependency resolution, and reproducible environments. All commands can be run with regular Python too (see [Alternative: Using Python Directly](#alternative-using-python-directly)), but we use `uv` throughout this documentation for consistency.
+
 ## Features
 
 - **Real-time streaming**: 500Hz, 12-channel EEG with µV precision
@@ -26,11 +28,6 @@ For additional features (WebSocket, LSL support):
 uv pip install "mw75-streamer[all]"
 ```
 
-Or directly (slower):
-```bash
-pip install "mw75-streamer[all]"
-```
-
 **Option 2: Install from source**
 
 ```bash
@@ -41,23 +38,12 @@ cd mw75_streamer
 
 ![Installation Demo](docs/assets/installation.gif)
 
-**Using uv (recommended)**
-
-1. Install uv if you need (see [installation guide](https://docs.astral.sh/uv/getting-started/installation))
 ```bash
+# Install uv if needed (see installation guide: https://docs.astral.sh/uv/getting-started/installation)
 brew install uv
-```
 
-2. install python, the dependencies and this package
-```bash
+# Create environment and install package
 uv venv && uv pip install -e ".[all]"
-```
-
-**Using pip**
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[all]"
 ```
 
 ## Usage
@@ -74,6 +60,31 @@ uv run -m mw75_streamer --csv eeg.csv --ws ws://localhost:8080
 ```
 ![Browser Visualization](docs/assets/browser.gif)
 
+
+## Developer Examples
+
+For advanced integration into your own applications, see the [examples/](examples/) folder:
+
+- **[simple_callback.py](examples/simple_callback.py)** - Quick start example for basic callback usage
+- **[callback_integration.py](examples/callback_integration.py)** - Comprehensive example showing real-time EEG processing using custom callbacks  
+- **[threaded_processing.py](examples/threaded_processing.py)** - Threading patterns for heavy processing (recommended for ML/filtering)
+- **Custom Callbacks**: Process EEG packets, raw data, and events directly in your code  
+- **Performance Guidance**: Keep callbacks fast (< 1ms) or use threading for heavy work
+- **Integration Patterns**: Combine callbacks with existing outputs (CSV, WebSocket, LSL)
+
+```python
+# Quick callback example
+from mw75_streamer import MW75Streamer, EEGPacket
+
+def process_eeg(packet: EEGPacket):
+    # packet.channels = 12 EEG channels in µV
+    print(f"Ch1: {packet.channels[0]:.1f} µV")
+
+streamer = MW75Streamer(eeg_callback=process_eeg)
+await streamer.start_streaming()
+```
+
+See [examples/README.md](examples/README.md) for complete documentation.
 
 ## Testing
 
@@ -139,12 +150,16 @@ sudo uv run -m mw75_streamer --csv eeg.csv
 
 ## Alternative: Using Python Directly
 
-If you prefer to use regular Python instead of `uv`, activate your virtual environment first:
+All `uv` commands can be replaced with regular Python. Simply activate your virtual environment first:
 
 ```bash
-# After installation with pip
+# Example: Replace 'uv run -m mw75_streamer' with 'python -m mw75_streamer'
 source .venv/bin/activate
 python -m mw75_streamer --csv eeg.csv --ws ws://localhost:8080
+python -m mw75_streamer.testing --advanced
+
+# Or replace 'uv pip install' with 'pip install'  
+pip install mw75-streamer
 ```
 
 ## Development
