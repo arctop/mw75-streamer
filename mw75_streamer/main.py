@@ -7,7 +7,7 @@ Clean main function and CLI interface for the MW75 EEG streamer.
 import sys
 import asyncio
 import argparse
-from typing import Optional, List, Any, TYPE_CHECKING
+from typing import Optional, List, Any, TYPE_CHECKING, Callable
 import time
 import webbrowser
 import os
@@ -32,6 +32,7 @@ if sys.platform == "darwin":
 else:
     _MW75Device = None
 from .data.streamers import CSVWriter, WebSocketStreamer, StdoutStreamer, LSLStreamer
+from .data.packet_processor import EEGPacket
 from .panel.panel_server import PanelServer, WebSocketLogHandler
 
 
@@ -46,6 +47,9 @@ class MW75Streamer:
         lsl_stream_name: Optional[str] = None,
         panel_server: Optional[PanelServer] = None,
         verbose: Optional[bool] = False,
+        eeg_callback: Optional[Callable[[EEGPacket], None]] = None,
+        raw_data_callback: Optional[Callable[[bytes], None]] = None,
+        other_event_callback: Optional[Callable[[bytes], None]] = None,
     ):
         """
         Initialize MW75 streamer
@@ -57,7 +61,14 @@ class MW75Streamer:
             lsl_stream_name: LSL stream name for LSL streaming
             panel_server: Panel server for browser dashboard
             verbose: Enable verbose logging
+            eeg_callback: Custom callback function for EEG packets (receives EEGPacket objects)
+            raw_data_callback: Custom callback function for raw device data (receives bytes)
+            other_event_callback: Custom callback function for non-EEG events (receives bytes)
         """
+        # Store custom callbacks
+        self.eeg_callback = eeg_callback
+        self.raw_data_callback = raw_data_callback
+        self.other_event_callback = other_event_callback
         self.csv_writer = CSVWriter(csv_file, extra_file)
         self.websocket_streamer = WebSocketStreamer(websocket_url)
         self.verbose = verbose
@@ -72,12 +83,14 @@ class MW75Streamer:
                 self.logger.error(f"Failed to initialize LSL streamer: {e}")
                 sys.exit(1)
 
-        # Suppress stdout printing when browser panel is used
+        # Suppress stdout printing when browser panel is used or custom callback is provided
         if panel_server is not None:
             self.stdout_streamer = None
         else:
             self.stdout_streamer = StdoutStreamer(
-                print_header=(not csv_file and not websocket_url and not lsl_stream_name)
+                print_header=(
+                    not csv_file and not websocket_url and not lsl_stream_name and not eeg_callback
+                )
             )
         self.packet_processor = PacketProcessor(self.verbose or False)
 
@@ -93,16 +106,42 @@ class MW75Streamer:
         # Initialize device with data callback
         if _MW75Device is None:
             raise RuntimeError("MW75Device not available on this platform")
-        self.device: MW75Device = _MW75Device(self._handle_device_data)
+        self.device = _MW75Device(self._handle_device_data)
+
+    def set_verbose(self, verbose: bool) -> None:
+        """
+        Enable or disable verbose logging including checksum error messages
+        
+        Args:
+            verbose: True to enable verbose logging, False to suppress it
+        """
+        self.verbose = verbose
+        self.packet_processor.verbose = verbose
+        self.logger.debug(f"Verbose logging {'enabled' if verbose else 'disabled'}")
 
     def _handle_device_data(self, data: bytes) -> None:
         """Handle raw data received from MW75 device"""
+        # Call raw data callback if provided
+        if self.raw_data_callback:
+            try:
+                self.raw_data_callback(data)
+            except Exception as e:
+                self.logger.error(f"Error in raw data callback: {e}")
+
+        # Process the data into packets
         self.packet_processor.process_data_buffer(
             data, self._handle_eeg_packet, self._handle_other_event
         )
 
-    def _handle_eeg_packet(self, packet: Any) -> None:
+    def _handle_eeg_packet(self, packet: EEGPacket) -> None:
         """Handle processed EEG packet"""
+        # Call user's custom EEG callback if provided
+        if self.eeg_callback:
+            try:
+                self.eeg_callback(packet)
+            except Exception as e:
+                self.logger.error(f"Error in EEG callback: {e}")
+
         # Sequence tracking for dropped packets
         try:
             if self.last_counter is not None:
@@ -118,7 +157,10 @@ class MW75Streamer:
         if self.csv_writer.eeg_file:
             self.csv_writer.write_eeg_packet(packet)
         elif (
-            self.stdout_streamer and not self.websocket_streamer.connected and not self.lsl_streamer
+            self.stdout_streamer
+            and not self.websocket_streamer.connected
+            and not self.lsl_streamer
+            and not self.eeg_callback
         ):
             # Write to stdout if no other outputs
             self.stdout_streamer.write_eeg_packet(packet)
@@ -176,6 +218,13 @@ class MW75Streamer:
 
     def _handle_other_event(self, packet: bytes) -> None:
         """Handle non-EEG events"""
+        # Call user's custom other event callback if provided
+        if self.other_event_callback:
+            try:
+                self.other_event_callback(packet)
+            except Exception as e:
+                self.logger.error(f"Error in other event callback: {e}")
+
         self.csv_writer.write_other_event(packet)
 
         event_id = packet[1] if len(packet) > 1 else 0

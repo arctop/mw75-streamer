@@ -106,8 +106,8 @@ class PacketProcessor:
                     f"Received: 0x{recv_checksum:04x} (Event ID: {packet[1]}, Counter: {packet[3]})"
                 )
 
-            # Report statistics periodically
-            if self.stats.invalid_packets % CHECKSUM_ERROR_REPORT_INTERVAL == 0:
+            # Report statistics periodically (only in verbose mode)
+            if self.verbose and self.stats.invalid_packets % CHECKSUM_ERROR_REPORT_INTERVAL == 0:
                 self._log_checksum_stats()
 
             return None
