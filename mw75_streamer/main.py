@@ -39,6 +39,8 @@ from .panel.panel_server import PanelServer, WebSocketLogHandler
 class MW75Streamer:
     """Main MW75 EEG streamer application"""
 
+    device: "MW75Device"
+
     def __init__(
         self,
         csv_file: Optional[str] = None,
@@ -111,7 +113,7 @@ class MW75Streamer:
     def set_verbose(self, verbose: bool) -> None:
         """
         Enable or disable verbose logging including checksum error messages
-        
+
         Args:
             verbose: True to enable verbose logging, False to suppress it
         """

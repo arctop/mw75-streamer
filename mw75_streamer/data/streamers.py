@@ -423,7 +423,7 @@ class LSLStreamer:
             # Add processing information
             processing = info.desc().append_child("processing")
             processing.append_child_value("software", "MW75 EEG Streamer")
-            processing.append_child_value("version", "1.0.0")
+            processing.append_child_value("version", "1.0.2")
             processing.append_child_value("scaling_factor", "0.023842")
             processing.append_child_value("developer", "Arctop")
 
