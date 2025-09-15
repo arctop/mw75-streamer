@@ -7,7 +7,7 @@ baseurl: "/mw75-streamer"
 # Author information
 author:
   name: Arctop
-  email: 
+  email:
   url: https://arctop.com
 
 # SEO settings
@@ -16,11 +16,11 @@ locale: en_US
 
 # Social media
 twitter:
-  username: 
+  username:
   card: summary_large_image
 facebook:
-  publisher: 
-google_site_verification: 
+  publisher:
+google_site_verification:
 
 # Logo for structured data
 logo: /assets/logo.png
@@ -31,7 +31,23 @@ repository: arctop/mw75-streamer
 
 # SEO Tags plugin configuration
 tagline: Real-time EEG streaming from MW75 Neuro headphones
-keywords: [EEG, MW75, Neuro headphones, brain-computer interface, BCI, neuroscience, real-time streaming, Python, LSL, WebSocket, RFCOMM, Bluetooth, brainwave, electroencephalography]
+keywords:
+  [
+    EEG,
+    MW75,
+    Neuro headphones,
+    brain-computer interface,
+    BCI,
+    neuroscience,
+    real-time streaming,
+    Python,
+    LSL,
+    WebSocket,
+    RFCOMM,
+    Bluetooth,
+    brainwave,
+    electroencephalography,
+  ]
 
 # Build settings
 markdown: kramdown
@@ -48,6 +64,9 @@ plugins:
 include:
   - _pages
   - mw75_streamer/assets/
+  - api/_static
+  - api/_modules
+  - api/_sources
 
 exclude:
   - README.md

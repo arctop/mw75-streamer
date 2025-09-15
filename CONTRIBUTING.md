@@ -36,6 +36,7 @@ Help bring MW75 EEG streaming to Linux by implementing Bluetooth Classic (RFCOMM
 
 **Getting started**:
 - Review the existing RFCOMM protocol implementation
+- Check the [Protocol Documentation](https://arctop.github.io/mw75-streamer/api/protocol.html) for technical details
 - Research Linux Bluetooth libraries (PyBluez, socket module)
 - Test BLE activation (already cross-platform via bleak)
 

@@ -6,6 +6,8 @@
 
 Stream 12-channel EEG data from MW75 Neuro headphones with WebSocket, CSV, and LSL output support.
 
+📖 **[Full Documentation & API Reference](https://arctop.github.io/mw75-streamer/api/)**
+
 **About `uv`:** This project uses [uv](https://docs.astral.sh/uv/) for fast, reliable Python package management. Benefits include faster installs, better dependency resolution, and reproducible environments. All commands can be run with regular Python too (see [Alternative: Using Python Directly](#alternative-using-python-directly)), but we use `uv` throughout this documentation for consistency.
 
 ## Features
@@ -147,6 +149,8 @@ sudo uv run -m mw75_streamer --csv eeg.csv
 - **MW75 not found**: Ensure headphones are powered on and paired
 - **Connection failed**: Re-pair device in Bluetooth settings
 - **Dropped packets**: Reduce Bluetooth interference, move away from WiFi routers and other 2.4GHz devices
+
+For detailed troubleshooting, see the [Troubleshooting Guide](https://arctop.github.io/mw75-streamer/api/troubleshooting.html)
 
 ## Alternative: Using Python Directly
 

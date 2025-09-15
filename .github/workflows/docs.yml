@@ -1,0 +1,102 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: false
+
+      - name: Install Jekyll and dependencies
+        run: |
+          gem install jekyll bundler minima jekyll-feed jekyll-sitemap jekyll-seo-tag
+          
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install Python dependencies
+        run: |
+          # create venv
+          uv venv
+
+          # Install core package dependencies (without macOS-specific ones)
+          uv pip install bleak websocket-client websockets pylsl
+
+          # Install documentation dependencies
+          uv pip install -e ".[docs]"
+
+      - name: Build Sphinx API documentation
+        run: |
+          # Use the Makefile target which handles uv properly
+          make docs
+
+      - name: Build Jekyll site and combine with API docs
+        run: |
+          # Build the Jekyll site (this processes all Jekyll variables like {{ site.baseurl }})
+          cd docs
+          jekyll build --destination ../_temp_jekyll_site
+          cd ..
+          
+          # Create final _site directory
+          mkdir -p _site
+
+          # Copy the built Jekyll site (with processed variables)
+          cp -r _temp_jekyll_site/* _site/
+
+          # Copy the Sphinx API documentation to the api/ subdirectory
+          # The Jekyll site already has an api/ directory, so we need to merge
+          if [ -d "docs/api" ]; then
+            cp -r docs/api/* _site/api/
+          fi
+
+          # Clean up temporary directory
+          rm -rf _temp_jekyll_site
+
+          # Verify the final structure
+          echo "Final _site structure:"
+          ls -la _site/
+          echo "Checking if API docs exist:"
+          ls -la _site/api/ || echo "No api directory found"
+          echo "Checking if Jekyll assets were processed:"
+          ls -la _site/assets/ || echo "No assets directory found"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        id: deployment
+        uses: actions/deploy-pages@v4

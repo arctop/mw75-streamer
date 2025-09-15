@@ -70,3 +70,7 @@ htmlcov/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Generated documentation
+docs/api/
+docs-src/_build/

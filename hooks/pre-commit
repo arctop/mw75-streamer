@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# Pre-commit hook for MW75 EEG Streamer
+# Runs code quality checks before allowing commits
+#
+
+set -e
+
+echo "🔍 Running pre-commit code quality checks..."
+
+# Check if make is available
+if ! command -v make &> /dev/null; then
+    echo "Error: 'make' command not found"
+    echo "Please install make to use pre-commit hooks"
+    exit 1
+fi
+
+# Check if uv is available
+if ! command -v uv &> /dev/null; then
+    echo "Error: 'uv' command not found"
+    echo "Please install uv: https://docs.astral.sh/uv/getting-started/installation/"
+    exit 1
+fi
+
+# Run the combined code quality checks
+echo "🔧 Running format, lint, and type-check..."
+if make check; then
+    echo "All code quality checks passed! Proceeding with commit..."
+else
+    echo ""
+    echo "Code quality checks failed!"
+    echo ""
+    echo "Please fix the issues above and try committing again."
+    echo "You can run 'make check' to see the same checks."
+    echo ""
+    echo "To bypass this hook (not recommended, PR will auto fail):"
+    echo "  git commit --no-verify"
+    echo ""
+    exit 1
+fi
