@@ -190,6 +190,22 @@ class PacketProcessor:
                 if i + PACKET_SIZE <= len(self.buffer):
                     packet = bytes(self.buffer[i : i + PACKET_SIZE])
 
+                    # Validate checksum first so we don't skip valid alignments when payload
+                    # contains a run of SYNC bytes (e.g., 0xAA). On checksum failure, advance
+                    # by 1 byte instead of PACKET_SIZE.
+                    is_valid, _, _ = self.validate_checksum(packet)
+                    if not is_valid:
+                        try:
+                            # Keep stats/logging consistent for all packets by routing
+                            # through parse_eeg_packet, which records checksum stats
+                            # and exits early on invalid checksum without unpacking.
+                            _ = self.parse_eeg_packet(packet)
+                        except Exception as e:
+                            self.logger.error(f"Error processing invalid packet: {e}")
+
+                        i += 1  # slide window by 1 byte to avoid skipping a valid alignment
+                        continue
+
                     try:
                         if packet[1] == EEG_EVENT_ID:  # EEG data
                             eeg_packet = self.parse_eeg_packet(packet)
