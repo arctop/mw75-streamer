@@ -1,0 +1,590 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mw75_streamer.data.packet_processor &mdash; MW75 EEG Streamer Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=4dd473e5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://arctop.github.io/mw75-streamer/_modules/mw75_streamer/data/packet_processor.html"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #667eea" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MW75 EEG Streamer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#basic-installation">Basic Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#option-1-from-pypi-recommended">Option 1: From PyPI (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#option-2-from-source">Option 2: From Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#optional-dependencies">Optional Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#websocket-support">WebSocket Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#lab-streaming-layer-lsl-support">Lab Streaming Layer (LSL) Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#testing-utilities">Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#development-dependencies">Development Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#all-dependencies">All Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#documentation-dependencies">Documentation Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#hardware-setup">Hardware Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#mw75-neuro-headphones">MW75 Neuro Headphones</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#verification">Verification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#common-installation-issues">Common Installation Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#basic-usage">Basic Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#stream-to-csv-file">Stream to CSV File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#real-time-websocket-streaming">Real-time WebSocket Streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#lab-streaming-layer-lsl">Lab Streaming Layer (LSL)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#combined-output">Combined Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#command-line-options">Command Line Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#core-options">Core Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#understanding-the-data">Understanding the Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#eeg-data-format">EEG Data Format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#connection-process">Connection Process</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#testing-setup">Testing Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#browser-visualization">Browser Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#validation-checklist">Validation Checklist</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#common-issues">Common Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#device-not-found">Device Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#connection-failed">Connection Failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#poor-data-quality">Poor Data Quality</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#module-mw75_streamer.main">Main Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.MW75Streamer"><code class="docutils literal notranslate"><span class="pre">MW75Streamer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.main.MW75Streamer.device"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.main.MW75Streamer.set_verbose"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.set_verbose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.main.MW75Streamer.start_streaming"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.start_streaming()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.parse_arguments"><code class="docutils literal notranslate"><span class="pre">parse_arguments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.show_output_configuration"><code class="docutils literal notranslate"><span class="pre">show_output_configuration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.cli_main"><code class="docutils literal notranslate"><span class="pre">cli_main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#device-management">Device Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.device.mw75_device">MW75 Device Controller</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.device.mw75_device.MW75Device"><code class="docutils literal notranslate"><span class="pre">MW75Device</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.device.ble_manager">BLE Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.device.ble_manager.BLEManager"><code class="docutils literal notranslate"><span class="pre">BLEManager</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.device.rfcomm_manager">RFCOMM Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate"><code class="docutils literal notranslate"><span class="pre">RFCOMMDelegate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMManager"><code class="docutils literal notranslate"><span class="pre">RFCOMMManager</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#data-processing">Data Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.data.packet_processor">Packet Processor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.packet_processor.EEGPacket"><code class="docutils literal notranslate"><span class="pre">EEGPacket</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.packet_processor.ChecksumStats"><code class="docutils literal notranslate"><span class="pre">ChecksumStats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.packet_processor.PacketProcessor"><code class="docutils literal notranslate"><span class="pre">PacketProcessor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.data.streamers">Streamers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.streamers.CSVWriter"><code class="docutils literal notranslate"><span class="pre">CSVWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.streamers.WebSocketStreamer"><code class="docutils literal notranslate"><span class="pre">WebSocketStreamer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.streamers.StdoutStreamer"><code class="docutils literal notranslate"><span class="pre">StdoutStreamer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.streamers.LSLStreamer"><code class="docutils literal notranslate"><span class="pre">LSLStreamer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#module-mw75_streamer.config">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#testing-utilities">Testing Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.testing.websocket_server">WebSocket Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.websocket_server.SimpleWebSocketServer"><code class="docutils literal notranslate"><span class="pre">SimpleWebSocketServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.websocket_server.WebSocketTestServer"><code class="docutils literal notranslate"><span class="pre">WebSocketTestServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.websocket_server.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.testing.test_guide">Test Guide</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.test_guide.TestGuide"><code class="docutils literal notranslate"><span class="pre">TestGuide</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.test_guide.show_quick_start"><code class="docutils literal notranslate"><span class="pre">show_quick_start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.test_guide.open_browser_test"><code class="docutils literal notranslate"><span class="pre">open_browser_test()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.test_guide.validate_test_setup"><code class="docutils literal notranslate"><span class="pre">validate_test_setup()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.panel.panel_server">Panel Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.panel.panel_server.PanelServer"><code class="docutils literal notranslate"><span class="pre">PanelServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.panel.panel_server.WebSocketLogHandler"><code class="docutils literal notranslate"><span class="pre">WebSocketLogHandler</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.utils.logging">Logging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.utils.logging.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.utils.logging.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#data-structures">Data Structures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../protocol.html">Protocol Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#connection-architecture">Connection Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#ble-activation-sequence">BLE Activation Sequence</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#ble-command-details">BLE Command Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#rfcomm-data-streaming">RFCOMM Data Streaming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#connection-parameters">Connection Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#packet-structure">Packet Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#eeg-channel-layout">EEG Channel Layout</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#data-validation">Data Validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#packet-validation">Packet Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#checksum-calculation">Checksum Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#data-processing-pipeline">Data Processing Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#event-types">Event Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#eeg-data-events">EEG Data Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#other-events">Other Events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#error-conditions">Error Conditions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#packet-validation-failures">Packet Validation Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#connection-issues">Connection Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#performance-characteristics">Performance Characteristics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#expected-performance">Expected Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#bandwidth-requirements">Bandwidth Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#platform-specific-details">Platform-Specific Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#macos-implementation">macOS Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#future-platform-support">Future Platform Support</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#installation-issues">Installation Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#pyobjc-installation-fails">PyObjC Installation Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#lsl-library-not-found">LSL Library Not Found</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#connection-issues">Connection Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#mw75-device-not-found">MW75 Device Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#ble-activation-fails">BLE Activation Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#rfcomm-connection-lost">RFCOMM Connection Lost</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#data-quality-issues">Data Quality Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#high-packet-loss">High Packet Loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#many-disconnected-electrodes">Many Disconnected Electrodes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#output-issues">Output Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#csv-files-not-created">CSV Files Not Created</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#websocket-connection-failed">WebSocket Connection Failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#lsl-stream-not-visible">LSL Stream Not Visible</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#performance-issues">Performance Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#high-cpu-usage">High CPU Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#high-memory-usage">High Memory Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#getting-help">Getting Help</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#enable-verbose-logging">Enable Verbose Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#collect-system-information">Collect System Information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#report-issues">Report Issues</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #667eea" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MW75 EEG Streamer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mw75_streamer.data.packet_processor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mw75_streamer.data.packet_processor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Packet Processor for MW75 EEG Data</span>
+
+<span class="sd">Handles parsing, validation, and processing of MW75 EEG data packets.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">EEG_EVENT_ID</span><span class="p">,</span>
+    <span class="n">PACKET_SIZE</span><span class="p">,</span>
+    <span class="n">SYNC_BYTE</span><span class="p">,</span>
+    <span class="n">EEG_SCALING_FACTOR</span><span class="p">,</span>
+    <span class="n">NUM_EEG_CHANNELS</span><span class="p">,</span>
+    <span class="n">CHECKSUM_ERROR_REPORT_INTERVAL</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<div class="viewcode-block" id="EEGPacket">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.data.packet_processor.EEGPacket">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EEGPacket</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a parsed EEG packet from MW75 device&quot;&quot;&quot;</span>
+
+    <span class="n">timestamp</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">event_id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">counter</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">ref</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">drl</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="n">feature_status</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">checksum_valid</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+
+<div class="viewcode-block" id="ChecksumStats">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.data.packet_processor.ChecksumStats">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChecksumStats</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tracks packet validation statistics&quot;&quot;&quot;</span>
+
+    <span class="n">valid_packets</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">invalid_packets</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total_packets</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">error_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate error rate as percentage&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">invalid_packets</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_packets</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_packets</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span></div>
+
+
+
+<div class="viewcode-block" id="PacketProcessor">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.data.packet_processor.PacketProcessor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PacketProcessor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles MW75 packet parsing and validation&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="n">ChecksumStats</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>  <span class="c1"># Continuous buffer across RFCOMM chunks</span>
+
+<div class="viewcode-block" id="PacketProcessor.validate_checksum">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.data.packet_processor.PacketProcessor.validate_checksum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_checksum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate MW75 packet checksum</span>
+
+<span class="sd">        MW75 checksum calculation:</span>
+<span class="sd">        - Sum of first 61 bytes (index 0-60)</span>
+<span class="sd">        - Masked to 16 bits (&amp; 0xFFFF)</span>
+<span class="sd">        - Stored in bytes 61-62 as little endian</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            packet: 63-byte MW75 packet</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple of (is_valid, calculated_checksum, received_checksum)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">PACKET_SIZE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+
+        <span class="n">calculated_checksum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">packet</span><span class="p">[:</span><span class="mi">61</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span>
+        <span class="n">received_checksum</span> <span class="o">=</span> <span class="n">packet</span><span class="p">[</span><span class="mi">61</span><span class="p">]</span> <span class="o">|</span> <span class="p">(</span><span class="n">packet</span><span class="p">[</span><span class="mi">62</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="n">calculated_checksum</span> <span class="o">==</span> <span class="n">received_checksum</span>
+
+        <span class="k">return</span> <span class="n">is_valid</span><span class="p">,</span> <span class="n">calculated_checksum</span><span class="p">,</span> <span class="n">received_checksum</span></div>
+
+
+<div class="viewcode-block" id="PacketProcessor.parse_eeg_packet">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.data.packet_processor.PacketProcessor.parse_eeg_packet">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_eeg_packet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">EEGPacket</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a 63-byte EEG packet into structured data</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            packet: 63-byte packet from MW75 device</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            EEGPacket if successfully parsed and valid, None otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span> <span class="o">!=</span> <span class="n">PACKET_SIZE</span> <span class="ow">or</span> <span class="n">packet</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">SYNC_BYTE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Validate checksum</span>
+        <span class="n">is_valid</span><span class="p">,</span> <span class="n">calc_checksum</span><span class="p">,</span> <span class="n">recv_checksum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_checksum</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">total_packets</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">invalid_packets</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Checksum mismatch! Calculated: 0x</span><span class="si">{</span><span class="n">calc_checksum</span><span class="si">:</span><span class="s2">04x</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Received: 0x</span><span class="si">{</span><span class="n">recv_checksum</span><span class="si">:</span><span class="s2">04x</span><span class="si">}</span><span class="s2"> (Event ID: </span><span class="si">{</span><span class="n">packet</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, Counter: </span><span class="si">{</span><span class="n">packet</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Report statistics periodically (only in verbose mode)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">invalid_packets</span> <span class="o">%</span> <span class="n">CHECKSUM_ERROR_REPORT_INTERVAL</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log_checksum_stats</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">valid_packets</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Parse packet structure</span>
+        <span class="n">event_id</span> <span class="o">=</span> <span class="n">packet</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">packet</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Extract REF and DRL values (already in correct units)</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;f&quot;</span><span class="p">,</span> <span class="n">packet</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">drl</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;f&quot;</span><span class="p">,</span> <span class="n">packet</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">12</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Extract 12 EEG channels with scaling</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM_EEG_CHANNELS</span><span class="p">):</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">+</span> <span class="p">(</span><span class="n">ch</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">packet</span><span class="p">):</span>
+                <span class="n">raw_value</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;f&quot;</span><span class="p">,</span> <span class="n">packet</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">4</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># Convert ADC values to microvolts</span>
+                <span class="n">scaled_value</span> <span class="o">=</span> <span class="n">raw_value</span> <span class="o">*</span> <span class="n">EEG_SCALING_FACTOR</span>
+                <span class="n">channels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scaled_value</span><span class="p">)</span>
+
+        <span class="n">feature_status</span> <span class="o">=</span> <span class="n">packet</span><span class="p">[</span><span class="mi">60</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">60</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="n">EEGPacket</span><span class="p">(</span>
+            <span class="n">timestamp</span><span class="o">=</span><span class="n">timestamp</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+            <span class="n">counter</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span>
+            <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">drl</span><span class="o">=</span><span class="n">drl</span><span class="p">,</span>
+            <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+            <span class="n">feature_status</span><span class="o">=</span><span class="n">feature_status</span><span class="p">,</span>
+            <span class="n">checksum_valid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log_checksum_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log current checksum statistics&quot;&quot;&quot;</span>
+        <span class="n">invalid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">invalid_packets</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">valid_packets</span>
+        <span class="n">error_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">error_rate</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Checksum Stats: </span><span class="si">{</span><span class="n">valid</span><span class="si">}</span><span class="s2"> valid, </span><span class="si">{</span><span class="n">invalid</span><span class="si">}</span><span class="s2"> invalid, </span><span class="si">{</span><span class="n">error_rate</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% error rate&quot;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="PacketProcessor.process_data_buffer">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.data.packet_processor.PacketProcessor.process_data_buffer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_data_buffer</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+        <span class="n">eeg_callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">EEGPacket</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
+        <span class="n">other_event_callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">bytes</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process data buffer and extract packets using continuous buffering</span>
+
+<span class="sd">        This method accumulates data across RFCOMM chunks to handle packet framing</span>
+<span class="sd">        correctly, since RFCOMM delivers arbitrary-sized chunks (e.g., 64 bytes)</span>
+<span class="sd">        while EEG packets are exactly 63 bytes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: Raw data buffer from device</span>
+<span class="sd">            eeg_callback: Function to call for EEG packets</span>
+<span class="sd">            other_event_callback: Function to call for non-EEG packets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">packets_processed</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Append new data to continuous buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">initial_buffer_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+
+        <span class="c1"># Process all complete packets in buffer</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">):</span>
+            <span class="c1"># Look for sync byte to find packet boundaries</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">SYNC_BYTE</span><span class="p">:</span>
+                <span class="c1"># Check if we have enough data for a complete packet</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="n">PACKET_SIZE</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">):</span>
+                    <span class="n">packet</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">PACKET_SIZE</span><span class="p">])</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">packet</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">EEG_EVENT_ID</span><span class="p">:</span>  <span class="c1"># EEG data</span>
+                            <span class="n">eeg_packet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_eeg_packet</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">eeg_packet</span><span class="p">:</span>
+                                <span class="n">eeg_callback</span><span class="p">(</span><span class="n">eeg_packet</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Other event types</span>
+                            <span class="k">if</span> <span class="n">other_event_callback</span><span class="p">:</span>
+                                <span class="n">other_event_callback</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+
+                        <span class="n">packets_processed</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing packet: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                    <span class="n">i</span> <span class="o">+=</span> <span class="n">PACKET_SIZE</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Not enough data for complete packet, stop processing</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Search for next sync byte</span>
+
+        <span class="c1"># Remove processed data from buffer, keep remaining partial data</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># Prevent buffer from growing too large (protect against sync byte loss)</span>
+        <span class="n">max_buffer_size</span> <span class="o">=</span> <span class="n">PACKET_SIZE</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># Allow up to 10 packets worth of data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_buffer_size</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Buffer too large (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span><span class="si">}</span><span class="s2">B), truncating to find sync&quot;</span><span class="p">)</span>
+            <span class="c1"># Try to find a sync byte in the last portion</span>
+            <span class="n">sync_pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">-</span> <span class="n">PACKET_SIZE</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">SYNC_BYTE</span><span class="p">:</span>
+                    <span class="n">sync_pos</span> <span class="o">=</span> <span class="n">j</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">sync_pos</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[:</span><span class="n">sync_pos</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recovered sync at position </span><span class="si">{</span><span class="n">sync_pos</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No sync byte found, clearing buffer&quot;</span><span class="p">)</span>
+
+        <span class="n">total_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="k">if</span> <span class="n">total_time</span> <span class="o">&gt;</span> <span class="mf">0.005</span> <span class="ow">or</span> <span class="n">packets_processed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Log significant processing or any packets</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;BUFFER: </span><span class="si">{</span><span class="n">initial_buffer_size</span><span class="si">}</span><span class="s2">B+</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">B → </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span><span class="si">}</span><span class="s2">B remaining, </span><span class="si">{</span><span class="n">packets_processed</span><span class="si">}</span><span class="s2"> packets in </span><span class="si">{</span><span class="n">total_time</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PacketProcessor.get_final_stats">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.data.packet_processor.PacketProcessor.get_final_stats">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_final_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChecksumStats</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get final packet processing statistics</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ChecksumStats with current statistics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Arctop.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,598 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mw75_streamer.device.rfcomm_manager &mdash; MW75 EEG Streamer Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=4dd473e5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://arctop.github.io/mw75-streamer/_modules/mw75_streamer/device/rfcomm_manager.html"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #667eea" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MW75 EEG Streamer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#basic-installation">Basic Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#option-1-from-pypi-recommended">Option 1: From PyPI (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#option-2-from-source">Option 2: From Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#optional-dependencies">Optional Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#websocket-support">WebSocket Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#lab-streaming-layer-lsl-support">Lab Streaming Layer (LSL) Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#testing-utilities">Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#development-dependencies">Development Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#all-dependencies">All Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#documentation-dependencies">Documentation Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#hardware-setup">Hardware Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#mw75-neuro-headphones">MW75 Neuro Headphones</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#verification">Verification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../installation.html#common-installation-issues">Common Installation Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#basic-usage">Basic Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#stream-to-csv-file">Stream to CSV File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#real-time-websocket-streaming">Real-time WebSocket Streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#lab-streaming-layer-lsl">Lab Streaming Layer (LSL)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#combined-output">Combined Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#command-line-options">Command Line Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#core-options">Core Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#understanding-the-data">Understanding the Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#eeg-data-format">EEG Data Format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#connection-process">Connection Process</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#testing-setup">Testing Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#browser-visualization">Browser Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#validation-checklist">Validation Checklist</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#common-issues">Common Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#device-not-found">Device Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#connection-failed">Connection Failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../quickstart.html#poor-data-quality">Poor Data Quality</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../quickstart.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#module-mw75_streamer.main">Main Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.MW75Streamer"><code class="docutils literal notranslate"><span class="pre">MW75Streamer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.main.MW75Streamer.device"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.main.MW75Streamer.set_verbose"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.set_verbose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.main.MW75Streamer.start_streaming"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.start_streaming()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.parse_arguments"><code class="docutils literal notranslate"><span class="pre">parse_arguments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.show_output_configuration"><code class="docutils literal notranslate"><span class="pre">show_output_configuration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#mw75_streamer.main.cli_main"><code class="docutils literal notranslate"><span class="pre">cli_main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#device-management">Device Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.device.mw75_device">MW75 Device Controller</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.device.mw75_device.MW75Device"><code class="docutils literal notranslate"><span class="pre">MW75Device</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.device.ble_manager">BLE Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.device.ble_manager.BLEManager"><code class="docutils literal notranslate"><span class="pre">BLEManager</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.device.rfcomm_manager">RFCOMM Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate"><code class="docutils literal notranslate"><span class="pre">RFCOMMDelegate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMManager"><code class="docutils literal notranslate"><span class="pre">RFCOMMManager</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#data-processing">Data Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.data.packet_processor">Packet Processor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.packet_processor.EEGPacket"><code class="docutils literal notranslate"><span class="pre">EEGPacket</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.packet_processor.ChecksumStats"><code class="docutils literal notranslate"><span class="pre">ChecksumStats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.packet_processor.PacketProcessor"><code class="docutils literal notranslate"><span class="pre">PacketProcessor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.data.streamers">Streamers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.streamers.CSVWriter"><code class="docutils literal notranslate"><span class="pre">CSVWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.streamers.WebSocketStreamer"><code class="docutils literal notranslate"><span class="pre">WebSocketStreamer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.streamers.StdoutStreamer"><code class="docutils literal notranslate"><span class="pre">StdoutStreamer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.data.streamers.LSLStreamer"><code class="docutils literal notranslate"><span class="pre">LSLStreamer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#module-mw75_streamer.config">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#testing-utilities">Testing Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.testing.websocket_server">WebSocket Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.websocket_server.SimpleWebSocketServer"><code class="docutils literal notranslate"><span class="pre">SimpleWebSocketServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.websocket_server.WebSocketTestServer"><code class="docutils literal notranslate"><span class="pre">WebSocketTestServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.websocket_server.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.testing.test_guide">Test Guide</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.test_guide.TestGuide"><code class="docutils literal notranslate"><span class="pre">TestGuide</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.test_guide.show_quick_start"><code class="docutils literal notranslate"><span class="pre">show_quick_start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.test_guide.open_browser_test"><code class="docutils literal notranslate"><span class="pre">open_browser_test()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.testing.test_guide.validate_test_setup"><code class="docutils literal notranslate"><span class="pre">validate_test_setup()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.panel.panel_server">Panel Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.panel.panel_server.PanelServer"><code class="docutils literal notranslate"><span class="pre">PanelServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.panel.panel_server.WebSocketLogHandler"><code class="docutils literal notranslate"><span class="pre">WebSocketLogHandler</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api.html#module-mw75_streamer.utils.logging">Logging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.utils.logging.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api.html#mw75_streamer.utils.logging.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api.html#data-structures">Data Structures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../protocol.html">Protocol Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#connection-architecture">Connection Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#ble-activation-sequence">BLE Activation Sequence</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#ble-command-details">BLE Command Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#rfcomm-data-streaming">RFCOMM Data Streaming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#connection-parameters">Connection Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#packet-structure">Packet Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#eeg-channel-layout">EEG Channel Layout</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#data-validation">Data Validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#packet-validation">Packet Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#checksum-calculation">Checksum Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#data-processing-pipeline">Data Processing Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#event-types">Event Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#eeg-data-events">EEG Data Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#other-events">Other Events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#error-conditions">Error Conditions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#packet-validation-failures">Packet Validation Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#connection-issues">Connection Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#performance-characteristics">Performance Characteristics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#expected-performance">Expected Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#bandwidth-requirements">Bandwidth Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../protocol.html#platform-specific-details">Platform-Specific Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#macos-implementation">macOS Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../protocol.html#future-platform-support">Future Platform Support</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#installation-issues">Installation Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#pyobjc-installation-fails">PyObjC Installation Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#lsl-library-not-found">LSL Library Not Found</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#connection-issues">Connection Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#mw75-device-not-found">MW75 Device Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#ble-activation-fails">BLE Activation Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#rfcomm-connection-lost">RFCOMM Connection Lost</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#data-quality-issues">Data Quality Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#high-packet-loss">High Packet Loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#many-disconnected-electrodes">Many Disconnected Electrodes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#output-issues">Output Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#csv-files-not-created">CSV Files Not Created</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#websocket-connection-failed">WebSocket Connection Failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#lsl-stream-not-visible">LSL Stream Not Visible</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#performance-issues">Performance Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#high-cpu-usage">High CPU Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#high-memory-usage">High Memory Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../troubleshooting.html#getting-help">Getting Help</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#enable-verbose-logging">Enable Verbose Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#collect-system-information">Collect System Information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../troubleshooting.html#report-issues">Report Issues</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #667eea" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MW75 EEG Streamer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mw75_streamer.device.rfcomm_manager</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mw75_streamer.device.rfcomm_manager</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">RFCOMM Manager for MW75 EEG Streamer</span>
+
+<span class="sd">Handles Bluetooth RFCOMM connection and data streaming using macOS IOBluetooth framework.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">objc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">Foundation</span><span class="w"> </span><span class="kn">import</span> <span class="n">NSObject</span><span class="p">,</span> <span class="n">NSRunLoop</span><span class="p">,</span> <span class="n">NSDate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IOBluetooth</span><span class="w"> </span><span class="kn">import</span> <span class="n">IOBluetoothDevice</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..config</span><span class="w"> </span><span class="kn">import</span> <span class="n">RFCOMM_CHANNEL</span><span class="p">,</span> <span class="n">RFCOMM_CONNECTION_TIMEOUT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<div class="viewcode-block" id="RFCOMMDelegate">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RFCOMMDelegate</span><span class="p">(</span><span class="n">NSObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;RFCOMM delegate for handling Bluetooth data reception&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">initWithCallback_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">bytes</span><span class="p">],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;RFCOMMDelegate&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize with data callback function&quot;&quot;&quot;</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">objc</span><span class="o">.</span><span class="n">super</span><span class="p">(</span><span class="n">RFCOMMDelegate</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_callback</span> <span class="o">=</span> <span class="n">callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">rfcommChannelOpenComplete_status_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rfcommChannel</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle RFCOMM channel open completion&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RFCOMM delegate callback fired! status=0x</span><span class="si">{</span><span class="n">status</span><span class="si">:</span><span class="s2">08x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;RFCOMM connected successfully&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">rfcommChannel</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RFCOMM failed: 0x</span><span class="si">{</span><span class="n">status</span><span class="si">:</span><span class="s2">08x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">rfcommChannelData_data_length_</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">rfcommChannel</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">dataPointer</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">dataLength</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle incoming RFCOMM data&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RFCOMM data received: </span><span class="si">{</span><span class="n">dataLength</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">string_at</span><span class="p">(</span><span class="n">dataPointer</span><span class="p">,</span> <span class="n">dataLength</span><span class="p">)</span>
+
+            <span class="c1"># Forward data to packet processor for buffering and framing</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_callback</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing RFCOMM data: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">rfcommChannelClosed_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rfcommChannel</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle RFCOMM channel closed&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;RFCOMM channel closed&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="RFCOMMManager">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMManager">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RFCOMMManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manages RFCOMM connection and data streaming&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">bytes</span><span class="p">],</span> <span class="kc">None</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize RFCOMM manager</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device_name: Name of the MW75 device to connect to</span>
+<span class="sd">            data_callback: Function to call when data is received</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span> <span class="o">=</span> <span class="n">device_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_callback</span> <span class="o">=</span> <span class="n">data_callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RFCOMMDelegate</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_stop</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RFCOMMManager.connect">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMManager.connect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect to RFCOMM channel and start data streaming</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if connection successful, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Looking for paired Bluetooth device: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Find paired device</span>
+        <span class="n">target_device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_paired_device</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_device</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Create delegate and connect</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_establish_connection</span><span class="p">(</span><span class="n">target_device</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_paired_device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IOBluetoothDevice</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the paired Bluetooth device matching the device name</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            IOBluetoothDevice if found, None otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paired_devices</span> <span class="o">=</span> <span class="n">IOBluetoothDevice</span><span class="o">.</span><span class="n">pairedDevices</span><span class="p">()</span>
+        <span class="n">target_device</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">paired_devices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">paired_devices</span><span class="p">)</span><span class="si">}</span><span class="s2"> paired Bluetooth devices&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">paired_devices</span><span class="p">:</span>
+                <span class="n">device_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">device_name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">device_name</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+                    <span class="n">target_device</span> <span class="o">=</span> <span class="n">device</span>
+                    <span class="n">device_address</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">addressString</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Found matching paired device: </span><span class="si">{</span><span class="n">device_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">device_address</span><span class="si">}</span><span class="s2">)&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   - </span><span class="si">{</span><span class="n">device_name</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;Unknown&#39;</span><span class="si">}</span><span class="s2"> (not a match)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_device</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No paired device found matching &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Please ensure MW75 is paired via System Settings &gt; Bluetooth&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">target_device</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_establish_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">IOBluetoothDevice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Establish RFCOMM connection to the device</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device: IOBluetoothDevice to connect to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if connection successful, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="n">RFCOMMDelegate</span><span class="o">.</span><span class="n">alloc</span><span class="p">()</span><span class="o">.</span><span class="n">initWithCallback_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_callback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connecting RFCOMM to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Delegate created: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">delegate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Open RFCOMM channel</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">openRFCOMMChannelAsync_withChannelID_delegate_</span><span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span> <span class="n">RFCOMM_CHANNEL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RFCOMM channel </span><span class="si">{</span><span class="n">RFCOMM_CHANNEL</span><span class="si">}</span><span class="s2"> result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Wait for connection with timeout</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_connection</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wait_for_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for RFCOMM connection to establish</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if connection established within timeout, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Waiting for delegate callback...&quot;</span><span class="p">)</span>
+        <span class="n">runloop</span> <span class="o">=</span> <span class="n">NSRunLoop</span><span class="o">.</span><span class="n">currentRunLoop</span><span class="p">()</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">NSDate</span><span class="o">.</span><span class="n">dateWithTimeIntervalSinceNow_</span><span class="p">(</span><span class="n">RFCOMM_CONNECTION_TIMEOUT</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">NSDate</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="o">.</span><span class="n">compare_</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">runloop</span><span class="o">.</span><span class="n">runUntilDate_</span><span class="p">(</span><span class="n">NSDate</span><span class="o">.</span><span class="n">dateWithTimeIntervalSinceNow_</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;RFCOMM connected - data is flowing!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RFCOMM connection timeout after </span><span class="si">{</span><span class="n">RFCOMM_CONNECTION_TIMEOUT</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_high_priority</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set high priority for the streaming process&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Set high process priority (niceness = -10, requires sudo for &lt; 0)</span>
+            <span class="n">current_nice</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">nice</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Get current niceness</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">nice</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># Try to set high priority</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Process priority increased from </span><span class="si">{</span><span class="n">current_nice</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">nice</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+                <span class="c1"># Fallback: set to highest priority we can without sudo</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">nice</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Process priority increased from </span><span class="si">{</span><span class="n">current_nice</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">nice</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> (limited by permissions)&quot;</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not adjust process priority&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Set high thread priority for current thread</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">ctypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">c_void_p</span>
+
+            <span class="c1"># macOS thread priority constants</span>
+            <span class="n">THREAD_TIME_CONSTRAINT_POLICY</span> <span class="o">=</span> <span class="mi">2</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Get current thread handle</span>
+                <span class="n">libc</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="s2">&quot;libc.dylib&quot;</span><span class="p">)</span>
+                <span class="n">pthread_self</span> <span class="o">=</span> <span class="n">libc</span><span class="o">.</span><span class="n">pthread_self</span>
+                <span class="n">pthread_self</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_void_p</span>
+
+                <span class="n">current_thread</span> <span class="o">=</span> <span class="n">pthread_self</span><span class="p">()</span>
+
+                <span class="c1"># Set thread to time constraint policy (real-time)</span>
+                <span class="n">libc</span><span class="o">.</span><span class="n">thread_policy_set</span><span class="p">(</span>
+                    <span class="n">current_thread</span><span class="p">,</span>
+                    <span class="n">THREAD_TIME_CONSTRAINT_POLICY</span><span class="p">,</span>
+                    <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span>  <span class="c1"># period</span>
+                    <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Thread set to real-time priority&quot;</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not set thread priority: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Priority adjustment failed (you can run with sudo to optimize performance)&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="RFCOMMManager.run_until_stopped">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMManager.run_until_stopped">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_until_stopped</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the RFCOMM event loop until stop is requested&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot run - RFCOMM not connected&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Data streaming... Press Ctrl+C to stop&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Set high priority for better real-time performance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_high_priority</span><span class="p">()</span>
+
+        <span class="n">runloop</span> <span class="o">=</span> <span class="n">NSRunLoop</span><span class="o">.</span><span class="n">currentRunLoop</span><span class="p">()</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_stop</span><span class="p">:</span>
+            <span class="c1"># Use shorter intervals for more responsive event handling</span>
+            <span class="n">runloop</span><span class="o">.</span><span class="n">runUntilDate_</span><span class="p">(</span><span class="n">NSDate</span><span class="o">.</span><span class="n">dateWithTimeIntervalSinceNow_</span><span class="p">(</span><span class="mf">0.001</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="RFCOMMManager.stop">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMManager.stop">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Signal to stop the RFCOMM event loop&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Stop requested for RFCOMM event loop&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_stop</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="RFCOMMManager.close">
+<a class="viewcode-back" href="../../../api.html#mw75_streamer.device.rfcomm_manager.RFCOMMManager.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close RFCOMM connection&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span><span class="o">.</span><span class="n">channel</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Closing RFCOMM channel...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">closeChannel</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;RFCOMM channel closed&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error closing RFCOMM: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No RFCOMM channel to close&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Arctop.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

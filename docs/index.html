@@ -5,477 +5,614 @@ description: Python package for streaming real-time EEG data from MW75 Neuro hea
 keywords: EEG, MW75, Neuro headphones, brain-computer interface, BCI, neuroscience, real-time streaming, Python, LSL, WebSocket, RFCOMM, Bluetooth, brainwave, electroencephalography
 image: /assets/mw75-preview.png
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Jekyll SEO Tag will inject meta tags here -->
-    {% seo %}
-    
-    <!-- Additional SEO Meta Tags -->
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="googlebot" content="index, follow">
-    <meta name="bingbot" content="index, follow">
-    <link rel="canonical" href="https://arctop.github.io/mw75-streamer/">
-    
-    <!-- Alternate URLs -->
-    <link rel="alternate" type="application/rss+xml" title="MW75 EEG Streamer" href="{{ site.url }}{{ site.baseurl }}/feed.xml">
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="MW75 EEG Streamer - Real-time EEG Data Streaming">
-    <meta property="og:description" content="Python package for streaming real-time EEG data from MW75 Neuro headphones. Supports WebSocket, CSV, and LSL outputs.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://arctop.github.io/mw75-streamer/">
-    <meta property="og:image" content="https://arctop.github.io/mw75-streamer/assets/mw75-preview.png">
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="MW75 EEG Streamer - Real-time EEG Data Streaming">
-    <meta name="twitter:description" content="Python package for streaming real-time EEG data from MW75 Neuro headphones.">
-    <meta name="twitter:image" content="https://arctop.github.io/mw75-streamer/assets/mw75-preview.png">
-    
-    <meta name="google-site-verification" content="f0SMtLrrFeWsyV0cPO991RpCXhslyGJKjzIR1gpYyyg" />
 
-    <!-- Enhanced Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": ["SoftwareApplication", "SoftwareSourceCode"],
-        "name": "MW75 EEG Streamer",
-        "alternateName": "mw75-streamer",
-        "description": "Python package for streaming real-time EEG data from MW75 Neuro headphones with support for WebSocket, CSV, and LSL outputs",
-        "applicationCategory": ["Neuroscience Software", "Medical Software", "Research Tool"],
-        "operatingSystem": "macOS",
-        "programmingLanguage": "Python",
-        "runtimePlatform": "Python 3.9+",
-        "url": "https://arctop.github.io/mw75-streamer/",
-        "downloadUrl": "https://github.com/arctop/mw75-streamer",
-        "codeRepository": "https://github.com/arctop/mw75-streamer",
-        "author": {
-            "@type": "Organization",
-            "name": "Arctop",
-            "url": "https://arctop.com"
-        },
-        "maintainer": {
-            "@type": "Organization",
-            "name": "Arctop"
-        },
-        "license": "https://github.com/arctop/mw75-streamer/blob/main/LICENSE",
-        "keywords": ["EEG", "MW75", "Neuro headphones", "brain-computer interface", "BCI", "neuroscience", "real-time streaming", "Python", "LSL", "WebSocket", "RFCOMM", "Bluetooth"],
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        },
-        "softwareRequirements": "macOS, Python 3.9+, MW75 Neuro headphones",
-        "releaseNotes": "Real-time EEG streaming with multiple output formats",
-        "featureList": [
-            "Real-time EEG data streaming",
-            "Multiple output formats (WebSocket, CSV, LSL)",
-            "BLE activation and RFCOMM data streaming",
-            "Packet validation and checksum verification",
-            "Modular architecture with type safety"
-        ],
-        "targetProduct": {
-            "@type": "Product",
-            "name": "MW75 Neuro Headphones",
-            "manufacturer": {
-                "@type": "Organization",
-                "name": "Master & Dynamic"
-            },
-            "url": "https://www.masterdynamic.com/products/mw75-neuro"
-        }
-    }
-    </script>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ site.baseurl }}/favicon.svg">
-    <link rel="alternate icon" href="{{ site.baseurl }}/favicon.ico">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-        
-        nav a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        
-        nav a:hover {
-            color: #667eea;
-        }
-        
-        .hero {
-            text-align: center;
-            padding: 4rem 0;
-            color: white;
-        }
-        
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 12px 30px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        
-        .btn-primary {
-            background: white;
-            color: #667eea;
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: white;
-            border-color: white;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .features {
-            background: white;
-            padding: 4rem 0;
-        }
-        
-        .features h2 {
-            text-align: center;
-            margin-bottom: 3rem;
-            font-size: 2.5rem;
-            color: #333;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .feature-card {
-            text-align: center;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        
-        .feature-card h3 {
-            margin-bottom: 1rem;
-            color: #667eea;
-        }
-        
-        .installation {
-            background: #f8f9fa;
-            padding: 4rem 0;
-        }
-        
-        .installation h2 {
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
-            color: #333;
-        }
-        
-        .code-block {
-            background: #1a1a1a;
-            color: #f8f8f2;
-            padding: 1.5rem;
-            border-radius: 8px;
-            font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.4;
-            margin: 1rem 0;
-            overflow-x: auto;
-            white-space: pre;
-            word-wrap: normal;
-            word-break: normal;
-        }
-        
-        footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 2rem 0;
-        }
-        
-        .footer-links {
-            margin-bottom: 1rem;
-        }
-        
-        .footer-links a {
-            color: #ccc;
-            text-decoration: none;
-            margin: 0 1rem;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-        }
-        
-        /* Media frame for gifs/screenshots */
-        .media-frame {
-            max-width: 900px;
-            margin: 1.5rem auto;
-        }
-        
-        .media-frame img {
-            display: block;
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <!-- Jekyll SEO Tag will inject meta tags here -->
+        {% seo %}
+
+        <!-- Additional SEO Meta Tags -->
+        <meta
+            name="robots"
+            content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+        />
+        <meta name="googlebot" content="index, follow" />
+        <meta name="bingbot" content="index, follow" />
+        <link rel="canonical" href="https://arctop.github.io/mw75-streamer/" />
+
+        <!-- Alternate URLs -->
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="MW75 EEG Streamer"
+            href="{{ site.url }}{{ site.baseurl }}/feed.xml"
+        />
+
+        <!-- Open Graph Meta Tags -->
+        <meta
+            property="og:title"
+            content="MW75 EEG Streamer - Real-time EEG Data Streaming"
+        />
+        <meta
+            property="og:description"
+            content="Python package for streaming real-time EEG data from MW75 Neuro headphones. Supports WebSocket, CSV, and LSL outputs."
+        />
+        <meta property="og:type" content="website" />
+        <meta
+            property="og:url"
+            content="https://arctop.github.io/mw75-streamer/"
+        />
+        <meta
+            property="og:image"
+            content="https://arctop.github.io/mw75-streamer/assets/mw75-preview.png"
+        />
+
+        <!-- Twitter Card Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+            name="twitter:title"
+            content="MW75 EEG Streamer - Real-time EEG Data Streaming"
+        />
+        <meta
+            name="twitter:description"
+            content="Python package for streaming real-time EEG data from MW75 Neuro headphones."
+        />
+        <meta
+            name="twitter:image"
+            content="https://arctop.github.io/mw75-streamer/assets/mw75-preview.png"
+        />
+
+        <meta
+            name="google-site-verification"
+            content="f0SMtLrrFeWsyV0cPO991RpCXhslyGJKjzIR1gpYyyg"
+        />
+
+        <!-- Enhanced Structured Data -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": ["SoftwareApplication", "SoftwareSourceCode"],
+                "name": "MW75 EEG Streamer",
+                "alternateName": "mw75-streamer",
+                "description": "Python package for streaming real-time EEG data from MW75 Neuro headphones with support for WebSocket, CSV, and LSL outputs",
+                "applicationCategory": [
+                    "Neuroscience Software",
+                    "Medical Software",
+                    "Research Tool"
+                ],
+                "operatingSystem": "macOS",
+                "programmingLanguage": "Python",
+                "runtimePlatform": "Python 3.9+",
+                "url": "https://arctop.github.io/mw75-streamer/",
+                "downloadUrl": "https://github.com/arctop/mw75-streamer",
+                "codeRepository": "https://github.com/arctop/mw75-streamer",
+                "author": {
+                    "@type": "Organization",
+                    "name": "Arctop",
+                    "url": "https://arctop.com"
+                },
+                "maintainer": {
+                    "@type": "Organization",
+                    "name": "Arctop"
+                },
+                "license": "https://github.com/arctop/mw75-streamer/blob/main/LICENSE",
+                "keywords": [
+                    "EEG",
+                    "MW75",
+                    "Neuro headphones",
+                    "brain-computer interface",
+                    "BCI",
+                    "neuroscience",
+                    "real-time streaming",
+                    "Python",
+                    "LSL",
+                    "WebSocket",
+                    "RFCOMM",
+                    "Bluetooth"
+                ],
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                },
+                "softwareRequirements": "macOS, Python 3.9+, MW75 Neuro headphones",
+                "releaseNotes": "Real-time EEG streaming with multiple output formats",
+                "featureList": [
+                    "Real-time EEG data streaming",
+                    "Multiple output formats (WebSocket, CSV, LSL)",
+                    "BLE activation and RFCOMM data streaming",
+                    "Packet validation and checksum verification",
+                    "Modular architecture with type safety"
+                ],
+                "targetProduct": {
+                    "@type": "Product",
+                    "name": "MW75 Neuro Headphones",
+                    "manufacturer": {
+                        "@type": "Organization",
+                        "name": "Master & Dynamic"
+                    },
+                    "url": "https://www.masterdynamic.com/products/mw75-neuro"
+                }
             }
-            
-            .hero p {
-                font-size: 1.1rem;
+        </script>
+
+        <!-- Favicon -->
+        <link
+            rel="icon"
+            type="image/svg+xml"
+            href="{{ site.baseurl }}/favicon.svg"
+        />
+        <link rel="alternate icon" href="{{ site.baseurl }}/favicon.ico" />
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
-            
-            .cta-buttons {
-                flex-direction: column;
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Oxygen, Ubuntu, Cantarell, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            header {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 1rem 0;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .header-content {
+                display: flex;
+                justify-content: space-between;
                 align-items: center;
             }
-            
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
+
+            .logo {
+                font-size: 1.8rem;
+                font-weight: bold;
+                color: #667eea;
             }
-            
+
             nav ul {
-                gap: 1rem;
+                display: flex;
+                list-style: none;
+                gap: 2rem;
             }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">MW75 EEG Streamer</div>
-                <nav>
-                    <ul>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#installation">Installation</a></li>
-                        <li><a href="https://github.com/arctop/mw75-streamer">GitHub</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
 
-    <main>
-        <section class="hero">
+            nav a {
+                text-decoration: none;
+                color: #333;
+                font-weight: 500;
+                transition: color 0.3s;
+            }
+
+            nav a:hover {
+                color: #667eea;
+            }
+
+            .hero {
+                text-align: center;
+                padding: 4rem 0;
+                color: white;
+            }
+
+            .hero h1 {
+                font-size: 3.5rem;
+                margin-bottom: 1rem;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .hero p {
+                font-size: 1.3rem;
+                margin-bottom: 2rem;
+                opacity: 0.9;
+            }
+
+            .cta-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                display: inline-block;
+                padding: 12px 30px;
+                border-radius: 25px;
+                text-decoration: none;
+                font-weight: bold;
+                transition: all 0.3s;
+                border: 2px solid transparent;
+            }
+
+            .btn-primary {
+                background: white;
+                color: #667eea;
+            }
+
+            .btn-secondary {
+                background: transparent;
+                color: white;
+                border-color: white;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .features {
+                background: white;
+                padding: 4rem 0;
+            }
+
+            .features h2 {
+                text-align: center;
+                margin-bottom: 3rem;
+                font-size: 2.5rem;
+                color: #333;
+            }
+
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+
+            .feature-card {
+                text-align: center;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s;
+            }
+
+            .feature-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .feature-icon {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+            }
+
+            .feature-card h3 {
+                margin-bottom: 1rem;
+                color: #667eea;
+            }
+
+            .installation {
+                background: #f8f9fa;
+                padding: 4rem 0;
+            }
+
+            .installation h2 {
+                text-align: center;
+                margin-bottom: 2rem;
+                font-size: 2.5rem;
+                color: #333;
+            }
+
+            .code-block {
+                background: #1a1a1a;
+                color: #f8f8f2;
+                padding: 1.5rem;
+                border-radius: 8px;
+                font-family:
+                    "Monaco", "Menlo", "Consolas", "Courier New", monospace;
+                font-size: 14px;
+                line-height: 1.4;
+                margin: 1rem 0;
+                overflow-x: auto;
+                white-space: pre;
+                word-wrap: normal;
+                word-break: normal;
+            }
+
+            footer {
+                background: #333;
+                color: white;
+                text-align: center;
+                padding: 2rem 0;
+            }
+
+            .footer-links {
+                margin-bottom: 1rem;
+            }
+
+            .footer-links a {
+                color: #ccc;
+                text-decoration: none;
+                margin: 0 1rem;
+            }
+
+            .footer-links a:hover {
+                color: white;
+            }
+
+            /* Media frame for gifs/screenshots */
+            .media-frame {
+                max-width: 900px;
+                margin: 1.5rem auto;
+            }
+
+            .media-frame img {
+                display: block;
+                width: 100%;
+                height: auto;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            @media (max-width: 768px) {
+                .hero h1 {
+                    font-size: 2.5rem;
+                }
+
+                .hero p {
+                    font-size: 1.1rem;
+                }
+
+                .cta-buttons {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .header-content {
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+
+                nav ul {
+                    gap: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
             <div class="container">
-                <h1>Real-time EEG Streaming</h1>
-                <p>Stream EEG data from <a href="https://www.masterdynamic.com/products/mw75-neuro" target="_blank" style="color: #ffffff; text-decoration: underline;">MW75 Neuro headphones</a> with Python</p>
-                <div class="cta-buttons">
-                    <a href="https://github.com/arctop/mw75-streamer" class="btn btn-primary">View on GitHub</a>
-                    <a href="#installation" class="btn btn-secondary">Get Started</a>
+                <div class="header-content">
+                    <div class="logo">MW75 EEG Streamer</div>
+                    <nav>
+                        <ul>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#installation">Installation</a></li>
+                            <li><a href="./api/">API Docs</a></li>
+                            <li>
+                                <a
+                                    href="https://github.com/arctop/mw75-streamer"
+                                    >GitHub</a
+                                >
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
-        </section>
+        </header>
 
-        <section id="features" class="features">
-            <div class="container">
-                <h2>Key Features</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">⚡</div>
-                        <h3>High-Speed Streaming</h3>
-                        <p>Real-time EEG data streaming with minimal latency for responsive brain-computer interface applications.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🔄</div>
-                        <h3>Multiple Output Formats</h3>
-                        <p>Stream to WebSocket, CSV files, Lab Streaming Layer (LSL), or stdout with simultaneous multi-format support.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🧠</div>
-                        <h3>MW75 Neuro Integration</h3>
-                        <p>Seamless integration with <a href="https://www.masterdynamic.com/products/mw75-neuro" target="_blank" style="color: #667eea; text-decoration: none; border-bottom: 1px solid #667eea;">MW75 Neuro headphones</a> using BLE activation and RFCOMM data streaming on macOS.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3>Data Validation</h3>
-                        <p>Built-in packet validation, checksum verification, and automatic conversion to microvolts for accurate data.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🔧</div>
-                        <h3>Modular Architecture</h3>
-                        <p>Clean, modular codebase with type safety, comprehensive logging, and easy extensibility.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🔬</div>
-                        <h3>Research Ready</h3>
-                        <p>Perfect for neuroscience research, BCI development, and real-time brain signal analysis applications.</p>
+        <main>
+            <section class="hero">
+                <div class="container">
+                    <h1>Real-time EEG Streaming</h1>
+                    <p>
+                        Stream EEG data from
+                        <a
+                            href="https://www.masterdynamic.com/products/mw75-neuro"
+                            target="_blank"
+                            style="color: #ffffff; text-decoration: underline"
+                            >MW75 Neuro headphones</a
+                        >
+                        with Python
+                    </p>
+                    <div class="cta-buttons">
+                        <a
+                            href="https://github.com/arctop/mw75-streamer"
+                            class="btn btn-primary"
+                            >View on GitHub</a
+                        >
+                        <a href="#installation" class="btn btn-secondary"
+                            >Get Started</a
+                        >
+                        <a href="./api/" class="btn btn-secondary"
+                            >API Documentation</a
+                        >
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="installation" class="installation">
+            <section id="features" class="features">
+                <div class="container">
+                    <h2>Key Features</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h3>High-Speed Streaming</h3>
+                            <p>
+                                Real-time EEG data streaming with minimal
+                                latency for responsive brain-computer interface
+                                applications.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔄</div>
+                            <h3>Multiple Output Formats</h3>
+                            <p>
+                                Stream to WebSocket, CSV files, Lab Streaming
+                                Layer (LSL), or stdout with simultaneous
+                                multi-format support.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🧠</div>
+                            <h3>MW75 Neuro Integration</h3>
+                            <p>
+                                Seamless integration with
+                                <a
+                                    href="https://www.masterdynamic.com/products/mw75-neuro"
+                                    target="_blank"
+                                    style="
+                                        color: #667eea;
+                                        text-decoration: none;
+                                        border-bottom: 1px solid #667eea;
+                                    "
+                                    >MW75 Neuro headphones</a
+                                >
+                                using BLE activation and RFCOMM data streaming
+                                on macOS.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h3>Data Validation</h3>
+                            <p>
+                                Built-in packet validation, checksum
+                                verification, and automatic conversion to
+                                microvolts for accurate data.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔧</div>
+                            <h3>Modular Architecture</h3>
+                            <p>
+                                Clean, modular codebase with type safety,
+                                comprehensive logging, and easy extensibility.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔬</div>
+                            <h3>Research Ready</h3>
+                            <p>
+                                Perfect for neuroscience research, BCI
+                                development, and real-time brain signal analysis
+                                applications.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="installation" class="installation">
+                <div class="container">
+                    <h2>Quick Installation</h2>
+                    <p
+                        style="
+                            text-align: center;
+                            margin-bottom: 1.5rem;
+                            padding: 1rem;
+                            background: #fff3cd;
+                            border: 1px solid #ffeaa7;
+                            border-radius: 8px;
+                            color: #856404;
+                        "
+                    >
+                        <strong>macOS Only:</strong> Currently supported on
+                        macOS only. Linux and Windows support coming soon.
+                    </p>
+                    <div class="code-block">
+                        # Option 1: Install from PyPI (recommended) uv pip
+                        install mw75-streamer # For additional features
+                        (WebSocket, LSL support): uv pip install
+                        "mw75-streamer[all]" # Or directly (slower): pip install
+                        "mw75-streamer[all]" # Option 2: Install from source #
+                        Clone this repository git clone
+                        https://github.com/arctop/mw75-streamer.git cd
+                        mw75_streamer # Option 2a: Using uv (recommended) # 1.
+                        Install uv if you need (see installation guide:
+                        https://docs.astral.sh/uv/getting-started/installation)
+                        brew install uv # 2. install python, the dependencies
+                        and this package uv venv && uv pip install -e ".[all]" #
+                        Option 2b: Using pip python -m venv .venv source
+                        .venv/bin/activate pip install -e ".[all]" # For LSL
+                        support on macOS brew install labstreaminglayer/tap/lsl
+                        export
+                        DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
+                    </div>
+                    <div class="media-frame">
+                        <img
+                            src="{{ site.baseurl }}/assets/installation.gif"
+                            alt="Installation demo"
+                        />
+                    </div>
+
+                    <h3 style="margin-top: 2rem; text-align: center">
+                        Basic Usage
+                    </h3>
+                    <div class="code-block">
+                        # Basic streaming uv run -m mw75_streamer --browser uv
+                        run -m mw75_streamer --csv eeg.csv uv run -m
+                        mw75_streamer --ws ws://localhost:8080 uv run -m
+                        mw75_streamer --lsl MW75_EEG # Combined outputs uv run
+                        -m mw75_streamer --csv eeg.csv --ws ws://localhost:8080
+                    </div>
+                    <h3 style="margin-top: 2rem; text-align: center">
+                        Browser Visualization
+                    </h3>
+                    <div class="media-frame">
+                        <img
+                            src="{{ site.baseurl }}/assets/browser.gif"
+                            alt="Browser visualization demo"
+                        />
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
             <div class="container">
-                <h2>Quick Installation</h2>
-                <p style="text-align: center; margin-bottom: 1.5rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; color: #856404;">
-                    <strong>macOS Only:</strong> Currently supported on macOS only. Linux and Windows support coming soon.
+                <div class="footer-links">
+                    <a href="https://github.com/arctop/mw75-streamer"
+                        >GitHub Repository</a
+                    >
+                    <a href="https://github.com/arctop/mw75-streamer/issues"
+                        >Report Issues</a
+                    >
+                    <a
+                        href="https://github.com/arctop/mw75-streamer/blob/main/LICENSE"
+                        >License</a
+                    >
+                </div>
+                <p>
+                    &copy; 2025
+                    <a
+                        href="https://arctop.com"
+                        target="_blank"
+                        style="color: #ffffff; text-decoration: underline"
+                        >Arctop</a
+                    >. Open source software for research.
                 </p>
-                <div class="code-block">
-# Option 1: Install from PyPI (recommended)
-uv pip install mw75-streamer
-
-# For additional features (WebSocket, LSL support):
-uv pip install "mw75-streamer[all]"
-
-# Or directly (slower):
-pip install "mw75-streamer[all]"
-
-# Option 2: Install from source
-# Clone this repository
-git clone https://github.com/arctop/mw75-streamer.git
-cd mw75_streamer
-
-# Option 2a: Using uv (recommended)
-# 1. Install uv if you need (see installation guide: https://docs.astral.sh/uv/getting-started/installation)
-brew install uv
-
-# 2. install python, the dependencies and this package
-uv venv && uv pip install -e ".[all]"
-
-# Option 2b: Using pip
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[all]"
-
-# For LSL support on macOS
-brew install labstreaminglayer/tap/lsl
-export DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
-                </div>
-                <div class="media-frame">
-                    <img src="{{ site.baseurl }}/assets/installation.gif" alt="Installation demo" />
-                </div>
-                
-                <h3 style="margin-top: 2rem; text-align: center;">Basic Usage</h3>
-                <div class="code-block">
-# Basic streaming
-uv run -m mw75_streamer --browser
-uv run -m mw75_streamer --csv eeg.csv
-uv run -m mw75_streamer --ws ws://localhost:8080
-uv run -m mw75_streamer --lsl MW75_EEG
-
-# Combined outputs
-uv run -m mw75_streamer --csv eeg.csv --ws ws://localhost:8080
-                </div>
-                <h3 style="margin-top: 2rem; text-align: center;">Browser Visualization</h3>
-                <div class="media-frame">
-                    <img src="{{ site.baseurl }}/assets/browser.gif" alt="Browser visualization demo" />
-                </div>
             </div>
-        </section>
-    </main>
+        </footer>
 
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="https://github.com/arctop/mw75-streamer">GitHub Repository</a>
-                <a href="https://github.com/arctop/mw75-streamer/issues">Report Issues</a>
-                <a href="https://github.com/arctop/mw75-streamer/blob/main/LICENSE">License</a>
-            </div>
-            <p>&copy; 2025 <a href="https://arctop.com" target="_blank" style="color: #ffffff; text-decoration: underline;">Arctop</a>. Open source software for research.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+                anchor.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    document
+                        .querySelector(this.getAttribute("href"))
+                        .scrollIntoView({
+                            behavior: "smooth",
+                        });
                 });
             });
-        });
-    </script>
-</body>
+        </script>
+    </body>
 </html>

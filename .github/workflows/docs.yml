@@ -1,0 +1,80 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Create virtual environment
+      run: uv venv
+
+    - name: Install dependencies
+      run: |
+        # Install core package dependencies (without macOS-specific ones)
+        uv pip install bleak
+        uv pip install websocket-client websockets pylsl
+
+        # Install documentation dependencies
+        uv pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints myst-parser
+
+        # Install package in development mode
+        uv pip install -e .
+
+    - name: Build Sphinx documentation
+      run: |
+        cd docs-src
+        sphinx-build -b html . ../_site/api -W --keep-going
+
+    - name: Copy existing docs
+      run: |
+        # Copy existing GitHub Pages content
+        cp -r docs/* _site/
+
+        # Ensure API docs are in the right place
+        mkdir -p _site/api
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: _site
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build-docs
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

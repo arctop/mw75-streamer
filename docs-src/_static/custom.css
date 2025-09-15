@@ -1,0 +1,37 @@
+/* Custom CSS for MW75 EEG Streamer documentation */
+
+/* Brand colors matching the main site */
+:root {
+    --mw75-primary: #667eea;
+    --mw75-secondary: #764ba2;
+}
+
+/* Header customization */
+.wy-side-nav-search {
+    background: linear-gradient(
+        135deg,
+        var(--mw75-primary) 0%,
+        var(--mw75-secondary) 100%
+    );
+}
+
+.wy-side-nav-search > a {
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+/* Admonition styling */
+.admonition {
+    border-radius: 8px;
+}
+
+/* Navigation improvements */
+.wy-nav-content-wrap {
+    margin-left: 300px;
+}
+
+@media screen and (max-width: 768px) {
+    .wy-nav-content-wrap {
+        margin-left: 0;
+    }
+}

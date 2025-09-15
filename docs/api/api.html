@@ -1,0 +1,1292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; MW75 EEG Streamer Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=4dd473e5" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.svg"/>
+    <link rel="canonical" href="https://arctop.github.io/mw75-streamer/api.html"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Protocol Documentation" href="protocol.html" />
+    <link rel="prev" title="Quick Start Guide" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #667eea" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MW75 EEG Streamer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#basic-installation">Basic Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-1-from-pypi-recommended">Option 1: From PyPI (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-2-from-source">Option 2: From Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-dependencies">Optional Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#websocket-support">WebSocket Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#lab-streaming-layer-lsl-support">Lab Streaming Layer (LSL) Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#testing-utilities">Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#development-dependencies">Development Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#all-dependencies">All Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#documentation-dependencies">Documentation Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#hardware-setup">Hardware Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#mw75-neuro-headphones">MW75 Neuro Headphones</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#verification">Verification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#common-installation-issues">Common Installation Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#basic-usage">Basic Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#stream-to-csv-file">Stream to CSV File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#real-time-websocket-streaming">Real-time WebSocket Streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#lab-streaming-layer-lsl">Lab Streaming Layer (LSL)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#combined-output">Combined Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#command-line-options">Command Line Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#core-options">Core Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#understanding-the-data">Understanding the Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#eeg-data-format">EEG Data Format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#connection-process">Connection Process</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#testing-setup">Testing Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#browser-visualization">Browser Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#validation-checklist">Validation Checklist</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#common-issues">Common Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#device-not-found">Device Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#connection-failed">Connection Failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#poor-data-quality">Poor Data Quality</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-mw75_streamer.main">Main Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mw75_streamer.main.MW75Streamer"><code class="docutils literal notranslate"><span class="pre">MW75Streamer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.main.MW75Streamer.device"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.main.MW75Streamer.set_verbose"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.set_verbose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.main.MW75Streamer.start_streaming"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.start_streaming()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mw75_streamer.main.parse_arguments"><code class="docutils literal notranslate"><span class="pre">parse_arguments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mw75_streamer.main.show_output_configuration"><code class="docutils literal notranslate"><span class="pre">show_output_configuration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mw75_streamer.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mw75_streamer.main.cli_main"><code class="docutils literal notranslate"><span class="pre">cli_main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#device-management">Device Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.device.mw75_device">MW75 Device Controller</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.device.mw75_device.MW75Device"><code class="docutils literal notranslate"><span class="pre">MW75Device</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.device.ble_manager">BLE Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.device.ble_manager.BLEManager"><code class="docutils literal notranslate"><span class="pre">BLEManager</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.device.rfcomm_manager">RFCOMM Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate"><code class="docutils literal notranslate"><span class="pre">RFCOMMDelegate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.device.rfcomm_manager.RFCOMMManager"><code class="docutils literal notranslate"><span class="pre">RFCOMMManager</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-processing">Data Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.data.packet_processor">Packet Processor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.data.packet_processor.EEGPacket"><code class="docutils literal notranslate"><span class="pre">EEGPacket</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.data.packet_processor.ChecksumStats"><code class="docutils literal notranslate"><span class="pre">ChecksumStats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.data.packet_processor.PacketProcessor"><code class="docutils literal notranslate"><span class="pre">PacketProcessor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.data.streamers">Streamers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.data.streamers.CSVWriter"><code class="docutils literal notranslate"><span class="pre">CSVWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.data.streamers.WebSocketStreamer"><code class="docutils literal notranslate"><span class="pre">WebSocketStreamer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.data.streamers.StdoutStreamer"><code class="docutils literal notranslate"><span class="pre">StdoutStreamer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.data.streamers.LSLStreamer"><code class="docutils literal notranslate"><span class="pre">LSLStreamer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mw75_streamer.config">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-utilities">Testing Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.testing.websocket_server">WebSocket Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.testing.websocket_server.SimpleWebSocketServer"><code class="docutils literal notranslate"><span class="pre">SimpleWebSocketServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.testing.websocket_server.WebSocketTestServer"><code class="docutils literal notranslate"><span class="pre">WebSocketTestServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.testing.websocket_server.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.testing.test_guide">Test Guide</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.testing.test_guide.TestGuide"><code class="docutils literal notranslate"><span class="pre">TestGuide</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.testing.test_guide.show_quick_start"><code class="docutils literal notranslate"><span class="pre">show_quick_start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.testing.test_guide.open_browser_test"><code class="docutils literal notranslate"><span class="pre">open_browser_test()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.testing.test_guide.validate_test_setup"><code class="docutils literal notranslate"><span class="pre">validate_test_setup()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.panel.panel_server">Panel Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.panel.panel_server.PanelServer"><code class="docutils literal notranslate"><span class="pre">PanelServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.panel.panel_server.WebSocketLogHandler"><code class="docutils literal notranslate"><span class="pre">WebSocketLogHandler</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mw75_streamer.utils.logging">Logging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.utils.logging.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mw75_streamer.utils.logging.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-structures">Data Structures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">Protocol Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#connection-architecture">Connection Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#ble-activation-sequence">BLE Activation Sequence</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#ble-command-details">BLE Command Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#rfcomm-data-streaming">RFCOMM Data Streaming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#connection-parameters">Connection Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#packet-structure">Packet Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#eeg-channel-layout">EEG Channel Layout</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#data-validation">Data Validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#packet-validation">Packet Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#checksum-calculation">Checksum Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#data-processing-pipeline">Data Processing Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#event-types">Event Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#eeg-data-events">EEG Data Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#other-events">Other Events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#error-conditions">Error Conditions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#packet-validation-failures">Packet Validation Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#connection-issues">Connection Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#performance-characteristics">Performance Characteristics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#expected-performance">Expected Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#bandwidth-requirements">Bandwidth Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#platform-specific-details">Platform-Specific Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#macos-implementation">macOS Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#future-platform-support">Future Platform Support</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#installation-issues">Installation Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#pyobjc-installation-fails">PyObjC Installation Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#lsl-library-not-found">LSL Library Not Found</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#connection-issues">Connection Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#mw75-device-not-found">MW75 Device Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#ble-activation-fails">BLE Activation Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#rfcomm-connection-lost">RFCOMM Connection Lost</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#data-quality-issues">Data Quality Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#high-packet-loss">High Packet Loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#many-disconnected-electrodes">Many Disconnected Electrodes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#output-issues">Output Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#csv-files-not-created">CSV Files Not Created</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#websocket-connection-failed">WebSocket Connection Failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#lsl-stream-not-visible">LSL Stream Not Visible</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#performance-issues">Performance Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#high-cpu-usage">High CPU Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#high-memory-usage">High Memory Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#getting-help">Getting Help</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#enable-verbose-logging">Enable Verbose Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#collect-system-information">Collect System Information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html#report-issues">Report Issues</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #667eea" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MW75 EEG Streamer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<p>This section provides detailed documentation for all classes and functions in the MW75 EEG Streamer package.</p>
+<section id="module-mw75_streamer.main">
+<span id="main-module"></span><h2>Main Module<a class="headerlink" href="#module-mw75_streamer.main" title="Link to this heading"></a></h2>
+<p>MW75 EEG Streamer - Main Entry Point</p>
+<p>Clean main function and CLI interface for the MW75 EEG streamer.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.main.MW75Streamer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.main.</span></span><span class="sig-name descname"><span class="pre">MW75Streamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">websocket_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lsl_stream_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_server</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eeg_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_data_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_event_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/main.html#MW75Streamer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.main.MW75Streamer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Main MW75 EEG streamer application</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.main.MW75Streamer.device">
+<span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#mw75_streamer.device.mw75_device.MW75Device" title="mw75_streamer.device.mw75_device.MW75Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">MW75Device</span></code></a></em><a class="headerlink" href="#mw75_streamer.main.MW75Streamer.device" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.main.MW75Streamer.set_verbose">
+<span class="sig-name descname"><span class="pre">set_verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/main.html#MW75Streamer.set_verbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.main.MW75Streamer.set_verbose" title="Link to this definition"></a></dt>
+<dd><p>Enable or disable verbose logging including checksum error messages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>verbose</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – True to enable verbose logging, False to suppress it</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.main.MW75Streamer.start_streaming">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_streaming</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/main.html#MW75Streamer.start_streaming"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.main.MW75Streamer.start_streaming" title="Link to this definition"></a></dt>
+<dd><p>Start the MW75 streaming process</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if streaming completed successfully, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.main.parse_arguments">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.main.</span></span><span class="sig-name descname"><span class="pre">parse_arguments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/main.html#parse_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.main.parse_arguments" title="Link to this definition"></a></dt>
+<dd><p>Parse command line arguments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.main.show_output_configuration">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.main.</span></span><span class="sig-name descname"><span class="pre">show_output_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/main.html#show_output_configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.main.show_output_configuration" title="Link to this definition"></a></dt>
+<dd><p>Display output configuration to user</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.main.main">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.main.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/main.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.main.main" title="Link to this definition"></a></dt>
+<dd><p>Main entry point for the MW75 EEG streamer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.main.cli_main">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.main.</span></span><span class="sig-name descname"><span class="pre">cli_main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/main.html#cli_main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.main.cli_main" title="Link to this definition"></a></dt>
+<dd><p>Synchronous entry point for CLI console scripts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="device-management">
+<h2>Device Management<a class="headerlink" href="#device-management" title="Link to this heading"></a></h2>
+<section id="module-mw75_streamer.device.mw75_device">
+<span id="mw75-device-controller"></span><h3>MW75 Device Controller<a class="headerlink" href="#module-mw75_streamer.device.mw75_device" title="Link to this heading"></a></h3>
+<p>MW75 Device Coordinator</p>
+<p>High-level interface for managing MW75 device connections and data streaming.
+Coordinates BLE activation and RFCOMM data streaming.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.device.mw75_device.MW75Device">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.device.mw75_device.</span></span><span class="sig-name descname"><span class="pre">MW75Device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/mw75_device.html#MW75Device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.mw75_device.MW75Device" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>High-level MW75 device coordinator</p>
+<p>Manages the complete MW75 connection lifecycle:
+1. BLE discovery and activation
+2. RFCOMM connection and data streaming
+3. Clean shutdown and cleanup</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.device.mw75_device.MW75Device.connect_and_stream">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect_and_stream</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/mw75_device.html#MW75Device.connect_and_stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.mw75_device.MW75Device.connect_and_stream" title="Link to this definition"></a></dt>
+<dd><p>Connect to MW75 device and start data streaming</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if streaming started successfully, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.device.mw75_device.MW75Device.cleanup">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/mw75_device.html#MW75Device.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.mw75_device.MW75Device.cleanup" title="Link to this definition"></a></dt>
+<dd><p>Clean up all MW75 connections and resources</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mw75_streamer.device.ble_manager">
+<span id="ble-manager"></span><h3>BLE Manager<a class="headerlink" href="#module-mw75_streamer.device.ble_manager" title="Link to this heading"></a></h3>
+<p>BLE Manager for MW75 EEG Streamer</p>
+<p>Handles Bluetooth Low Energy device discovery, connection, and activation sequence
+for the MW75 Neuro headphones.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.device.ble_manager.BLEManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.device.ble_manager.</span></span><span class="sig-name descname"><span class="pre">BLEManager</span></span><a class="reference internal" href="_modules/mw75_streamer/device/ble_manager.html#BLEManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.ble_manager.BLEManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages BLE connection and MW75 activation sequence</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.device.ble_manager.BLEManager.discover_and_activate">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">discover_and_activate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/ble_manager.html#BLEManager.discover_and_activate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.ble_manager.BLEManager.discover_and_activate" title="Link to this definition"></a></dt>
+<dd><p>Discover MW75 device and execute activation sequence</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Device name if successful, None if failed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.device.ble_manager.BLEManager.cleanup">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/ble_manager.html#BLEManager.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.ble_manager.BLEManager.cleanup" title="Link to this definition"></a></dt>
+<dd><p>Send disable commands and disconnect from BLE</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mw75_streamer.device.rfcomm_manager">
+<span id="rfcomm-manager"></span><h3>RFCOMM Manager<a class="headerlink" href="#module-mw75_streamer.device.rfcomm_manager" title="Link to this heading"></a></h3>
+<p>RFCOMM Manager for MW75 EEG Streamer</p>
+<p>Handles Bluetooth RFCOMM connection and data streaming using macOS IOBluetooth framework.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMDelegate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.device.rfcomm_manager.</span></span><span class="sig-name descname"><span class="pre">RFCOMMDelegate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/rfcomm_manager.html#RFCOMMDelegate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_PyObjCIntermediate_NSObject</span></code></p>
+<p>RFCOMM delegate for handling Bluetooth data reception</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMDelegate.initWithCallback_">
+<span class="sig-name descname"><span class="pre">initWithCallback_</span></span><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate.initWithCallback_" title="Link to this definition"></a></dt>
+<dd><p>Initialize with data callback function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMDelegate.rfcommChannelOpenComplete_status_">
+<span class="sig-name descname"><span class="pre">rfcommChannelOpenComplete_status_</span></span><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate.rfcommChannelOpenComplete_status_" title="Link to this definition"></a></dt>
+<dd><p>Handle RFCOMM channel open completion</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMDelegate.rfcommChannelData_data_length_">
+<span class="sig-name descname"><span class="pre">rfcommChannelData_data_length_</span></span><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate.rfcommChannelData_data_length_" title="Link to this definition"></a></dt>
+<dd><p>Handle incoming RFCOMM data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMDelegate.rfcommChannelClosed_">
+<span class="sig-name descname"><span class="pre">rfcommChannelClosed_</span></span><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate.rfcommChannelClosed_" title="Link to this definition"></a></dt>
+<dd><p>Handle RFCOMM channel closed</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.device.rfcomm_manager.</span></span><span class="sig-name descname"><span class="pre">RFCOMMManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/rfcomm_manager.html#RFCOMMManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages RFCOMM connection and data streaming</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMManager.connect">
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/rfcomm_manager.html#RFCOMMManager.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMManager.connect" title="Link to this definition"></a></dt>
+<dd><p>Connect to RFCOMM channel and start data streaming</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if connection successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMManager.run_until_stopped">
+<span class="sig-name descname"><span class="pre">run_until_stopped</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/rfcomm_manager.html#RFCOMMManager.run_until_stopped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMManager.run_until_stopped" title="Link to this definition"></a></dt>
+<dd><p>Run the RFCOMM event loop until stop is requested</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMManager.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/rfcomm_manager.html#RFCOMMManager.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMManager.stop" title="Link to this definition"></a></dt>
+<dd><p>Signal to stop the RFCOMM event loop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.device.rfcomm_manager.RFCOMMManager.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/device/rfcomm_manager.html#RFCOMMManager.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.device.rfcomm_manager.RFCOMMManager.close" title="Link to this definition"></a></dt>
+<dd><p>Close RFCOMM connection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="data-processing">
+<h2>Data Processing<a class="headerlink" href="#data-processing" title="Link to this heading"></a></h2>
+<section id="module-mw75_streamer.data.packet_processor">
+<span id="packet-processor"></span><h3>Packet Processor<a class="headerlink" href="#module-mw75_streamer.data.packet_processor" title="Link to this heading"></a></h3>
+<p>Packet Processor for MW75 EEG Data</p>
+<p>Handles parsing, validation, and processing of MW75 EEG data packets.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.data.packet_processor.</span></span><span class="sig-name descname"><span class="pre">EEGPacket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checksum_valid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/packet_processor.html#EEGPacket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Represents a parsed EEG packet from MW75 device</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket.timestamp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket.event_id">
+<span class="sig-name descname"><span class="pre">event_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket.event_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket.counter">
+<span class="sig-name descname"><span class="pre">counter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket.counter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket.ref">
+<span class="sig-name descname"><span class="pre">ref</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket.ref" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket.drl">
+<span class="sig-name descname"><span class="pre">drl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket.drl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket.channels">
+<span class="sig-name descname"><span class="pre">channels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket.channels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket.feature_status">
+<span class="sig-name descname"><span class="pre">feature_status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket.feature_status" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.EEGPacket.checksum_valid">
+<span class="sig-name descname"><span class="pre">checksum_valid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.EEGPacket.checksum_valid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.ChecksumStats">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.data.packet_processor.</span></span><span class="sig-name descname"><span class="pre">ChecksumStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valid_packets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invalid_packets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_packets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/packet_processor.html#ChecksumStats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.packet_processor.ChecksumStats" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Tracks packet validation statistics</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.ChecksumStats.valid_packets">
+<span class="sig-name descname"><span class="pre">valid_packets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.ChecksumStats.valid_packets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.ChecksumStats.invalid_packets">
+<span class="sig-name descname"><span class="pre">invalid_packets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.ChecksumStats.invalid_packets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.ChecksumStats.total_packets">
+<span class="sig-name descname"><span class="pre">total_packets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.ChecksumStats.total_packets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.ChecksumStats.error_rate">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">error_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></em><a class="headerlink" href="#mw75_streamer.data.packet_processor.ChecksumStats.error_rate" title="Link to this definition"></a></dt>
+<dd><p>Calculate error rate as percentage</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.PacketProcessor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.data.packet_processor.</span></span><span class="sig-name descname"><span class="pre">PacketProcessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/packet_processor.html#PacketProcessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.packet_processor.PacketProcessor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Handles MW75 packet parsing and validation</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.PacketProcessor.validate_checksum">
+<span class="sig-name descname"><span class="pre">validate_checksum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/packet_processor.html#PacketProcessor.validate_checksum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.packet_processor.PacketProcessor.validate_checksum" title="Link to this definition"></a></dt>
+<dd><p>Validate MW75 packet checksum</p>
+<p>MW75 checksum calculation:
+- Sum of first 61 bytes (index 0-60)
+- Masked to 16 bits (&amp; 0xFFFF)
+- Stored in bytes 61-62 as little endian</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packet</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span>) – 63-byte MW75 packet</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple of (is_valid, calculated_checksum, received_checksum)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.PacketProcessor.parse_eeg_packet">
+<span class="sig-name descname"><span class="pre">parse_eeg_packet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/packet_processor.html#PacketProcessor.parse_eeg_packet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.packet_processor.PacketProcessor.parse_eeg_packet" title="Link to this definition"></a></dt>
+<dd><p>Parse a 63-byte EEG packet into structured data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packet</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span>) – 63-byte packet from MW75 device</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#mw75_streamer.data.packet_processor.EEGPacket" title="mw75_streamer.data.packet_processor.EEGPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGPacket</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>EEGPacket if successfully parsed and valid, None otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.PacketProcessor.process_data_buffer">
+<span class="sig-name descname"><span class="pre">process_data_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eeg_callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_event_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/packet_processor.html#PacketProcessor.process_data_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.packet_processor.PacketProcessor.process_data_buffer" title="Link to this definition"></a></dt>
+<dd><p>Process data buffer and extract packets using continuous buffering</p>
+<p>This method accumulates data across RFCOMM chunks to handle packet framing
+correctly, since RFCOMM delivers arbitrary-sized chunks (e.g., 64 bytes)
+while EEG packets are exactly 63 bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span>) – Raw data buffer from device</p></li>
+<li><p><strong>eeg_callback</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference internal" href="#mw75_streamer.data.packet_processor.EEGPacket" title="mw75_streamer.data.packet_processor.EEGPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGPacket</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span>) – Function to call for EEG packets</p></li>
+<li><p><strong>other_event_callback</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]]</span>) – Function to call for non-EEG packets</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.packet_processor.PacketProcessor.get_final_stats">
+<span class="sig-name descname"><span class="pre">get_final_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/packet_processor.html#PacketProcessor.get_final_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.packet_processor.PacketProcessor.get_final_stats" title="Link to this definition"></a></dt>
+<dd><p>Get final packet processing statistics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#mw75_streamer.data.packet_processor.ChecksumStats" title="mw75_streamer.data.packet_processor.ChecksumStats"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChecksumStats</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ChecksumStats with current statistics</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mw75_streamer.data.streamers">
+<span id="streamers"></span><h3>Streamers<a class="headerlink" href="#module-mw75_streamer.data.streamers" title="Link to this heading"></a></h3>
+<p>Data Streamers for MW75 EEG Data</p>
+<p>Handles output of EEG data to various destinations: CSV files, WebSocket, and stdout.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.CSVWriter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.data.streamers.</span></span><span class="sig-name descname"><span class="pre">CSVWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eeg_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#CSVWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.CSVWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Handles CSV file output for EEG data and other events</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.CSVWriter.write_eeg_packet">
+<span class="sig-name descname"><span class="pre">write_eeg_packet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#CSVWriter.write_eeg_packet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.CSVWriter.write_eeg_packet" title="Link to this definition"></a></dt>
+<dd><p>Write EEG packet to CSV file or stdout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packet</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#mw75_streamer.data.packet_processor.EEGPacket" title="mw75_streamer.data.packet_processor.EEGPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGPacket</span></code></a></span>) – EEG packet to write</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if write successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.CSVWriter.write_other_event">
+<span class="sig-name descname"><span class="pre">write_other_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#CSVWriter.write_other_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.CSVWriter.write_other_event" title="Link to this definition"></a></dt>
+<dd><p>Write non-EEG event to extra CSV file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packet</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span>) – Raw packet bytes</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if write successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.CSVWriter.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#CSVWriter.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.CSVWriter.close" title="Link to this definition"></a></dt>
+<dd><p>Close CSV files safely</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.WebSocketStreamer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.data.streamers.</span></span><span class="sig-name descname"><span class="pre">WebSocketStreamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#WebSocketStreamer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.WebSocketStreamer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Handles real-time WebSocket streaming of EEG data</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.WebSocketStreamer.send_eeg_data">
+<span class="sig-name descname"><span class="pre">send_eeg_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#WebSocketStreamer.send_eeg_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.WebSocketStreamer.send_eeg_data" title="Link to this definition"></a></dt>
+<dd><p>Send EEG packet as JSON to WebSocket</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packet</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#mw75_streamer.data.packet_processor.EEGPacket" title="mw75_streamer.data.packet_processor.EEGPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGPacket</span></code></a></span>) – EEG packet to send</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if send successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.WebSocketStreamer.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#WebSocketStreamer.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.WebSocketStreamer.close" title="Link to this definition"></a></dt>
+<dd><p>Close WebSocket connection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.StdoutStreamer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.data.streamers.</span></span><span class="sig-name descname"><span class="pre">StdoutStreamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#StdoutStreamer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.StdoutStreamer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Handles EEG data output to stdout (console)</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.StdoutStreamer.write_eeg_packet">
+<span class="sig-name descname"><span class="pre">write_eeg_packet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#StdoutStreamer.write_eeg_packet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.StdoutStreamer.write_eeg_packet" title="Link to this definition"></a></dt>
+<dd><p>Write EEG packet to stdout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packet</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#mw75_streamer.data.packet_processor.EEGPacket" title="mw75_streamer.data.packet_processor.EEGPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGPacket</span></code></a></span>) – EEG packet to write</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if write successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.LSLStreamer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.data.streamers.</span></span><span class="sig-name descname"><span class="pre">LSLStreamer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MW75_EEG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EEG'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#LSLStreamer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.LSLStreamer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Handles real-time LSL (Lab Streaming Layer) streaming of EEG data</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.LSLStreamer.send_eeg_data">
+<span class="sig-name descname"><span class="pre">send_eeg_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#LSLStreamer.send_eeg_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.LSLStreamer.send_eeg_data" title="Link to this definition"></a></dt>
+<dd><p>Send EEG packet to LSL stream</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packet</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#mw75_streamer.data.packet_processor.EEGPacket" title="mw75_streamer.data.packet_processor.EEGPacket"><code class="xref py py-class docutils literal notranslate"><span class="pre">EEGPacket</span></code></a></span>) – EEG packet to send</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if send successful, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.LSLStreamer.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#LSLStreamer.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.LSLStreamer.close" title="Link to this definition"></a></dt>
+<dd><p>Close LSL stream outlet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.data.streamers.LSLStreamer.get_stream_info">
+<span class="sig-name descname"><span class="pre">get_stream_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/data/streamers.html#LSLStreamer.get_stream_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.data.streamers.LSLStreamer.get_stream_info" title="Link to this definition"></a></dt>
+<dd><p>Get information about the current LSL stream</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with stream information</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="module-mw75_streamer.config">
+<span id="configuration"></span><h2>Configuration<a class="headerlink" href="#module-mw75_streamer.config" title="Link to this heading"></a></h2>
+<p>MW75 EEG Streamer Configuration</p>
+<p>Contains all constants, UUIDs, and configuration settings for the MW75 EEG streamer.</p>
+</section>
+<section id="testing-utilities">
+<h2>Testing Utilities<a class="headerlink" href="#testing-utilities" title="Link to this heading"></a></h2>
+<section id="module-mw75_streamer.testing.websocket_server">
+<span id="websocket-server"></span><h3>WebSocket Server<a class="headerlink" href="#module-mw75_streamer.testing.websocket_server" title="Link to this heading"></a></h3>
+<p>WebSocket Test Servers for MW75 EEG Streamer</p>
+<p>Provides WebSocket test servers for validating EEG streaming functionality.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.testing.websocket_server.SimpleWebSocketServer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.testing.websocket_server.</span></span><span class="sig-name descname"><span class="pre">SimpleWebSocketServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/websocket_server.html#SimpleWebSocketServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.websocket_server.SimpleWebSocketServer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Minimal WebSocket server for quick testing</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.testing.websocket_server.SimpleWebSocketServer.handle_connection">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">websocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/websocket_server.html#SimpleWebSocketServer.handle_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.websocket_server.SimpleWebSocketServer.handle_connection" title="Link to this definition"></a></dt>
+<dd><p>Handle WebSocket connections</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.testing.websocket_server.SimpleWebSocketServer.start">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/websocket_server.html#SimpleWebSocketServer.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.websocket_server.SimpleWebSocketServer.start" title="Link to this definition"></a></dt>
+<dd><p>Start the WebSocket server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.testing.websocket_server.WebSocketTestServer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.testing.websocket_server.</span></span><span class="sig-name descname"><span class="pre">WebSocketTestServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8080</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/websocket_server.html#WebSocketTestServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.websocket_server.WebSocketTestServer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Full-featured WebSocket test server with advanced statistics</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.testing.websocket_server.WebSocketTestServer.handle_client">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">websocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/websocket_server.html#WebSocketTestServer.handle_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.websocket_server.WebSocketTestServer.handle_client" title="Link to this definition"></a></dt>
+<dd><p>Handle incoming WebSocket connections</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.testing.websocket_server.WebSocketTestServer.start">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/websocket_server.html#WebSocketTestServer.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.websocket_server.WebSocketTestServer.start" title="Link to this definition"></a></dt>
+<dd><p>Start the advanced WebSocket server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.testing.websocket_server.main">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.testing.websocket_server.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/websocket_server.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.websocket_server.main" title="Link to this definition"></a></dt>
+<dd><p>CLI entry point for WebSocket test servers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mw75_streamer.testing.test_guide">
+<span id="test-guide"></span><h3>Test Guide<a class="headerlink" href="#module-mw75_streamer.testing.test_guide" title="Link to this heading"></a></h3>
+<p>MW75 Testing Guide and Utilities</p>
+<p>Provides testing guidance and utility functions for MW75 EEG streaming validation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.testing.test_guide.TestGuide">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.testing.test_guide.</span></span><span class="sig-name descname"><span class="pre">TestGuide</span></span><a class="reference internal" href="_modules/mw75_streamer/testing/test_guide.html#TestGuide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.test_guide.TestGuide" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Interactive testing guide for MW75 EEG streaming</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.testing.test_guide.TestGuide.show_quick_start">
+<span class="sig-name descname"><span class="pre">show_quick_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/test_guide.html#TestGuide.show_quick_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.test_guide.TestGuide.show_quick_start" title="Link to this definition"></a></dt>
+<dd><p>Display quick start testing instructions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.testing.test_guide.TestGuide.open_browser_client">
+<span class="sig-name descname"><span class="pre">open_browser_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8080</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/test_guide.html#TestGuide.open_browser_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.test_guide.TestGuide.open_browser_client" title="Link to this definition"></a></dt>
+<dd><p>Open the browser test client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>port</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – WebSocket server port for the browser client URL</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if browser was opened successfully, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.testing.test_guide.TestGuide.validate_setup">
+<span class="sig-name descname"><span class="pre">validate_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/test_guide.html#TestGuide.validate_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.test_guide.TestGuide.validate_setup" title="Link to this definition"></a></dt>
+<dd><p>Validate the testing setup</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with validation results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.testing.test_guide.TestGuide.show_test_checklist">
+<span class="sig-name descname"><span class="pre">show_test_checklist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/test_guide.html#TestGuide.show_test_checklist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.test_guide.TestGuide.show_test_checklist" title="Link to this definition"></a></dt>
+<dd><p>Display testing checklist for validation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.testing.test_guide.show_quick_start">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.testing.test_guide.</span></span><span class="sig-name descname"><span class="pre">show_quick_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/test_guide.html#show_quick_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.test_guide.show_quick_start" title="Link to this definition"></a></dt>
+<dd><p>Convenience function to show quick start guide</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.testing.test_guide.open_browser_test">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.testing.test_guide.</span></span><span class="sig-name descname"><span class="pre">open_browser_test</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/test_guide.html#open_browser_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.test_guide.open_browser_test" title="Link to this definition"></a></dt>
+<dd><p>Convenience function to open browser test client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.testing.test_guide.validate_test_setup">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.testing.test_guide.</span></span><span class="sig-name descname"><span class="pre">validate_test_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/testing/test_guide.html#validate_test_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.testing.test_guide.validate_test_setup" title="Link to this definition"></a></dt>
+<dd><p>Convenience function to validate testing setup</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mw75_streamer.panel.panel_server">
+<span id="panel-server"></span><h3>Panel Server<a class="headerlink" href="#module-mw75_streamer.panel.panel_server" title="Link to this heading"></a></h3>
+<p>Panel WebSocket relay for MW75 streamer</p>
+<p>Broadcasts EEG data, runtime statistics, and log messages to connected
+browser clients (e.g., panel.html). Sends data only when clients are
+connected and releases resources on disconnect.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.PanelServer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.panel.panel_server.</span></span><span class="sig-name descname"><span class="pre">PanelServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8090</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#PanelServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.PanelServer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Minimal WebSocket relay for browser panel.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.PanelServer.start">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#PanelServer.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.PanelServer.start" title="Link to this definition"></a></dt>
+<dd><p>Start the WebSocket server in the current event loop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.PanelServer.stop">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#PanelServer.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.PanelServer.stop" title="Link to this definition"></a></dt>
+<dd><p>Stop the WebSocket server and disconnect clients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.PanelServer.start_background">
+<span class="sig-name descname"><span class="pre">start_background</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#PanelServer.start_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.PanelServer.start_background" title="Link to this definition"></a></dt>
+<dd><p>Start the server on a dedicated event loop thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.PanelServer.stop_background">
+<span class="sig-name descname"><span class="pre">stop_background</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#PanelServer.stop_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.PanelServer.stop_background" title="Link to this definition"></a></dt>
+<dd><p>Stop the background server thread cleanly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.PanelServer.publish_eeg">
+<span class="sig-name descname"><span class="pre">publish_eeg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#PanelServer.publish_eeg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.PanelServer.publish_eeg" title="Link to this definition"></a></dt>
+<dd><p>Schedule sending EEG packet to clients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.PanelServer.publish_stats">
+<span class="sig-name descname"><span class="pre">publish_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#PanelServer.publish_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.PanelServer.publish_stats" title="Link to this definition"></a></dt>
+<dd><p>Schedule sending aggregated stats to clients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.PanelServer.publish_log">
+<span class="sig-name descname"><span class="pre">publish_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#PanelServer.publish_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.PanelServer.publish_log" title="Link to this definition"></a></dt>
+<dd><p>Schedule sending a log record to clients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.WebSocketLogHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mw75_streamer.panel.panel_server.</span></span><span class="sig-name descname"><span class="pre">WebSocketLogHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">panel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#WebSocketLogHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.WebSocketLogHandler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Handler" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Handler</span></code></a></p>
+<p>Logging handler that forwards log records to the PanelServer.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mw75_streamer.panel.panel_server.WebSocketLogHandler.emit">
+<span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/panel/panel_server.html#WebSocketLogHandler.emit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.panel.panel_server.WebSocketLogHandler.emit" title="Link to this definition"></a></dt>
+<dd><p>Do whatever it takes to actually log the specified logging record.</p>
+<p>This version is intended to be implemented by subclasses and so
+raises a NotImplementedError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Link to this heading"></a></h2>
+<section id="module-mw75_streamer.utils.logging">
+<span id="logging"></span><h3>Logging<a class="headerlink" href="#module-mw75_streamer.utils.logging" title="Link to this heading"></a></h3>
+<p>Logging utilities for MW75 EEG Streamer</p>
+<p>Provides consistent logging setup and configuration across the application.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.utils.logging.setup_logging">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.utils.logging.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/utils/logging.html#setup_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.utils.logging.setup_logging" title="Link to this definition"></a></dt>
+<dd><p>Setup logging configuration for the MW75 streamer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>verbose</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Enable debug level logging if True, otherwise info level</p></li>
+<li><p><strong>logger_name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Name for the logger, defaults to the package name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Configured logger instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mw75_streamer.utils.logging.get_logger">
+<span class="sig-prename descclassname"><span class="pre">mw75_streamer.utils.logging.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mw75_streamer/utils/logging.html#get_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mw75_streamer.utils.logging.get_logger" title="Link to this definition"></a></dt>
+<dd><p>Get a logger for a specific module</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Module name (usually __name__)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Logger instance with consistent configuration</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="data-structures">
+<h2>Data Structures<a class="headerlink" href="#data-structures" title="Link to this heading"></a></h2>
+<p>The core data structures are documented within their respective modules above. The main data structure is the <code class="docutils literal notranslate"><span class="pre">EEGPacket</span></code> class in the packet processor module.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="protocol.html" class="btn btn-neutral float-right" title="Protocol Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Arctop.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -17,7 +17,7 @@ license = "MIT"
 requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Intended Audience :: Science/Research", 
+    "Intended Audience :: Science/Research",
     "Operating System :: MacOS :: MacOS X",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -45,14 +45,24 @@ lsl = [
 testing = [
     "websockets>=11.0.0"
 ]
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-autodoc-typehints>=1.25.0",
+    "myst-parser>=2.0.0"
+]
 dev = [
     "pytest>=7.0.0",
-    "black>=23.0.0", 
+    "black>=23.0.0",
     "flake8>=6.0.0",
     "mypy>=1.0.0",
     "websocket-client>=1.6.0",
     "websockets>=11.0.0",
-    "pylsl>=1.16.0"
+    "pylsl>=1.16.0",
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-autodoc-typehints>=1.25.0",
+    "myst-parser>=2.0.0"
 ]
 all = [
     "websocket-client>=1.6.0",
@@ -62,7 +72,7 @@ all = [
 
 [project.urls]
 Homepage = "https://github.com/arctop/mw75-streamer"
-Documentation = "https://github.com/arctop/mw75-streamer#readme"
+Documentation = "https://arctop.github.io/mw75-streamer/api/"
 Repository = "https://github.com/arctop/mw75-streamer"
 "Bug Tracker" = "https://github.com/arctop/mw75-streamer/issues"
 "Company" = "https://arctop.com"
@@ -98,7 +108,7 @@ extend-exclude = '''
 )/
 '''
 
-# MyPy type checker configuration  
+# MyPy type checker configuration
 [tool.mypy]
 python_version = "3.9"
 warn_return_any = true
@@ -137,7 +147,7 @@ omit = [
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
-    "raise AssertionError", 
+    "raise AssertionError",
     "raise NotImplementedError",
     "if __name__ == .__main__.:"
 ]

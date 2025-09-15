@@ -1,0 +1,723 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting Guide &mdash; MW75 EEG Streamer Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=4dd473e5" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.svg"/>
+    <link rel="canonical" href="https://arctop.github.io/mw75-streamer/troubleshooting.html"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1ed6394b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Protocol Documentation" href="protocol.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #667eea" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MW75 EEG Streamer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#basic-installation">Basic Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-1-from-pypi-recommended">Option 1: From PyPI (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#option-2-from-source">Option 2: From Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-dependencies">Optional Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#websocket-support">WebSocket Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#lab-streaming-layer-lsl-support">Lab Streaming Layer (LSL) Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#testing-utilities">Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#development-dependencies">Development Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#all-dependencies">All Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#documentation-dependencies">Documentation Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#hardware-setup">Hardware Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#mw75-neuro-headphones">MW75 Neuro Headphones</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#verification">Verification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#common-installation-issues">Common Installation Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#basic-usage">Basic Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#stream-to-csv-file">Stream to CSV File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#real-time-websocket-streaming">Real-time WebSocket Streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#lab-streaming-layer-lsl">Lab Streaming Layer (LSL)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#combined-output">Combined Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#command-line-options">Command Line Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#core-options">Core Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#understanding-the-data">Understanding the Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#eeg-data-format">EEG Data Format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#connection-process">Connection Process</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#testing-setup">Testing Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#browser-visualization">Browser Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#validation-checklist">Validation Checklist</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#common-issues">Common Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#device-not-found">Device Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#connection-failed">Connection Failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#poor-data-quality">Poor Data Quality</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-mw75_streamer.main">Main Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#mw75_streamer.main.MW75Streamer"><code class="docutils literal notranslate"><span class="pre">MW75Streamer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.main.MW75Streamer.device"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.main.MW75Streamer.set_verbose"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.set_verbose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.main.MW75Streamer.start_streaming"><code class="docutils literal notranslate"><span class="pre">MW75Streamer.start_streaming()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#mw75_streamer.main.parse_arguments"><code class="docutils literal notranslate"><span class="pre">parse_arguments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#mw75_streamer.main.show_output_configuration"><code class="docutils literal notranslate"><span class="pre">show_output_configuration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#mw75_streamer.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#mw75_streamer.main.cli_main"><code class="docutils literal notranslate"><span class="pre">cli_main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#device-management">Device Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.device.mw75_device">MW75 Device Controller</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.device.mw75_device.MW75Device"><code class="docutils literal notranslate"><span class="pre">MW75Device</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.device.ble_manager">BLE Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.device.ble_manager.BLEManager"><code class="docutils literal notranslate"><span class="pre">BLEManager</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.device.rfcomm_manager">RFCOMM Manager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.device.rfcomm_manager.RFCOMMDelegate"><code class="docutils literal notranslate"><span class="pre">RFCOMMDelegate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.device.rfcomm_manager.RFCOMMManager"><code class="docutils literal notranslate"><span class="pre">RFCOMMManager</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#data-processing">Data Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.data.packet_processor">Packet Processor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.data.packet_processor.EEGPacket"><code class="docutils literal notranslate"><span class="pre">EEGPacket</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.data.packet_processor.ChecksumStats"><code class="docutils literal notranslate"><span class="pre">ChecksumStats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.data.packet_processor.PacketProcessor"><code class="docutils literal notranslate"><span class="pre">PacketProcessor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.data.streamers">Streamers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.data.streamers.CSVWriter"><code class="docutils literal notranslate"><span class="pre">CSVWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.data.streamers.WebSocketStreamer"><code class="docutils literal notranslate"><span class="pre">WebSocketStreamer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.data.streamers.StdoutStreamer"><code class="docutils literal notranslate"><span class="pre">StdoutStreamer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.data.streamers.LSLStreamer"><code class="docutils literal notranslate"><span class="pre">LSLStreamer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-mw75_streamer.config">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#testing-utilities">Testing Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.testing.websocket_server">WebSocket Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.testing.websocket_server.SimpleWebSocketServer"><code class="docutils literal notranslate"><span class="pre">SimpleWebSocketServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.testing.websocket_server.WebSocketTestServer"><code class="docutils literal notranslate"><span class="pre">WebSocketTestServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.testing.websocket_server.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.testing.test_guide">Test Guide</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.testing.test_guide.TestGuide"><code class="docutils literal notranslate"><span class="pre">TestGuide</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.testing.test_guide.show_quick_start"><code class="docutils literal notranslate"><span class="pre">show_quick_start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.testing.test_guide.open_browser_test"><code class="docutils literal notranslate"><span class="pre">open_browser_test()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.testing.test_guide.validate_test_setup"><code class="docutils literal notranslate"><span class="pre">validate_test_setup()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.panel.panel_server">Panel Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.panel.panel_server.PanelServer"><code class="docutils literal notranslate"><span class="pre">PanelServer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.panel.panel_server.WebSocketLogHandler"><code class="docutils literal notranslate"><span class="pre">WebSocketLogHandler</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-mw75_streamer.utils.logging">Logging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.utils.logging.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#mw75_streamer.utils.logging.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#data-structures">Data Structures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">Protocol Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#connection-architecture">Connection Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#ble-activation-sequence">BLE Activation Sequence</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#ble-command-details">BLE Command Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#rfcomm-data-streaming">RFCOMM Data Streaming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#connection-parameters">Connection Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#packet-structure">Packet Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#eeg-channel-layout">EEG Channel Layout</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#data-validation">Data Validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#packet-validation">Packet Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#checksum-calculation">Checksum Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#data-processing-pipeline">Data Processing Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#event-types">Event Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#eeg-data-events">EEG Data Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#other-events">Other Events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#error-conditions">Error Conditions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#packet-validation-failures">Packet Validation Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#connection-issues">Connection Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#performance-characteristics">Performance Characteristics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#expected-performance">Expected Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#bandwidth-requirements">Bandwidth Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#platform-specific-details">Platform-Specific Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#macos-implementation">macOS Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocol.html#future-platform-support">Future Platform Support</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation-issues">Installation Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyobjc-installation-fails">PyObjC Installation Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lsl-library-not-found">LSL Library Not Found</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#connection-issues">Connection Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mw75-device-not-found">MW75 Device Not Found</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ble-activation-fails">BLE Activation Fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rfcomm-connection-lost">RFCOMM Connection Lost</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-quality-issues">Data Quality Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#high-packet-loss">High Packet Loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#many-disconnected-electrodes">Many Disconnected Electrodes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output-issues">Output Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#csv-files-not-created">CSV Files Not Created</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#websocket-connection-failed">WebSocket Connection Failed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lsl-stream-not-visible">LSL Stream Not Visible</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-issues">Performance Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#high-cpu-usage">High CPU Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#high-memory-usage">High Memory Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#enable-verbose-logging">Enable Verbose Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collect-system-information">Collect System Information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#report-issues">Report Issues</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #667eea" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MW75 EEG Streamer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/troubleshooting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="troubleshooting-guide">
+<h1>Troubleshooting Guide<a class="headerlink" href="#troubleshooting-guide" title="Link to this heading"></a></h1>
+<p>This guide helps resolve common issues when using the MW75 EEG Streamer.</p>
+<p>For basic setup information, see the <a class="reference internal" href="installation.html"><span class="doc">Installation Guide</span></a> and <a class="reference internal" href="quickstart.html"><span class="doc">Quick Start Guide</span></a> guides. For technical details, refer to the <a class="reference internal" href="protocol.html"><span class="doc">Protocol Documentation</span></a> documentation.</p>
+<section id="installation-issues">
+<h2>Installation Issues<a class="headerlink" href="#installation-issues" title="Link to this heading"></a></h2>
+<section id="pyobjc-installation-fails">
+<h3>PyObjC Installation Fails<a class="headerlink" href="#pyobjc-installation-fails" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- Error during <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> or <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span> <span class="pre">install</span></code>
+- “Failed building wheel for pyobjc-\*” messages</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Update build tools:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span>setuptools<span class="w"> </span>wheel
+uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;mw75-streamer[all]&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Use uv instead of pip:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>uv
+uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;mw75-streamer[all]&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Install Xcode command line tools:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xcode-select<span class="w"> </span>--install
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="lsl-library-not-found">
+<h3>LSL Library Not Found<a class="headerlink" href="#lsl-library-not-found" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- <code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'pylsl'</span></code>
+- <code class="docutils literal notranslate"><span class="pre">OSError:</span> <span class="pre">Could</span> <span class="pre">not</span> <span class="pre">find</span> <span class="pre">liblsl</span></code></p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Install LSL system library:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>labstreaminglayer/tap/lsl
+<span class="nb">export</span><span class="w"> </span><span class="nv">DYLD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">&quot;/opt/homebrew/lib:</span><span class="nv">$DYLD_LIBRARY_PATH</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Add to shell profile permanently:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export DYLD_LIBRARY_PATH=&quot;/opt/homebrew/lib:$DYLD_LIBRARY_PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
+<span class="nb">source</span><span class="w"> </span>~/.zshrc
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="connection-issues">
+<h2>Connection Issues<a class="headerlink" href="#connection-issues" title="Link to this heading"></a></h2>
+<section id="mw75-device-not-found">
+<h3>MW75 Device Not Found<a class="headerlink" href="#mw75-device-not-found" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- “No MW75 device found”
+- BLE scan timeout</p>
+<p><strong>Diagnostic Steps:</strong></p>
+<ol class="arabic">
+<li><p><strong>Check Bluetooth pairing:</strong></p>
+<ul class="simple">
+<li><p>Open System Preferences → Bluetooth</p></li>
+<li><p>Verify MW75 Neuro appears in device list</p></li>
+<li><p>Status should show “Connected”</p></li>
+</ul>
+</li>
+<li><p><strong>Verify headphone power:</strong></p>
+<ul class="simple">
+<li><p>Ensure headphones are powered on</p></li>
+<li><p>Check battery level is sufficient (&gt;20%)</p></li>
+<li><p>Try power cycling the headphones</p></li>
+</ul>
+</li>
+<li><p><strong>Test Bluetooth connectivity:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check if device is visible to system</span>
+system_profiler<span class="w"> </span>SPBluetoothDataType<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;mw75\|neuro&quot;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Re-pair the device:</strong></p>
+<ul class="simple">
+<li><p>Remove MW75 from Bluetooth devices</p></li>
+<li><p>Power cycle headphones</p></li>
+<li><p>Re-pair using standard macOS Bluetooth settings</p></li>
+</ul>
+</li>
+<li><p><strong>Check permissions:</strong></p>
+<ul class="simple">
+<li><p>System Preferences → Security &amp; Privacy → Privacy → Bluetooth</p></li>
+<li><p>Ensure Terminal/Python has Bluetooth access</p></li>
+</ul>
+</li>
+<li><p><strong>Reset Bluetooth module:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset Bluetooth (requires restart)</span>
+sudo<span class="w"> </span>pkill<span class="w"> </span>bluetoothd
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="ble-activation-fails">
+<h3>BLE Activation Fails<a class="headerlink" href="#ble-activation-fails" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- “BLE activation timeout”
+- “Failed to enable EEG mode”</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Check connection stability:</strong></p>
+<ul class="simple">
+<li><p>Ensure headphones are within 1 meter</p></li>
+<li><p>Reduce 2.4GHz interference (WiFi, other Bluetooth devices)</p></li>
+</ul>
+</li>
+<li><p><strong>Retry activation:</strong></p>
+<ul class="simple">
+<li><p>BLE activation includes automatic retry logic</p></li>
+<li><p>Try running with <code class="docutils literal notranslate"><span class="pre">--verbose</span></code> to see detailed timing</p></li>
+</ul>
+</li>
+<li><p><strong>Manual device reset:</strong></p>
+<ul class="simple">
+<li><p>Power off headphones for 10 seconds</p></li>
+<li><p>Power on and wait 30 seconds before connecting</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="rfcomm-connection-lost">
+<h3>RFCOMM Connection Lost<a class="headerlink" href="#rfcomm-connection-lost" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- “RFCOMM connection failed”
+- Data stops flowing mid-session</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Check interference:</strong></p>
+<ul class="simple">
+<li><p>Move closer to headphones</p></li>
+<li><p>Disable other Bluetooth devices temporarily</p></li>
+<li><p>Switch to 5GHz WiFi if available</p></li>
+</ul>
+</li>
+<li><p><strong>Monitor connection quality:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run with verbose logging</span>
+python<span class="w"> </span>-m<span class="w"> </span>mw75_streamer<span class="w"> </span>--verbose<span class="w"> </span>--csv<span class="w"> </span>test.csv
+</pre></div>
+</div>
+</li>
+<li><p><strong>Automatic reconnection:</strong></p>
+<ul class="simple">
+<li><p>The streamer includes auto-reconnect logic</p></li>
+<li><p>Data gaps will be logged but streaming continues</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="data-quality-issues">
+<h2>Data Quality Issues<a class="headerlink" href="#data-quality-issues" title="Link to this heading"></a></h2>
+<section id="high-packet-loss">
+<h3>High Packet Loss<a class="headerlink" href="#high-packet-loss" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- Many missing counter values
+- “Packet loss detected” warnings
+- Irregular packet timing</p>
+<p><strong>Diagnostic:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Monitor packet loss with verbose logging (prints to console by default)</span>
+uv<span class="w"> </span>run<span class="w"> </span>-m<span class="w"> </span>mw75_streamer<span class="w"> </span>--verbose
+</pre></div>
+</div>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Reduce interference:</strong></p>
+<ul class="simple">
+<li><p>Move away from WiFi routers</p></li>
+<li><p>Disable other 2.4GHz devices</p></li>
+<li><p>Use USB-wired peripherals instead of wireless</p></li>
+</ul>
+</li>
+<li><p><strong>Optimize system resources:</strong></p>
+<ul class="simple">
+<li><p>Close unnecessary applications</p></li>
+<li><p>Ensure adequate CPU/memory available</p></li>
+<li><p>Run with higher process priority if needed (just run with sudo)</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="many-disconnected-electrodes">
+<h3>Many Disconnected Electrodes<a class="headerlink" href="#many-disconnected-electrodes" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- EEG channels showing value <code class="docutils literal notranslate"><span class="pre">8388607</span></code>
+- Poor signal quality in visualization</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Improve electrode contact:</strong></p>
+<ul class="simple">
+<li><p>Adjust headphone positioning</p></li>
+<li><p>Ensure good skin contact (move hair if needed)</p></li>
+</ul>
+</li>
+<li><p><strong>Check headphone condition:</strong></p>
+<ul class="simple">
+<li><p>Inspect electrodes for damage or corrosion</p></li>
+<li><p>Ensure electrodes are not loose</p></li>
+</ul>
+</li>
+<li><p><strong>Environmental factors:</strong></p>
+<ul class="simple">
+<li><p>Avoid excessive movement during recording</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="output-issues">
+<h2>Output Issues<a class="headerlink" href="#output-issues" title="Link to this heading"></a></h2>
+<section id="csv-files-not-created">
+<h3>CSV Files Not Created<a class="headerlink" href="#csv-files-not-created" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- No CSV files appear
+- Permission errors during file creation</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Check file permissions:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test write access in current directory</span>
+touch<span class="w"> </span>test_file.csv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>test_file.csv
+</pre></div>
+</div>
+</li>
+<li><p><strong>Use absolute paths:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>mw75_streamer<span class="w"> </span>--csv<span class="w"> </span>/full/path/to/output.csv
+</pre></div>
+</div>
+</li>
+<li><p><strong>Check disk space:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>df<span class="w"> </span>-h<span class="w"> </span>.
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="websocket-connection-failed">
+<h3>WebSocket Connection Failed<a class="headerlink" href="#websocket-connection-failed" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- “WebSocket connection failed”
+- Cannot connect to specified URL</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Test WebSocket server:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start test server first</span>
+python<span class="w"> </span>-m<span class="w"> </span>mw75_streamer.testing<span class="w"> </span>--advanced
+</pre></div>
+</div>
+</li>
+<li><p><strong>Check firewall settings:</strong></p>
+<ul class="simple">
+<li><p>Ensure port is not blocked</p></li>
+<li><p>Try localhost connection first: <code class="docutils literal notranslate"><span class="pre">ws://localhost:8080</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>Verify WebSocket URL format:</strong></p>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">ws://</span></code> for unencrypted connections</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">wss://</span></code> for encrypted connections</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="lsl-stream-not-visible">
+<h3>LSL Stream Not Visible<a class="headerlink" href="#lsl-stream-not-visible" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- LSL applications don’t see the MW75 stream
+- “No LSL streams found”</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Check LSL installation:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pylsl; print(pylsl.version_info())&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Test with LSL tools:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install LSL apps for testing</span>
+brew<span class="w"> </span>install<span class="w"> </span>labstreaminglayer/tap/lsl-apps
+
+<span class="c1"># View available streams</span>
+lsl_resolve_byprop<span class="w"> </span><span class="nb">type</span><span class="w"> </span>EEG
+</pre></div>
+</div>
+</li>
+<li><p><strong>Verify stream name:</strong></p>
+<ul class="simple">
+<li><p>Use exact stream name specified with <code class="docutils literal notranslate"><span class="pre">--lsl</span></code></p></li>
+<li><p>Stream names are case-sensitive</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="performance-issues">
+<h2>Performance Issues<a class="headerlink" href="#performance-issues" title="Link to this heading"></a></h2>
+<section id="high-cpu-usage">
+<h3>High CPU Usage<a class="headerlink" href="#high-cpu-usage" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- CPU usage &gt;50% for streaming
+- System becomes unresponsive</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic">
+<li><p><strong>Reduce output formats:</strong></p>
+<ul class="simple">
+<li><p>Use single output instead of multiple</p></li>
+<li><p>CSV is most efficient, WebSocket least efficient</p></li>
+</ul>
+</li>
+<li><p><strong>Optimize Python environment:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use optimized Python build</span>
+brew<span class="w"> </span>install<span class="w"> </span>python@3.11
+</pre></div>
+</div>
+</li>
+<li><p><strong>Check for memory leaks:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Monitor memory usage</span>
+python<span class="w"> </span>-m<span class="w"> </span>mw75_streamer<span class="w"> </span>--verbose<span class="w"> </span>--csv<span class="w"> </span>test.csv<span class="w"> </span><span class="p">&amp;</span>
+top<span class="w"> </span>-pid<span class="w"> </span><span class="nv">$!</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="high-memory-usage">
+<h3>High Memory Usage<a class="headerlink" href="#high-memory-usage" title="Link to this heading"></a></h3>
+<p><strong>Symptoms:</strong>
+- Memory usage grows over time
+- System runs out of memory during long sessions</p>
+<p><strong>Solutions:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Restart for long sessions:</strong></p>
+<ul class="simple">
+<li><p>Stop and restart streamer every few hours</p></li>
+<li><p>Monitor memory usage with Activity Monitor</p></li>
+</ul>
+</li>
+<li><p><strong>Use appropriate buffer sizes:</strong></p>
+<ul class="simple">
+<li><p>Default settings should work for most cases</p></li>
+<li><p>Avoid unnecessary data retention</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<section id="enable-verbose-logging">
+<h3>Enable Verbose Logging<a class="headerlink" href="#enable-verbose-logging" title="Link to this heading"></a></h3>
+<p>For any issue, start with verbose logging:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>mw75_streamer<span class="w"> </span>--verbose<span class="w"> </span><span class="o">[</span>your<span class="w"> </span>normal<span class="w"> </span>options<span class="o">]</span>
+</pre></div>
+</div>
+<p>This provides detailed information about:
+- BLE activation steps
+- RFCOMM connection status
+- Packet validation results
+- Timing information</p>
+</section>
+<section id="collect-system-information">
+<h3>Collect System Information<a class="headerlink" href="#collect-system-information" title="Link to this heading"></a></h3>
+<p>When reporting issues, include:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Python and package versions</span>
+python<span class="w"> </span>--version
+pip<span class="w"> </span>show<span class="w"> </span>mw75-streamer
+
+<span class="c1"># System information</span>
+sw_vers
+system_profiler<span class="w"> </span>SPBluetoothDataType
+
+<span class="c1"># Bluetooth device status</span>
+system_profiler<span class="w"> </span>SPBluetoothDataType<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">10</span><span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;mw75\|neuro&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="report-issues">
+<h3>Report Issues<a class="headerlink" href="#report-issues" title="Link to this heading"></a></h3>
+<p>If problems persist:</p>
+<ol class="arabic simple">
+<li><p><strong>Check existing issues:</strong> <a class="reference external" href="https://github.com/arctop/mw75-streamer/issues">https://github.com/arctop/mw75-streamer/issues</a></p></li>
+<li><p><strong>Create new issue:</strong> Include verbose logs and system information</p></li>
+<li><p><strong>Community support:</strong> Discuss on project GitHub page</p></li>
+</ol>
+<p>The development team actively monitors issues and provides support for users.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="protocol.html" class="btn btn-neutral float-left" title="Protocol Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Arctop.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
