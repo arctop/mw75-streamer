@@ -126,6 +126,8 @@ jobs:
     needs: [code-quality, macos-compatibility]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write
     
     steps:
     - uses: actions/checkout@v4
