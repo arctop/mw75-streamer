@@ -1,4 +1,4 @@
-.PHONY: help docs docs-serve docs-clean install install-dev install-hooks test lint format type-check check clean
+.PHONY: help docs docs-serve docs-clean install install-dev install-hooks test lint format type-check check clean version-patch version-minor version-major
 
 # Default target
 help:
@@ -24,6 +24,11 @@ help:
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  clean         Remove build artifacts"
+	@echo ""
+	@echo "Version Management:"
+	@echo "  version-patch Increment patch version (1.0.3 -> 1.0.4)"
+	@echo "  version-minor Increment minor version (1.0.3 -> 1.1.0)"
+	@echo "  version-major Increment major version (1.0.3 -> 2.0.0)"
 
 # Documentation targets
 docs:
@@ -90,3 +95,40 @@ clean:
 	rm -rf docs-src/_build/
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
+
+# Version management targets
+version-patch:
+	@echo "Incrementing patch version..."
+	@current_version=$$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/'); \
+	major=$$(echo $$current_version | cut -d. -f1); \
+	minor=$$(echo $$current_version | cut -d. -f2); \
+	patch=$$(echo $$current_version | cut -d. -f3); \
+	new_patch=$$((patch + 1)); \
+	new_version="$$major.$$minor.$$new_patch"; \
+	echo "Updating version from $$current_version to $$new_version"; \
+	sed -i '' "s/^version = \".*\"/version = \"$$new_version\"/" pyproject.toml; \
+	sed -i '' "s/__version__ = \".*\"/__version__ = \"$$new_version\"/" mw75_streamer/__init__.py; \
+	echo "Updated pyproject.toml and __init__.py to version $$new_version"
+
+version-minor:
+	@echo "Incrementing minor version..."
+	@current_version=$$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/'); \
+	major=$$(echo $$current_version | cut -d. -f1); \
+	minor=$$(echo $$current_version | cut -d. -f2); \
+	new_minor=$$((minor + 1)); \
+	new_version="$$major.$$new_minor.0"; \
+	echo "Updating version from $$current_version to $$new_version"; \
+	sed -i '' "s/^version = \".*\"/version = \"$$new_version\"/" pyproject.toml; \
+	sed -i '' "s/__version__ = \".*\"/__version__ = \"$$new_version\"/" mw75_streamer/__init__.py; \
+	echo "Updated pyproject.toml and __init__.py to version $$new_version"
+
+version-major:
+	@echo "Incrementing major version..."
+	@current_version=$$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/'); \
+	major=$$(echo $$current_version | cut -d. -f1); \
+	new_major=$$((major + 1)); \
+	new_version="$$new_major.0.0"; \
+	echo "Updating version from $$current_version to $$new_version"; \
+	sed -i '' "s/^version = \".*\"/version = \"$$new_version\"/" pyproject.toml; \
+	sed -i '' "s/__version__ = \".*\"/__version__ = \"$$new_version\"/" mw75_streamer/__init__.py; \
+	echo "Updated pyproject.toml and __init__.py to version $$new_version"
