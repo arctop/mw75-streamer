@@ -74,3 +74,5 @@ dmypy.json
 # Generated documentation
 docs/api/
 docs-src/_build/
+
+.ropeproject/
