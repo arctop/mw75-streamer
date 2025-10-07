@@ -25,12 +25,14 @@ The BLE phase activates EEG mode on the MW75 headphones:
    5. Send ENABLE_RAW_MODE command
    6. Wait 300ms (critical timing)
    7. Send START_SESSION command
-   8. Disconnect BLE
+   8. Wait for all responses
+   9. Disconnect BLE (macOS Taho 26+ only)
 
 **Critical Timing Requirements:**
 - 300ms delays between activation commands are mandatory
 - Commands must be sent in exact sequence
-- BLE connection remains active during RFCOMM streaming
+- **macOS Taho (26+)**: BLE must be disconnected before RFCOMM connection due to event loop interference
+- **macOS 15 and earlier**: BLE connection can remain active during RFCOMM streaming
 
 BLE Command Details
 ~~~~~~~~~~~~~~~~~~~

@@ -5,6 +5,7 @@ High-level interface for managing MW75 device connections and data streaming.
 Coordinates BLE activation and RFCOMM data streaming.
 """
 
+import asyncio
 import signal
 from typing import Optional, Callable, Any
 
@@ -60,6 +61,14 @@ class MW75Device:
             if not device_name:
                 self.logger.error("BLE activation failed")
                 return False
+
+            # Step 1.5: Disconnect BLE before RFCOMM (macOS Taho compatibility)
+            # On macOS 26+ (Taho), keeping BLE connected blocks RFCOMM delegate callbacks
+            self.logger.info("Disconnecting BLE (required for RFCOMM on macOS Taho)...")
+            await self.ble_manager.disconnect_after_activation()
+
+            # Wait for Bluetooth stack to settle after BLE disconnection
+            await asyncio.sleep(0.5)
 
             # Step 2: RFCOMM connection
             self.logger.info("Establishing RFCOMM connection...")
