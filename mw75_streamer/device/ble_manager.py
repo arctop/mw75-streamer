@@ -191,10 +191,42 @@ class BLEManager:
             await self.client.write_gatt_char(MW75_COMMAND_CHAR, BATTERY_CMD)
         await asyncio.sleep(BLE_COMMAND_DELAY)
 
+    async def disconnect_after_activation(self) -> None:
+        """
+        Disconnect BLE connection after activation is complete.
+
+        This is required on macOS Taho (26+) where keeping the BLE connection open
+        blocks RFCOMM delegate callbacks from being delivered.
+        """
+        if not self.client:
+            self.logger.debug("No BLE client to disconnect")
+            return
+
+        try:
+            if self.client.is_connected:
+                await self.client.disconnect()
+                self.logger.info("BLE disconnected (activation complete)")
+            self.client = None
+        except Exception as e:
+            self.logger.warning(f"Error disconnecting BLE after activation: {e}")
+            self.client = None
+
     async def cleanup(self) -> None:
         """Send disable commands and disconnect from BLE"""
-        if not self.client or not self.device_name:
+        # Note: On macOS Taho+, BLE is disconnected after activation, so client may be None
+        if not self.client and not self.device_name:
             self.logger.debug("No BLE connection to cleanup")
+            return
+
+        # If device_name is set but client is None, we disconnected after activation
+        if not self.client and self.device_name:
+            self.logger.debug("BLE was already disconnected after activation - no cleanup needed")
+            self.device_name = None
+            return
+
+        # At this point, self.client must be set (type guard for mypy)
+        if not self.client:
+            self.logger.debug("No BLE client to cleanup")
             return
 
         try:
