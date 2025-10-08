@@ -33,18 +33,21 @@ except ImportError:
 from ..utils.logging import get_logger
 
 # Platform-specific imports
-if sys.platform == "darwin":
+# For type checking, always import the types; at runtime, only on macOS
+if TYPE_CHECKING or sys.platform == "darwin":
     from ..device.mw75_device import MW75Device
     from ..device.rfcomm_manager import RFCOMMManager
     from ..data.packet_processor import PacketProcessor, EEGPacket
     from Foundation import NSRunLoop, NSDate
-else:
-    MW75Device = None  # type: ignore
-    RFCOMMManager = None  # type: ignore
-    PacketProcessor = None  # type: ignore
-    EEGPacket = None  # type: ignore
-    NSRunLoop = None  # type: ignore
-    NSDate = None  # type: ignore
+
+if sys.platform != "darwin":
+    # At runtime on non-macOS, these will be None
+    MW75Device = None  # type: ignore[assignment, misc]  # noqa: F811
+    RFCOMMManager = None  # type: ignore[assignment, misc]  # noqa: F811
+    PacketProcessor = None  # type: ignore[assignment, misc]  # noqa: F811
+    EEGPacket = None  # type: ignore[assignment, misc]  # noqa: F811
+    NSRunLoop = None  # noqa: F811
+    NSDate = None  # noqa: F811
 
 
 class DeviceState(Enum):

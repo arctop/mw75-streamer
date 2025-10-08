@@ -7,14 +7,16 @@ Command-line interface for starting the MW75 WebSocket server.
 import asyncio
 import argparse
 import sys
+from typing import TYPE_CHECKING
 
 from ..utils.logging import setup_logging, get_logger
 
 # Platform check
-if sys.platform == "darwin":
+if TYPE_CHECKING or sys.platform == "darwin":
     from .ws_server import MW75WebSocketServer
-else:
-    MW75WebSocketServer = None  # type: ignore
+
+if sys.platform != "darwin":
+    MW75WebSocketServer = None  # type: ignore[assignment, misc]  # noqa: F811
 
 
 async def main() -> None:
