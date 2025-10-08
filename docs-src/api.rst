@@ -65,11 +65,19 @@ Configuration
    :undoc-members:
    :show-inheritance:
 
+WebSocket Server (Remote Control)
+----------------------------------
+
+.. automodule:: mw75_streamer.server.ws_server
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Testing Utilities
 -----------------
 
-WebSocket Server
-~~~~~~~~~~~~~~~~
+WebSocket Test Server
+~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: mw75_streamer.testing.websocket_server
    :members:

@@ -63,6 +63,31 @@ python threaded_processing.py
 # Choose: 1) Threading, 2) Async, or 3) Both
 ```
 
+### 4. `websocket_server_client.py` - Remote Control via WebSocket Server
+
+**For remote device control** - Demonstrates how to connect to the MW75 WebSocket server and control device connections remotely:
+
+- **Remote device control**: Connect/disconnect to MW75 device via WebSocket
+- **Real-time data streaming**: Receive EEG data over WebSocket
+- **Status monitoring**: Track connection state and device status
+- **Auto-reconnect**: Automatic reconnection with exponential backoff
+- **Log filtering**: Configure log levels (DEBUG, INFO, WARNING, ERROR)
+
+**When to use:**
+- Building applications that need remote MW75 control
+- Web-based or mobile applications connecting to MW75
+- Distributed systems requiring EEG data streaming
+- Multiple services accessing the same MW75 device (one at a time)
+
+**Usage:**
+```bash
+# 1. Start the server in one terminal:
+uv run -m mw75_streamer.server --port 8080
+
+# 2. Run the client in another terminal:
+python examples/websocket_server_client.py
+```
+
 ## Performance Guidelines
 
 ### When to Use Threading

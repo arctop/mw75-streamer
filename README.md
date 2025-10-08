@@ -59,6 +59,9 @@ uv run -m mw75_streamer --lsl MW75_EEG
 
 # Combined outputs
 uv run -m mw75_streamer --csv eeg.csv --ws ws://localhost:8080
+
+# WebSocket Server (remote control mode)
+uv run -m mw75_streamer.server --port 8080
 ```
 ![Browser Visualization](docs/assets/browser.gif)
 
@@ -98,6 +101,27 @@ uv run -m mw75_streamer.testing --advanced
 # 2. Start EEG streaming
 uv run -m mw75_streamer --ws ws://localhost:8080
 ```
+
+## WebSocket Server (Remote Control Mode)
+
+For applications that need remote control of MW75 device connections, the package includes a WebSocket server mode:
+
+```bash
+# Start server
+uv run -m mw75_streamer.server --port 8080
+
+# Example client
+python examples/websocket_server_client.py
+```
+
+**Features:**
+- Remote device connection control via JSON commands
+- Real-time EEG data streaming  
+- Auto-reconnect with exponential backoff
+- Configurable log levels (DEBUG, INFO, WARNING, ERROR)
+- Single client connection with 30-second keepalive
+
+For complete protocol documentation and examples, see the [WebSocket Server documentation](https://arctop.github.io/mw75-streamer/api/server.html).
 
 ## How It Works
 

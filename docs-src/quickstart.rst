@@ -74,6 +74,21 @@ You can stream to multiple destinations simultaneously:
 
    uv run -m mw75_streamer --csv data.csv --ws ws://localhost:8080 --lsl MW75_EEG
 
+WebSocket Server (Remote Control)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For applications that need to remotely control the device:
+
+.. code-block:: bash
+
+   # Start WebSocket server
+   uv run -m mw75_streamer.server --port 8080
+
+   # Client connects and sends commands to control device
+   # See :doc:`server` for complete documentation
+
+This mode allows external applications to connect and control when to start/stop device connections.
+
 Command Line Options
 --------------------
 

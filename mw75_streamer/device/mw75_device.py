@@ -24,12 +24,13 @@ class MW75Device:
     3. Clean shutdown and cleanup
     """
 
-    def __init__(self, data_callback: Callable[[bytes], None]):
+    def __init__(self, data_callback: Callable[[bytes], None], setup_signal_handler: bool = True):
         """
         Initialize MW75 device coordinator
 
         Args:
             data_callback: Function to call when data is received from the device
+            setup_signal_handler: If True, set up SIGINT handler for graceful shutdown
         """
         self.data_callback = data_callback
         self.ble_manager = BLEManager()
@@ -37,8 +38,9 @@ class MW75Device:
         self.should_stop = False
         self.logger = get_logger(__name__)
 
-        # Set up signal handler for graceful shutdown
-        signal.signal(signal.SIGINT, self._signal_handler)
+        # Set up signal handler for graceful shutdown (optional)
+        if setup_signal_handler:
+            signal.signal(signal.SIGINT, self._signal_handler)
 
     def _signal_handler(self, signum: int, frame: Any) -> None:
         """Handle SIGINT (Ctrl+C) gracefully"""
