@@ -500,7 +500,7 @@ wheels = [
 
 [[package]]
 name = "mw75-streamer"
-version = "1.0.3"
+version = "1.0.4"
 source = { editable = "." }
 dependencies = [
     { name = "bleak" },

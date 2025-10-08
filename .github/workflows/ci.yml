@@ -38,7 +38,7 @@ jobs:
 
     - name: Run Flake8 (linting)
       run: |
-        uv run flake8 mw75_streamer/ --exclude=__pycache__ --max-line-length=100
+        uv run flake8 mw75_streamer/ --exclude=__pycache__
 
     - name: Run MyPy (type checking)
       run: |
@@ -70,6 +70,7 @@ jobs:
         import mw75_streamer.testing
         import mw75_streamer.utils
         import mw75_streamer.panel
+        import mw75_streamer.server
         print('✓ Cross-platform module imports passed')
         "
 
@@ -121,6 +122,7 @@ jobs:
       run: |
         uv run mw75-streamer --help
         uv run mw75-test-server --help
+        uv run python -m mw75_streamer.server --help
 
   build-and-publish:
     needs: [code-quality, macos-compatibility]

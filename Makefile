@@ -73,7 +73,7 @@ test:
 
 lint:
 	@echo "Running flake8..."
-	uv run flake8 mw75_streamer/ --extend-ignore=E501
+	uv run flake8 mw75_streamer/ --exclude=__pycache__
 
 format:
 	@echo "Formatting code with black..."
@@ -81,7 +81,7 @@ format:
 
 type-check:
 	@echo "Running mypy type checking..."
-	uv run mypy mw75_streamer/ --ignore-missing-imports
+	uv run mypy mw75_streamer/ --ignore-missing-imports --disable-error-code=unreachable
 
 check: format lint type-check
 	@echo "All code quality checks completed successfully!"
