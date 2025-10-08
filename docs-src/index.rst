@@ -9,6 +9,7 @@ MW75 EEG Streamer Documentation
 
    installation
    quickstart
+   server
    api
    protocol
    troubleshooting
