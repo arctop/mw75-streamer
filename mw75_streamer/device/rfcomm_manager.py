@@ -254,6 +254,11 @@ class RFCOMMManager:
                 self.logger.error(f"Error closing RFCOMM: {e}")
             finally:
                 self.connected = False
+                self.should_stop = False  # Reset for potential reuse
                 self.delegate = None
         else:
             self.logger.debug("No RFCOMM channel to close")
+            # Still reset state even if no channel
+            self.connected = False
+            self.should_stop = False
+            self.delegate = None

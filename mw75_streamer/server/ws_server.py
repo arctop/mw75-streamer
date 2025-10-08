@@ -254,14 +254,25 @@ class MW75WebSocketServer:
             await self._cancel_task(self.reconnect_task)
             self.reconnect_task = None
 
-            # Cancel device connection task
+            # Stop RFCOMM streaming if active (before cancelling task)
+            if self.device and self.device.rfcomm_manager:
+                self.device.rfcomm_manager.stop()
+                await asyncio.sleep(0.1)  # Let the streaming loop exit gracefully
+
+            # Cancel device connection task (its finally block will handle cleanup)
             await self._cancel_task(self.device_connection_task)
             self.device_connection_task = None
 
-            # Disconnect from device
-            if self.device and self.device_state in [DeviceState.CONNECTED, DeviceState.CONNECTING]:
-                self.logger.info("Client disconnected - disconnecting from MW75 device")
-                await self._disconnect_device()
+            # If device wasn't cleaned up by the task (shouldn't happen), clean up now
+            if self.device:
+                self.logger.warning("Device not cleaned up by connection task, cleaning up now")
+                try:
+                    await self.device.cleanup()
+                except Exception as e:
+                    self.logger.error(f"Error during fallback device cleanup: {e}")
+                self.device = None
+                self.packet_processor = None
+                self.device_state = DeviceState.IDLE
 
             # Remove logging handler
             if self.log_handler:
@@ -505,11 +516,23 @@ class MW75WebSocketServer:
             self.device_state = DeviceState.ERROR
             await self._send_error(message=f"Device error: {e}", code="DEVICE_ERROR")
 
+            # Clean up device on error
+            if self.device:
+                try:
+                    await self.device.cleanup()
+                    self.device = None
+                    self.packet_processor = None
+                except Exception as cleanup_error:
+                    self.logger.error(f"Error during cleanup after device error: {cleanup_error}")
+                    # Still clear references even on error
+                    self.device = None
+                    self.packet_processor = None
+
             # Start auto-reconnect if enabled
             if self.auto_reconnect_enabled:
                 await self._start_reconnect_loop()
         finally:
-            # Connection ended
+            # Connection ended - clean up device resources
             if connection_successful:
                 print("Device streaming ended")
                 self.device_state = DeviceState.DISCONNECTED
@@ -517,6 +540,18 @@ class MW75WebSocketServer:
                     state=DeviceState.DISCONNECTED.value,
                     message="Device connection closed",
                 )
+
+                # Clean up device to properly reset state for next connection
+                if self.device:
+                    try:
+                        await self.device.cleanup()
+                        self.device = None
+                        self.packet_processor = None
+                    except Exception as cleanup_error:
+                        self.logger.error(f"Error during device cleanup: {cleanup_error}")
+                        # Still clear references even on error
+                        self.device = None
+                        self.packet_processor = None
 
                 # Start auto-reconnect if enabled
                 if self.auto_reconnect_enabled:
