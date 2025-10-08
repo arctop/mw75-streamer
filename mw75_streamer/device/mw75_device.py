@@ -99,8 +99,13 @@ class MW75Device:
         if self.rfcomm_manager:
             self.rfcomm_manager.close()
             self.rfcomm_manager = None
+            # Wait for RFCOMM to fully close before BLE operations
+            await asyncio.sleep(0.5)
 
-        # Clean up BLE connection
+        # Clean up BLE connection (reconnects to send disable commands)
         await self.ble_manager.cleanup()
+
+        # Wait for Bluetooth stack to fully settle after cleanup
+        await asyncio.sleep(0.5)
 
         self.logger.info("MW75 device cleanup complete")

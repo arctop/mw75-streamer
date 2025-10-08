@@ -219,9 +219,12 @@ class BLEManager:
             return
 
         # If device_name is set but client is None, we disconnected after activation
+        # We need to reconnect to send disable commands to properly reset device state
         if not self.client and self.device_name:
-            self.logger.debug("BLE was already disconnected after activation - no cleanup needed")
-            self.device_name = None
+            self.logger.info(
+                "BLE was disconnected after activation - reconnecting to send disable commands..."
+            )
+            await self._reconnect_and_disable()
             return
 
         # At this point, self.client must be set (type guard for mypy)
@@ -230,26 +233,71 @@ class BLEManager:
             return
 
         try:
-            self.logger.info("Stopping EEG streaming...")
-
-            # Send stop commands in reverse order
-            self.logger.info("Sending STOP_SESSION...")
-            await self.client.write_gatt_char(MW75_CONTROL_CHAR, STOP_SESSION_CMD)
-            await asyncio.sleep(BLE_ACTIVATION_DELAY)
-
-            self.logger.info("Sending DISABLE_RAW_MODE...")
-            await self.client.write_gatt_char(MW75_COMMAND_CHAR, DISABLE_RAW_MODE_CMD)
-            await asyncio.sleep(BLE_ACTIVATION_DELAY)
-
-            self.logger.info("Sending DISABLE_EEG...")
-            await self.client.write_gatt_char(MW75_COMMAND_CHAR, DISABLE_EEG_CMD)
-            await asyncio.sleep(BLE_COMMAND_DELAY)
-
-            await self.client.disconnect()
-            self.logger.info("EEG streaming disabled and BLE disconnected")
-
+            await self._send_disable_sequence()
         except Exception as e:
             self.logger.error(f"Error during BLE cleanup: {e}")
+        finally:
+            self.client = None
+            self.device_name = None
+
+    async def _send_disable_sequence(self) -> None:
+        """Send the disable command sequence to the device"""
+        if not self.client:
+            return
+
+        self.logger.info("Stopping EEG streaming...")
+
+        # Send stop commands in reverse order
+        self.logger.info("Sending STOP_SESSION...")
+        await self.client.write_gatt_char(MW75_CONTROL_CHAR, STOP_SESSION_CMD)
+        await asyncio.sleep(BLE_ACTIVATION_DELAY)
+
+        self.logger.info("Sending DISABLE_RAW_MODE...")
+        await self.client.write_gatt_char(MW75_COMMAND_CHAR, DISABLE_RAW_MODE_CMD)
+        await asyncio.sleep(BLE_ACTIVATION_DELAY)
+
+        self.logger.info("Sending DISABLE_EEG...")
+        await self.client.write_gatt_char(MW75_COMMAND_CHAR, DISABLE_EEG_CMD)
+        await asyncio.sleep(BLE_COMMAND_DELAY)
+
+        await self.client.disconnect()
+        self.logger.info("EEG streaming disabled and BLE disconnected")
+
+    async def _reconnect_and_disable(self) -> None:
+        """Reconnect to BLE and send disable commands to reset device state"""
+        if not self.device_name:
+            self.logger.warning("Cannot reconnect for cleanup - device name not available")
+            return
+
+        try:
+            # Scan for the device
+            self.logger.debug(f"Scanning for {self.device_name} to send disable commands...")
+            devices = await BleakScanner.discover(timeout=BLE_DISCOVERY_TIMEOUT)
+            target_device = None
+
+            for device in devices:
+                if device.name and self.device_name.upper() in device.name.upper():
+                    target_device = device
+                    break
+
+            if not target_device:
+                self.logger.warning(
+                    f"Could not find {self.device_name} for cleanup - device may be out of range"
+                )
+                self.device_name = None
+                return
+
+            # Reconnect and send disable commands
+            self.logger.debug("Reconnecting to BLE for cleanup...")
+            self.client = BleakClient(target_device)
+            await self.client.connect()
+            self.logger.debug("BLE reconnected for cleanup")
+
+            # Send disable sequence
+            await self._send_disable_sequence()
+
+        except Exception as e:
+            self.logger.warning(f"Error during BLE reconnection for cleanup: {e}")
         finally:
             self.client = None
             self.device_name = None
