@@ -1,30 +1,11 @@
-# Pull Request
+## What does this PR do?
+<!-- Brief description of changes -->
 
-## Description
-<!-- Provide a brief description of the changes in this PR -->
+## Why?
+<!-- Context: What problem does this solve? What issue does it address? -->
 
-## Type of Change
-<!-- Mark the relevant option with an "x" -->
-- [ ] Bug fix (non-breaking change that fixes an issue)
-- [ ] New feature (non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Code refactoring
-- [ ] Performance improvement
+## How to test
+<!-- If manual testing is needed, describe the steps -->
 
-## Testing
-<!-- Describe how you tested your changes -->
-- [ ] Code passes all automated checks (Black, Flake8, MyPy)
-- [ ] Tested with actual MW75 hardware
-- [ ] Tested import functionality
-- [ ] Manual testing completed
-
-## Checklist
-- [ ] My code follows the project's code style (Black formatting)
-- [ ] I have performed a self-review of my code
-- [ ] My changes generate no new warnings
-- [ ] I have added type hints where appropriate
-- [ ] Any new dependencies are documented in pyproject.toml
-
-## Additional Notes
-<!-- Add any additional context, screenshots, or notes about the PR -->
+## Notes
+<!-- Any additional context, breaking changes, or things reviewers should know -->
