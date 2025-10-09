@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mw75-streamer"
-version = "1.0.4"
+version = "1.0.5"
 description = "Stream EEG data from MW75 Neuro headphones using BLE and RFCOMM"
 authors = [
     {name = "Eitan Kay", email = "opensource@arctop.com"}
