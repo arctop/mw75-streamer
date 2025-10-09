@@ -412,6 +412,7 @@ class MW75WebSocketServer:
             "device_state": self.device_state.value,
             "auto_reconnect": self.auto_reconnect_enabled,
             "log_level": self.client_log_level or "ERROR",
+            "battery_level": self._get_battery_level(),
         }
 
         await self._send_message(msg_type="status", data=status_info, request_id=request_id)
@@ -709,7 +710,11 @@ class MW75WebSocketServer:
                 await asyncio.sleep(self.heartbeat_interval)
 
                 # Send heartbeat ping (websockets lib handles connection health)
-                await self._send_message(msg_type="heartbeat", data={"timestamp": time.time()})
+                # Include battery level for periodic updates
+                await self._send_message(
+                    msg_type="heartbeat",
+                    data={"timestamp": time.time(), "battery_level": self._get_battery_level()},
+                )
 
         except asyncio.CancelledError:
             pass
@@ -734,11 +739,22 @@ class MW75WebSocketServer:
         except Exception as e:
             self.logger.error(f"Error sending message: {e}")
 
+    def _get_battery_level(self) -> Optional[int]:
+        """Get current battery level from device"""
+        if self.device and self.device.ble_manager:
+            return self.device.ble_manager.battery_level
+        return None
+
     async def _send_status(self, state: str, message: str) -> None:
         """Send status update to client"""
         await self._send_message(
             msg_type="status",
-            data={"state": state, "message": message, "timestamp": time.time()},
+            data={
+                "state": state,
+                "message": message,
+                "timestamp": time.time(),
+                "battery_level": self._get_battery_level(),
+            },
         )
 
     async def _send_error(self, message: str, code: str, request_id: Optional[str] = None) -> None:

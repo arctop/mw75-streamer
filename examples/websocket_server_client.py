@@ -75,7 +75,9 @@ async def main():
                     elif msg_type == "status":
                         state = msg_data.get("state")
                         message_text = msg_data.get("message")
-                        print(f"[STATUS] {state}")
+                        battery_level = msg_data.get("battery_level")
+                        battery_str = f" (Battery: {battery_level}%)" if battery_level is not None else ""
+                        print(f"[STATUS] {state}{battery_str}")
                         print(f"  {message_text}")
                         
                     elif msg_type == "log":
@@ -123,9 +125,10 @@ async def main():
                             break
                     
                     elif msg_type == "heartbeat":
-                        # Server heartbeat - respond to keep connection alive
-                        # (optional - the websocket library handles this automatically)
-                        pass
+                        # Server heartbeat - includes battery level for periodic updates
+                        battery_level = msg_data.get("battery_level")
+                        if battery_level is not None:
+                            print(f"[HEARTBEAT] Battery: {battery_level}%")
                     
                     else:
                         print(f"Unknown message type: {msg_type}")
