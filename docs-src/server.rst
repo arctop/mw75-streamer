@@ -129,9 +129,17 @@ Query current connection status:
      "data": {
        "device_state": "connected",
        "auto_reconnect": true,
-       "log_level": "ERROR"
+       "log_level": "ERROR",
+       "battery_level": 85
      }
    }
+
+**Status Fields:**
+
+- ``device_state`` - Current connection state (see Connection States below)
+- ``auto_reconnect`` - Whether auto-reconnect is enabled
+- ``log_level`` - Current log level filter
+- ``battery_level`` - Device battery percentage (0-100), or ``null`` if not available
 
 Ping/Pong
 ~~~~~~~~~
@@ -184,9 +192,17 @@ Connection state changes:
      "data": {
        "state": "connected",
        "message": "Successfully connected to MW75 device",
-       "timestamp": 1234567890.123
+       "timestamp": 1234567890.123,
+       "battery_level": 85
      }
    }
+
+**Status Update Fields:**
+
+- ``state`` - Current connection state (see Connection States below)
+- ``message`` - Human-readable status message
+- ``timestamp`` - Unix timestamp of status update
+- ``battery_level`` - Device battery percentage (0-100), or ``null`` if not available
 
 **Connection States:**
 
@@ -313,11 +329,17 @@ Automatic keepalive (sent every 30 seconds):
      "id": "uuid",
      "type": "heartbeat",
      "data": {
-       "timestamp": 1234567890.123
+       "timestamp": 1234567890.123,
+       "battery_level": 85
      }
    }
 
-These heartbeats help monitor connection health. The WebSocket library automatically handles connection liveness and will close the connection if it becomes unresponsive.
+**Heartbeat Fields:**
+
+- ``timestamp`` - Unix timestamp of heartbeat
+- ``battery_level`` - Device battery percentage (0-100), or ``null`` if not available
+
+These heartbeats help monitor connection health and provide periodic battery level updates. The WebSocket library automatically handles connection liveness and will close the connection if it becomes unresponsive.
 
 Features
 --------
@@ -345,6 +367,23 @@ Client can request specific log levels in the connect command:
 - ``ERROR`` - Errors only (default)
 
 Logs are captured from the entire ``mw75_streamer`` package and filtered before sending to client.
+
+Battery Monitoring
+~~~~~~~~~~~~~~~~~~
+
+The server automatically retrieves and reports the MW75 device battery level:
+
+- Battery level is obtained during device connection via BLE
+- Reported as percentage (0-100)
+- Included in all status messages
+- Periodically updated via heartbeat messages (every 30 seconds)
+- Returns ``null`` when device is not connected or battery level unavailable
+
+**Access Battery Level:**
+
+1. **Query Status:** Send ``status`` command to get current battery level
+2. **Status Updates:** Battery level included in all state change notifications
+3. **Heartbeats:** Periodic updates every 30 seconds while connected
 
 Single Client Policy
 ~~~~~~~~~~~~~~~~~~~~~
@@ -405,7 +444,14 @@ Complete Example
                    
                elif msg_type == "status":
                    state = data["data"]["state"]
-                   print(f"Status: {state}")
+                   battery = data["data"].get("battery_level")
+                   battery_str = f" (Battery: {battery}%)" if battery else ""
+                   print(f"Status: {state}{battery_str}")
+                   
+               elif msg_type == "heartbeat":
+                   battery = data["data"].get("battery_level")
+                   if battery:
+                       print(f"Heartbeat - Battery: {battery}%")
                    
                elif msg_type == "error":
                    code = data["data"]["code"]
@@ -450,7 +496,15 @@ JavaScript Client Example
          break;
          
        case 'status':
-         console.log(`Status: ${data.data.state}`);
+         const battery = data.data.battery_level;
+         const batteryStr = battery ? ` (Battery: ${battery}%)` : '';
+         console.log(`Status: ${data.data.state}${batteryStr}`);
+         break;
+         
+       case 'heartbeat':
+         if (data.data.battery_level) {
+           console.log(`Battery: ${data.data.battery_level}%`);
+         }
          break;
          
        case 'error':
@@ -491,6 +545,7 @@ Server Class
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:
 
 Comparison: Client vs Server Mode
 ----------------------------------

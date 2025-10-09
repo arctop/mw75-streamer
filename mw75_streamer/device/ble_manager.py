@@ -40,6 +40,7 @@ class BLEManager:
     def __init__(self) -> None:
         self.client: Optional[BleakClient] = None
         self.device_name: Optional[str] = None
+        self.battery_level: Optional[int] = None
         self.logger = get_logger(__name__)
 
     async def discover_and_activate(self) -> Optional[str]:
@@ -111,6 +112,7 @@ class BLEManager:
                     # Battery response format: [0x09, 0x9A, 0x03, 0x14, 0xF1, <battery_level>]
                     if len(data) >= 6:
                         battery_level = data[5]
+                        self.battery_level = battery_level
                         self.logger.info(f"Battery level: {battery_level}%")
                     else:
                         self.logger.debug(f"Battery command response: status=0x{status:02x}")
@@ -119,6 +121,7 @@ class BLEManager:
                     # Battery response format: [0x09, 0x9A, 0x03, 0xF1, <battery_level>]
                     if data[0] == 0x09 and data[1] == 0x9A and data[2] == 0x03:
                         battery_level = status  # status field contains battery level
+                        self.battery_level = battery_level
                         self.logger.info(f"Battery level: {battery_level}%")
                     else:
                         self.logger.debug(f"Success response: status=0x{status:02x}")
@@ -239,6 +242,7 @@ class BLEManager:
         finally:
             self.client = None
             self.device_name = None
+            self.battery_level = None
 
     async def _send_disable_sequence(self) -> None:
         """Send the disable command sequence to the device"""
@@ -301,3 +305,4 @@ class BLEManager:
         finally:
             self.client = None
             self.device_name = None
+            self.battery_level = None
