@@ -1,0 +1,19 @@
+{
+  "include": ["mw75_streamer"],
+  "exclude": ["**/__pycache__", ".venv", "build", "dist"],
+  "reportMissingImports": false,
+  "reportMissingTypeStubs": false,
+  "reportOptionalMemberAccess": false,
+  "reportAttributeAccessIssue": false,
+  "reportInvalidTypeForm": false,
+  "reportUnknownParameterType": false,
+  "reportUnknownArgumentType": false,
+  "reportUnknownVariableType": false,
+  "reportUnknownMemberType": false,
+  "reportUnusedParameter": false,
+  "reportUnusedVariable": false,
+  "reportAny": false,
+  "pythonVersion": "3.9",
+  "pythonPlatform": "Darwin",
+  "typeCheckingMode": "basic"
+}
