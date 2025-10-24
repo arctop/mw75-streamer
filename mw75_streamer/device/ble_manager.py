@@ -12,17 +12,13 @@ from bleak import BleakClient, BleakScanner
 from ..config import (
     MW75_COMMAND_CHAR,
     MW75_STATUS_CHAR,
-    MW75_CONTROL_CHAR,
     ENABLE_EEG_CMD,
     ENABLE_RAW_MODE_CMD,
-    START_SESSION_CMD,
     DISABLE_EEG_CMD,
     DISABLE_RAW_MODE_CMD,
-    STOP_SESSION_CMD,
     BATTERY_CMD,
     BLE_ACTIVATION_DELAY,
     BLE_COMMAND_DELAY,
-    BLE_SESSION_DELAY,
     BLE_DISCOVERY_TIMEOUT,
     MW75_DEVICE_NAME_PATTERN,
     BLE_SUCCESS_CODE,
@@ -172,27 +168,29 @@ class BLEManager:
             return False
 
     async def _send_activation_sequence(self) -> None:
-        """Send the MW75 activation command sequence with proper timing"""
+        """
+        Send the MW75 activation command sequence with proper timing.
+
+        Sequence:
+        1. ENABLE_EEG → 100ms delay
+        2. ENABLE_RAW_MODE → 500ms delay
+        3. BATTERY_CMD → 500ms delay
+        """
         self.logger.info("Sending ENABLE_EEG...")
         if self.client:
             await self.client.write_gatt_char(MW75_COMMAND_CHAR, ENABLE_EEG_CMD)
-        await asyncio.sleep(BLE_ACTIVATION_DELAY)
+        await asyncio.sleep(BLE_ACTIVATION_DELAY)  # 100ms
 
         self.logger.info("Sending ENABLE_RAW_MODE...")
         if self.client:
             await self.client.write_gatt_char(MW75_COMMAND_CHAR, ENABLE_RAW_MODE_CMD)
-        await asyncio.sleep(BLE_COMMAND_DELAY)
-
-        self.logger.info("Sending START_SESSION...")
-        if self.client:
-            await self.client.write_gatt_char(MW75_CONTROL_CHAR, START_SESSION_CMD)
-        await asyncio.sleep(BLE_SESSION_DELAY)
+        await asyncio.sleep(BLE_COMMAND_DELAY)  # 500ms
 
         # Battery check
         self.logger.info("Getting battery level...")
         if self.client:
             await self.client.write_gatt_char(MW75_COMMAND_CHAR, BATTERY_CMD)
-        await asyncio.sleep(BLE_COMMAND_DELAY)
+        await asyncio.sleep(BLE_COMMAND_DELAY)  # 500ms
 
     async def disconnect_after_activation(self) -> None:
         """
@@ -252,10 +250,6 @@ class BLEManager:
         self.logger.info("Stopping EEG streaming...")
 
         # Send stop commands in reverse order
-        self.logger.info("Sending STOP_SESSION...")
-        await self.client.write_gatt_char(MW75_CONTROL_CHAR, STOP_SESSION_CMD)
-        await asyncio.sleep(BLE_ACTIVATION_DELAY)
-
         self.logger.info("Sending DISABLE_RAW_MODE...")
         await self.client.write_gatt_char(MW75_COMMAND_CHAR, DISABLE_RAW_MODE_CMD)
         await asyncio.sleep(BLE_ACTIVATION_DELAY)

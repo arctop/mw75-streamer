@@ -154,7 +154,7 @@ Connection Process
 The streamer follows this sequence:
 
 1. **BLE Discovery** - Scan for MW75 device
-2. **BLE Activation** - Send activation commands with 300ms delays
+2. **BLE Activation** - Send activation commands (ENABLE_EEG → 100ms → ENABLE_RAW_MODE → 500ms → BATTERY_CMD)
 3. **RFCOMM Connection** - Connect to data streaming channel
 4. **Data Processing** - Validate packets and convert to microvolts
 

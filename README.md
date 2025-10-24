@@ -125,7 +125,7 @@ For complete protocol documentation and examples, see the [WebSocket Server docu
 
 ## How It Works
 
-1. **BLE Activation**: Discovers MW75 via Bluetooth LE and sends activation commands
+1. **BLE Activation**: Discovers MW75 via Bluetooth LE and sends activation commands (ENABLE_EEG → 100ms → ENABLE_RAW_MODE → 500ms → BATTERY_CMD)
 2. **RFCOMM Streaming**: Connects to channel 25 and receives 63-byte packets
 3. **Data Processing**: Converts raw ADC to µV, validates checksums, outputs to CSV/WebSocket/LSL
 

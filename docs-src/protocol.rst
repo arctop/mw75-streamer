@@ -21,15 +21,16 @@ The BLE phase activates EEG mode on the MW75 headphones:
    1. Discover MW75 device via BLE scan
    2. Connect to BLE service
    3. Send ENABLE_EEG command
-   4. Wait 300ms (critical timing)
+   4. Wait 100ms
    5. Send ENABLE_RAW_MODE command
-   6. Wait 300ms (critical timing)
-   7. Send START_SESSION command
+   6. Wait 500ms
+   7. Send BATTERY_CMD (optional battery level check)
    8. Wait for all responses
    9. Disconnect BLE (macOS Taho 26+ only)
 
 **Critical Timing Requirements:**
-- 300ms delays between activation commands are mandatory
+- 100ms delay after ENABLE_EEG command
+- 500ms delay after ENABLE_RAW_MODE and BATTERY_CMD commands
 - Commands must be sent in exact sequence
 - **macOS Taho (26+)**: BLE must be disconnected before RFCOMM connection due to event loop interference
 - **macOS 15 and earlier**: BLE connection can remain active during RFCOMM streaming
@@ -41,9 +42,9 @@ Commands are sent to the MW75's BLE characteristic:
 
 .. code-block:: python
 
-   ENABLE_EEG = bytes([0x02, 0x73, 0x02, 0x01])      # Enable EEG mode
-   ENABLE_RAW_MODE = bytes([0x02, 0x73, 0x05, 0x01]) # Enable raw data mode
-   START_SESSION = bytes([0x02, 0x73, 0x01, 0x01])   # Start streaming session
+   ENABLE_EEG = bytes([0x09, 0x9A, 0x03, 0x60, 0x01])      # Enable EEG mode
+   ENABLE_RAW_MODE = bytes([0x09, 0x9A, 0x03, 0x41, 0x01]) # Enable raw data mode
+   BATTERY_CMD = bytes([0x09, 0x9A, 0x03, 0x14, 0xFF])     # Request battery level
 
 RFCOMM Data Streaming
 ---------------------
