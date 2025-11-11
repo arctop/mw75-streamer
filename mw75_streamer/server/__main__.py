@@ -31,12 +31,15 @@ Examples:
   python -m mw75_streamer.server --host 0.0.0.0     # Listen on all interfaces
 
 WebSocket Protocol:
-  Client connects and sends JSON commands:
+  Multiple clients can connect simultaneously. One client controls device connection.
+  Client commands:
     {"id": "uuid", "type": "connect", "data": {"auto_reconnect": true, "log_level": "ERROR"}}
     {"id": "uuid", "type": "disconnect", "data": {}}
     {"id": "uuid", "type": "status", "data": {}}
+    {"id": "uuid", "type": "broadcast", "data": {"custom": "message"}}
 
-  Server responds with status, eeg_data, log, and error messages.
+  Server responds with status, eeg_data, log, error, and broadcast messages.
+  All clients receive EEG data and status updates. Broadcasts forwarded to all clients.
 """,
     )
 

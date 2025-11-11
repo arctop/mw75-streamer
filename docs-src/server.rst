@@ -39,10 +39,13 @@ Connection Behavior
 ~~~~~~~~~~~~~~~~~~~
 
 - Server starts **idle** (no device connection)
-- Waits for client to connect and send commands
-- Only **one client** allowed at a time
-- Client controls when to connect/disconnect from MW75 device
-- Device automatically disconnects when client disconnects
+- **Multiple clients** can connect simultaneously
+- Only **one client** can control device connection at a time
+- First client to send ``connect`` command gains control
+- Control is released when controlling client disconnects
+- All clients receive EEG data, status updates, and logs
+- Clients can broadcast messages to each other
+- Device stays connected when controlling client disconnects (if other clients remain)
 
 Message Protocol
 ----------------
@@ -130,7 +133,9 @@ Query current connection status:
        "device_state": "connected",
        "auto_reconnect": true,
        "log_level": "ERROR",
-       "battery_level": 85
+       "battery_level": 85,
+       "has_control": true,
+       "total_clients": 3
      }
    }
 
@@ -140,6 +145,8 @@ Query current connection status:
 - ``auto_reconnect`` - Whether auto-reconnect is enabled
 - ``log_level`` - Current log level filter
 - ``battery_level`` - Device battery percentage (0-100), or ``null`` if not available
+- ``has_control`` - Whether this client currently has device control (boolean)
+- ``total_clients`` - Number of connected clients (integer)
 
 Ping/Pong
 ~~~~~~~~~
@@ -155,6 +162,52 @@ Keepalive mechanism (optional, server sends automatic heartbeats):
    }
 
 **Response:** Server sends ``pong`` message
+
+Broadcast Command
+~~~~~~~~~~~~~~~~~
+
+Send a message to all other connected clients:
+
+.. code-block:: json
+
+   {
+     "id": "msg-5",
+     "type": "broadcast",
+     "data": {
+       "custom_field": "your data",
+       "another_field": 123
+     }
+   }
+
+**Parameters:**
+
+- ``data`` - Any JSON object to broadcast to other clients
+
+**Response:** Server sends ``command_ack`` to sender, and forwards the broadcast to all other clients with sender information
+
+**Received by other clients:**
+
+.. code-block:: json
+
+   {
+     "id": "msg-5",
+     "type": "broadcast",
+     "data": {
+       "from": "192.168.1.100:54321",
+       "data": {
+         "custom_field": "your data",
+         "another_field": 123
+       },
+       "timestamp": 1234567890.123
+     }
+   }
+
+**Use Cases:**
+
+- Client-to-client communication
+- Coordinating multiple viewers
+- Sharing analysis results between clients
+- Custom application-specific messaging
 
 Server Messages
 ---------------
@@ -302,7 +355,7 @@ Error notifications:
 
 **Common Error Codes:**
 
-- ``CLIENT_ALREADY_CONNECTED`` - Another client is already connected
+- ``DEVICE_CONTROL_TAKEN`` - Another client currently has device control (cannot connect or disconnect)
 - ``INVALID_JSON`` - Malformed JSON received
 - ``INVALID_MESSAGE`` - Message structure invalid
 - ``MISSING_TYPE`` - Message missing 'type' field
@@ -385,26 +438,57 @@ The server automatically retrieves and reports the MW75 device battery level:
 2. **Status Updates:** Battery level included in all state change notifications
 3. **Heartbeats:** Periodic updates every 30 seconds while connected
 
-Single Client Policy
+Multi-Client Support
 ~~~~~~~~~~~~~~~~~~~~~
 
-Only one client can connect at a time:
+Multiple clients can connect simultaneously with the following behavior:
 
-- Subsequent connection attempts are rejected
-- Rejection includes ``CLIENT_ALREADY_CONNECTED`` error
-- Client must disconnect before another can connect
-- Server does not queue or manage multiple clients
+**Connection:**
+
+- Any number of clients can connect to the WebSocket server
+- All clients receive EEG data, status updates, and logs
+
+**Device Control:**
+
+- Only one client can control the device (connect/disconnect commands)
+- First client to send ``connect`` gains control
+- Other clients attempting ``connect`` or ``disconnect`` receive ``DEVICE_CONTROL_TAKEN`` error
+- Control is automatically released when controlling client disconnects
+- Any remaining client can then take control
+
+**Broadcasting:**
+
+- Clients can send broadcast messages to communicate with each other
+- Broadcasts are forwarded to all clients except the sender
+- Sender information is included in forwarded broadcasts
+
+**Device Persistence:**
+
+- Device connection persists when controlling client disconnects (if other clients remain)
+- Device only disconnects when explicitly requested or when all clients disconnect
 
 Connection Lifecycle
 ~~~~~~~~~~~~~~~~~~~~
 
+**Single Client:**
+
 1. Client connects to WebSocket server
 2. Server sends welcome status message
-3. Client sends ``connect`` command
+3. Client sends ``connect`` command (gains control)
 4. Server acknowledges and begins device connection
-5. Device connects, EEG data flows
+5. Device connects, EEG data flows to client
 6. Client sends ``disconnect`` or closes WebSocket
 7. Server disconnects device and cleans up
+
+**Multiple Clients:**
+
+1. Client A connects, sends ``connect`` command (gains control)
+2. Device connects, EEG data flows to Client A
+3. Client B connects while device is connected
+4. Client B receives current device status and EEG data
+5. Client A disconnects (control released, device stays connected)
+6. Client B can now send ``connect`` or ``disconnect`` commands
+7. When last client disconnects, device disconnects
 
 Python Client Example
 ---------------------
@@ -592,17 +676,17 @@ Connection Refused
 
 4. Try localhost first: ``ws://localhost:8080``
 
-Client Rejected
-~~~~~~~~~~~~~~~
+Device Control Taken
+~~~~~~~~~~~~~~~~~~~~
 
-**Problem:** "CLIENT_ALREADY_CONNECTED" error
+**Problem:** "DEVICE_CONTROL_TAKEN" error when trying to connect or disconnect
 
 **Solutions:**
 
-1. Only one client can connect at a time
-2. Disconnect existing client first
-3. Wait a few seconds after client disconnect
-4. Restart server if needed
+1. Another client currently has device control
+2. Wait for controlling client to disconnect
+3. Check status with ``status`` command to see ``has_control`` field
+4. Only the client with control can send ``connect`` or ``disconnect`` commands
 
 Device Won't Connect
 ~~~~~~~~~~~~~~~~~~~~

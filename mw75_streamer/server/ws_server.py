@@ -62,22 +62,22 @@ class DeviceState(Enum):
 
 
 class WebSocketLogHandler(logging.Handler):
-    """Custom logging handler that sends logs to WebSocket client"""
+    """Custom logging handler that sends logs to all WebSocket clients"""
 
     def __init__(self, server: "MW75WebSocketServer"):
         super().__init__()
         self.server = server
 
     def emit(self, record: logging.LogRecord) -> None:
-        """Send log record to WebSocket client"""
+        """Send log record to all WebSocket clients"""
         try:
-            # Only send if we have a connected client and it's at or above their level
-            if self.server.current_client and self.server.client_log_level:
+            # Only send if we have connected clients and a log level is set
+            if self.server.clients and self.server.client_log_level:
                 # Check if this log record meets the client's level threshold
                 client_level_value = getattr(logging, self.server.client_log_level)
                 if record.levelno >= client_level_value:
                     log_message = self.format(record)
-                    # Create async task (we're on main thread with running event loop)
+                    # Create async task to broadcast log to all clients
                     asyncio.create_task(
                         self.server._send_log(
                             level=record.levelname, message=log_message, logger_name=record.name
@@ -109,10 +109,12 @@ class MW75WebSocketServer:
         self.port = port
         self.logger = get_logger(__name__)
 
-        # Client management
-        self.current_client: Optional[WebSocketServerProtocol] = None
+        # Client management - support multiple clients
+        self.clients: set[WebSocketServerProtocol] = set()
+        self.controlling_client: Optional[WebSocketServerProtocol] = None
         self.client_lock = asyncio.Lock()
         self.client_log_level: Optional[str] = None
+        self.client_heartbeats: dict[WebSocketServerProtocol, asyncio.Task] = {}
 
         # Device management
         self.device: Optional[MW75Device] = None
@@ -125,7 +127,6 @@ class MW75WebSocketServer:
 
         # Heartbeat
         self.heartbeat_interval = 30.0  # seconds
-        self.heartbeat_task: Optional[asyncio.Task] = None
 
         # Device connection task
         self.device_connection_task: Optional[asyncio.Task] = None
@@ -161,10 +162,11 @@ class MW75WebSocketServer:
         """Clean shutdown of server and all connections"""
         print("Shutting down server...")
 
-        # Disconnect any connected client
-        if self.current_client:
+        # Disconnect all connected clients
+        clients_to_cleanup = list(self.clients)
+        for client in clients_to_cleanup:
             try:
-                await self._cleanup_client()
+                await self._cleanup_client(client)
             except Exception as e:
                 print(f"Error during client cleanup: {e}")
 
@@ -174,40 +176,28 @@ class MW75WebSocketServer:
         """Handle incoming WebSocket client connection"""
         client_address = f"{websocket.remote_address[0]}:{websocket.remote_address[1]}"
 
-        # Check if we already have a client
+        # Accept all clients - no rejection for multiple connections
         async with self.client_lock:
-            if self.current_client is not None:
-                self.logger.warning(
-                    f"Rejected connection from {client_address} - client already connected"
-                )
-                await websocket.send(
-                    json.dumps(
-                        {
-                            "id": str(uuid.uuid4()),
-                            "type": "error",
-                            "data": {
-                                "message": "Server already has a connected client",
-                                "code": "CLIENT_ALREADY_CONNECTED",
-                            },
-                        }
-                    )
-                )
-                await websocket.close()
-                return
-
-            # Accept the client
-            self.current_client = websocket
-            print(f"Client connected from {client_address}")
+            self.clients.add(websocket)
+            print(f"Client connected from {client_address} (Total clients: {len(self.clients)})")
             self.logger.info(f"Client connected: {client_address}")
 
         try:
-            # Send welcome status
-            await self._send_status(
-                state=self.device_state.value, message="Client connected to MW75 server"
+            # Send welcome status to this specific client
+            await self._send_to_client(
+                websocket,
+                msg_type="status",
+                data={
+                    "state": self.device_state.value,
+                    "message": "Client connected to MW75 server",
+                    "timestamp": time.time(),
+                    "battery_level": self._get_battery_level(),
+                },
             )
 
-            # Start heartbeat
-            self.heartbeat_task = asyncio.create_task(self._heartbeat_loop())
+            # Start per-client heartbeat
+            heartbeat_task = asyncio.create_task(self._heartbeat_loop(websocket))
+            self.client_heartbeats[websocket] = heartbeat_task
 
             # Handle messages from client
             async for message in websocket:
@@ -217,10 +207,18 @@ class MW75WebSocketServer:
                         message_str = message.decode("utf-8")
                     else:
                         message_str = message
-                    await self._process_client_message(message_str)
+                    await self._process_client_message(message_str, websocket)
                 except Exception as e:
                     self.logger.error(f"Error processing message: {e}")
-                    await self._send_error(message=str(e), code="MESSAGE_PROCESSING_ERROR")
+                    await self._send_to_client(
+                        websocket,
+                        msg_type="error",
+                        data={
+                            "message": str(e),
+                            "code": "MESSAGE_PROCESSING_ERROR",
+                            "timestamp": time.time(),
+                        },
+                    )
 
         except websockets.exceptions.ConnectionClosed:
             print(f"Client disconnected: {client_address}")
@@ -230,7 +228,7 @@ class MW75WebSocketServer:
             self.logger.error(f"Error handling client {client_address}: {e}")
         finally:
             # Clean up client connection
-            await self._cleanup_client()
+            await self._cleanup_client(websocket)
 
     @staticmethod
     async def _cancel_task(task: Optional[asyncio.Task]) -> None:
@@ -242,59 +240,100 @@ class MW75WebSocketServer:
             except asyncio.CancelledError:
                 pass
 
-    async def _cleanup_client(self) -> None:
-        """Clean up client connection and associated resources"""
+    async def _cleanup_client(self, websocket: WebSocketServerProtocol) -> None:
+        """Clean up individual client connection and associated resources"""
         async with self.client_lock:
-            # Cancel heartbeat
-            await self._cancel_task(self.heartbeat_task)
-            self.heartbeat_task = None
+            # Remove client from set
+            if websocket in self.clients:
+                self.clients.discard(websocket)
+                self.logger.info(f"Client removed. Remaining clients: {len(self.clients)}")
 
-            # Stop auto-reconnect
-            self.auto_reconnect_enabled = False
-            await self._cancel_task(self.reconnect_task)
-            self.reconnect_task = None
+            # Cancel this client's heartbeat
+            if websocket in self.client_heartbeats:
+                await self._cancel_task(self.client_heartbeats[websocket])
+                del self.client_heartbeats[websocket]
 
-            # Stop RFCOMM streaming if active (before cancelling task)
-            if self.device and self.device.rfcomm_manager:
-                self.device.rfcomm_manager.stop()
-                await asyncio.sleep(0.1)  # Let the streaming loop exit gracefully
+            # Check if this client was controlling the device
+            was_controlling = websocket == self.controlling_client
+            if was_controlling:
+                self.controlling_client = None
+                self.logger.info("Controlling client disconnected - control released")
 
-            # Cancel device connection task (its finally block will handle cleanup)
-            await self._cancel_task(self.device_connection_task)
-            self.device_connection_task = None
+                # Notify remaining clients that control is available
+                if self.clients:
+                    await self._broadcast_message(
+                        msg_type="status",
+                        data={
+                            "state": self.device_state.value,
+                            "message": "Device control released - available for new controller",
+                            "timestamp": time.time(),
+                            "battery_level": self._get_battery_level(),
+                        },
+                    )
 
-            # If device wasn't cleaned up by the task (shouldn't happen), clean up now
-            if self.device:
-                self.logger.warning("Device not cleaned up by connection task, cleaning up now")
-                try:
-                    await self.device.cleanup()
-                except Exception as e:
-                    self.logger.error(f"Error during fallback device cleanup: {e}")
-                self.device = None
-                self.packet_processor = None
-                self.device_state = DeviceState.IDLE
+            # Only disconnect device if no clients remain
+            if not self.clients:
+                self.logger.info("No clients remaining - cleaning up device resources")
 
-            # Remove logging handler
-            if self.log_handler:
-                top_logger = logging.getLogger("mw75_streamer")
-                top_logger.removeHandler(self.log_handler)
-                self.log_handler = None
+                # Stop auto-reconnect
+                self.auto_reconnect_enabled = False
+                await self._cancel_task(self.reconnect_task)
+                self.reconnect_task = None
 
-            self.current_client = None
-            self.client_log_level = None
-            self.logger.info("Client cleanup complete")
+                # Stop RFCOMM streaming if active (before cancelling task)
+                if self.device and self.device.rfcomm_manager:
+                    self.device.rfcomm_manager.stop()
+                    await asyncio.sleep(0.1)  # Let the streaming loop exit gracefully
 
-    async def _process_client_message(self, message: str) -> None:
+                # Cancel device connection task (its finally block will handle cleanup)
+                await self._cancel_task(self.device_connection_task)
+                self.device_connection_task = None
+
+                # If device wasn't cleaned up by the task (shouldn't happen), clean up now
+                if self.device:
+                    self.logger.warning("Device not cleaned up by connection task, cleaning up now")
+                    try:
+                        await self.device.cleanup()
+                    except Exception as e:
+                        self.logger.error(f"Error during fallback device cleanup: {e}")
+                    self.device = None
+                    self.packet_processor = None
+                    self.device_state = DeviceState.IDLE
+
+                # Remove logging handler
+                if self.log_handler:
+                    top_logger = logging.getLogger("mw75_streamer")
+                    top_logger.removeHandler(self.log_handler)
+                    self.log_handler = None
+
+                self.client_log_level = None
+                self.logger.info("All clients disconnected - cleanup complete")
+
+    async def _process_client_message(
+        self, message: str, websocket: WebSocketServerProtocol
+    ) -> None:
         """Process incoming message from client"""
         try:
             data = json.loads(message)
         except json.JSONDecodeError:
-            await self._send_error(message="Invalid JSON", code="INVALID_JSON")
+            await self._send_to_client(
+                websocket,
+                msg_type="error",
+                data={"message": "Invalid JSON", "code": "INVALID_JSON", "timestamp": time.time()},
+            )
             return
 
         # Validate message structure
         if not isinstance(data, dict):
-            await self._send_error(message="Message must be a JSON object", code="INVALID_MESSAGE")
+            await self._send_to_client(
+                websocket,
+                msg_type="error",
+                data={
+                    "message": "Message must be a JSON object",
+                    "code": "INVALID_MESSAGE",
+                    "timestamp": time.time(),
+                },
+            )
             return
 
         msg_id = data.get("id")
@@ -302,36 +341,69 @@ class MW75WebSocketServer:
         msg_data = data.get("data", {})
 
         if not msg_type:
-            await self._send_error(
-                message="Missing 'type' field in message", code="MISSING_TYPE", request_id=msg_id
+            await self._send_to_client(
+                websocket,
+                msg_type="error",
+                data={
+                    "message": "Missing 'type' field in message",
+                    "code": "MISSING_TYPE",
+                    "timestamp": time.time(),
+                },
+                request_id=msg_id,
             )
             return
 
         # Route command
         if msg_type == "connect":
-            await self._handle_connect_command(msg_data, msg_id)
+            await self._handle_connect_command(msg_data, msg_id, websocket)
         elif msg_type == "disconnect":
-            await self._handle_disconnect_command(msg_data, msg_id)
+            await self._handle_disconnect_command(msg_data, msg_id, websocket)
         elif msg_type == "status":
-            await self._handle_status_command(msg_data, msg_id)
+            await self._handle_status_command(msg_data, msg_id, websocket)
         elif msg_type == "ping":
-            await self._handle_ping_command(msg_id)
+            await self._handle_ping_command(msg_id, websocket)
+        elif msg_type == "broadcast":
+            await self._handle_broadcast_command(msg_data, msg_id, websocket)
         else:
-            await self._send_error(
-                message=f"Unknown command type: {msg_type}",
-                code="UNKNOWN_COMMAND",
+            await self._send_to_client(
+                websocket,
+                msg_type="error",
+                data={
+                    "message": f"Unknown command type: {msg_type}",
+                    "code": "UNKNOWN_COMMAND",
+                    "timestamp": time.time(),
+                },
                 request_id=msg_id,
             )
 
     async def _handle_connect_command(
-        self, data: Dict[str, Any], request_id: Optional[str]
+        self, data: Dict[str, Any], request_id: Optional[str], websocket: WebSocketServerProtocol
     ) -> None:
         """Handle connect command from client"""
+        # Check if another client has control
+        if self.controlling_client is not None and self.controlling_client != websocket:
+            await self._send_to_client(
+                websocket,
+                msg_type="error",
+                data={
+                    "message": "Another client currently has device control",
+                    "code": "DEVICE_CONTROL_TAKEN",
+                    "timestamp": time.time(),
+                },
+                request_id=request_id,
+            )
+            return
+
         # Check current state
         if self.device_state in [DeviceState.CONNECTED, DeviceState.CONNECTING]:
-            await self._send_error(
-                message=f"Already {self.device_state.value}",
-                code="ALREADY_CONNECTED",
+            await self._send_to_client(
+                websocket,
+                msg_type="error",
+                data={
+                    "message": f"Already {self.device_state.value}",
+                    "code": "ALREADY_CONNECTED",
+                    "timestamp": time.time(),
+                },
                 request_id=request_id,
             )
             return
@@ -342,13 +414,20 @@ class MW75WebSocketServer:
 
         # Validate log level
         if log_level not in ["DEBUG", "INFO", "WARNING", "ERROR"]:
-            await self._send_error(
-                message=f"Invalid log_level: {log_level}. Must be DEBUG, INFO, WARNING, or ERROR",
-                code="INVALID_LOG_LEVEL",
+            await self._send_to_client(
+                websocket,
+                msg_type="error",
+                data={
+                    "message": f"Invalid log_level: {log_level}. Must be DEBUG, INFO, WARNING, or ERROR",
+                    "code": "INVALID_LOG_LEVEL",
+                    "timestamp": time.time(),
+                },
                 request_id=request_id,
             )
             return
 
+        # Grant control to this client
+        self.controlling_client = websocket
         self.client_log_level = log_level
 
         # Set up logging handler (remove old one if exists, to support log level changes)
@@ -365,8 +444,9 @@ class MW75WebSocketServer:
         top_logger = logging.getLogger("mw75_streamer")
         top_logger.addHandler(self.log_handler)
 
-        # Send confirmation
-        await self._send_message(
+        # Send confirmation to requesting client
+        await self._send_to_client(
+            websocket,
             msg_type="command_ack",
             data={
                 "command": "connect",
@@ -381,16 +461,31 @@ class MW75WebSocketServer:
         await self._connect_device()
 
     async def _handle_disconnect_command(
-        self, _data: Dict[str, Any], request_id: Optional[str]
+        self, _data: Dict[str, Any], request_id: Optional[str], websocket: WebSocketServerProtocol
     ) -> None:
         """Handle disconnect command from client"""
+        # Check if this client has control
+        if self.controlling_client is not None and self.controlling_client != websocket:
+            await self._send_to_client(
+                websocket,
+                msg_type="error",
+                data={
+                    "message": "Another client currently has device control",
+                    "code": "DEVICE_CONTROL_TAKEN",
+                    "timestamp": time.time(),
+                },
+                request_id=request_id,
+            )
+            return
+
         # Disable auto-reconnect
         self.auto_reconnect_enabled = False
         await self._cancel_task(self.reconnect_task)
         self.reconnect_task = None
 
-        # Send confirmation
-        await self._send_message(
+        # Send confirmation to requesting client
+        await self._send_to_client(
+            websocket,
             msg_type="command_ack",
             data={"command": "disconnect", "message": "Disconnect command received"},
             request_id=request_id,
@@ -400,12 +495,18 @@ class MW75WebSocketServer:
         if self.device and self.device_state in [DeviceState.CONNECTED, DeviceState.CONNECTING]:
             await self._disconnect_device()
         else:
-            await self._send_status(
-                state=DeviceState.IDLE.value, message="No active device connection"
+            await self._broadcast_message(
+                msg_type="status",
+                data={
+                    "state": DeviceState.IDLE.value,
+                    "message": "No active device connection",
+                    "timestamp": time.time(),
+                    "battery_level": self._get_battery_level(),
+                },
             )
 
     async def _handle_status_command(
-        self, _data: Dict[str, Any], request_id: Optional[str]
+        self, _data: Dict[str, Any], request_id: Optional[str], websocket: WebSocketServerProtocol
     ) -> None:
         """Handle status command from client"""
         status_info = {
@@ -413,15 +514,59 @@ class MW75WebSocketServer:
             "auto_reconnect": self.auto_reconnect_enabled,
             "log_level": self.client_log_level or "ERROR",
             "battery_level": self._get_battery_level(),
+            "has_control": (websocket == self.controlling_client),
+            "total_clients": len(self.clients),
         }
 
-        await self._send_message(msg_type="status", data=status_info, request_id=request_id)
+        await self._send_to_client(
+            websocket,
+            msg_type="status",
+            data=status_info,
+            request_id=request_id,
+        )
 
-    async def _handle_ping_command(self, request_id: Optional[str]) -> None:
+    async def _handle_ping_command(
+        self, request_id: Optional[str], websocket: WebSocketServerProtocol
+    ) -> None:
         """Handle ping command from client"""
-        await self._send_message(
+        await self._send_to_client(
+            websocket,
             msg_type="pong",
             data={"timestamp": time.time()},
+            request_id=request_id,
+        )
+
+    async def _handle_broadcast_command(
+        self, data: Dict[str, Any], request_id: Optional[str], websocket: WebSocketServerProtocol
+    ) -> None:
+        """Handle broadcast message from client - forward to all other clients"""
+        # Get client address for identification
+        client_address = f"{websocket.remote_address[0]}:{websocket.remote_address[1]}"
+
+        # Add sender information to the broadcast data
+        broadcast_data = {
+            "from": client_address,
+            "data": data,
+            "timestamp": time.time(),
+        }
+
+        # Broadcast to all clients except the sender
+        await self._broadcast_message(
+            msg_type="broadcast",
+            data=broadcast_data,
+            request_id=request_id,
+            exclude=websocket,
+        )
+
+        # Send acknowledgement to sender
+        await self._send_to_client(
+            websocket,
+            msg_type="command_ack",
+            data={
+                "command": "broadcast",
+                "message": f"Message broadcast to {len(self.clients) - 1} other client(s)",
+                "recipients": len(self.clients) - 1,
+            },
             request_id=request_id,
         )
 
@@ -447,8 +592,13 @@ class MW75WebSocketServer:
         except Exception as e:
             self.logger.error(f"Error initiating device connection: {e}")
             self.device_state = DeviceState.ERROR
-            await self._send_error(
-                message=f"Failed to connect to device: {e}", code="CONNECTION_FAILED"
+            await self._broadcast_message(
+                msg_type="error",
+                data={
+                    "message": f"Failed to connect to device: {e}",
+                    "code": "CONNECTION_FAILED",
+                    "timestamp": time.time(),
+                },
             )
 
     async def _device_connection_task(self) -> None:
@@ -466,9 +616,13 @@ class MW75WebSocketServer:
                 print("MW75 device not found")
                 self.logger.error("BLE activation failed")
                 self.device_state = DeviceState.ERROR
-                await self._send_error(
-                    message="MW75 device not found or BLE activation failed",
-                    code="BLE_ACTIVATION_FAILED",
+                await self._broadcast_message(
+                    msg_type="error",
+                    data={
+                        "message": "MW75 device not found or BLE activation failed",
+                        "code": "BLE_ACTIVATION_FAILED",
+                        "timestamp": time.time(),
+                    },
                 )
                 if self.auto_reconnect_enabled:
                     await self._start_reconnect_loop()
@@ -490,8 +644,13 @@ class MW75WebSocketServer:
                 print("RFCOMM connection failed")
                 self.logger.error("RFCOMM connection failed")
                 self.device_state = DeviceState.ERROR
-                await self._send_error(
-                    message="RFCOMM connection failed", code="RFCOMM_CONNECTION_FAILED"
+                await self._broadcast_message(
+                    msg_type="error",
+                    data={
+                        "message": "RFCOMM connection failed",
+                        "code": "RFCOMM_CONNECTION_FAILED",
+                        "timestamp": time.time(),
+                    },
                 )
                 if self.auto_reconnect_enabled:
                     await self._start_reconnect_loop()
@@ -515,7 +674,14 @@ class MW75WebSocketServer:
         except Exception as e:
             self.logger.error(f"Device connection error: {e}")
             self.device_state = DeviceState.ERROR
-            await self._send_error(message=f"Device error: {e}", code="DEVICE_ERROR")
+            await self._broadcast_message(
+                msg_type="error",
+                data={
+                    "message": f"Device error: {e}",
+                    "code": "DEVICE_ERROR",
+                    "timestamp": time.time(),
+                },
+            )
 
             # Clean up device on error
             if self.device:
@@ -610,7 +776,14 @@ class MW75WebSocketServer:
         except Exception as e:
             self.logger.error(f"Error disconnecting device: {e}")
             self.device_state = DeviceState.ERROR
-            await self._send_error(message=f"Disconnect error: {e}", code="DISCONNECT_ERROR")
+            await self._broadcast_message(
+                msg_type="error",
+                data={
+                    "message": f"Disconnect error: {e}",
+                    "code": "DISCONNECT_ERROR",
+                    "timestamp": time.time(),
+                },
+            )
 
     async def _start_reconnect_loop(self) -> None:
         """Start auto-reconnect loop"""
@@ -657,16 +830,24 @@ class MW75WebSocketServer:
 
             except Exception as e:
                 self.logger.error(f"Auto-reconnect attempt {attempt} failed: {e}")
-                await self._send_error(
-                    message=f"Reconnect attempt {attempt} failed: {e}",
-                    code="RECONNECT_FAILED",
+                await self._broadcast_message(
+                    msg_type="error",
+                    data={
+                        "message": f"Reconnect attempt {attempt} failed: {e}",
+                        "code": "RECONNECT_FAILED",
+                        "timestamp": time.time(),
+                    },
                 )
 
         # Max attempts reached
         if self.auto_reconnect_enabled and attempt >= max_attempts:
-            await self._send_error(
-                message=f"Auto-reconnect failed after {max_attempts} attempts",
-                code="RECONNECT_EXHAUSTED",
+            await self._broadcast_message(
+                msg_type="error",
+                data={
+                    "message": f"Auto-reconnect failed after {max_attempts} attempts",
+                    "code": "RECONNECT_EXHAUSTED",
+                    "timestamp": time.time(),
+                },
             )
             self.auto_reconnect_enabled = False
 
@@ -685,11 +866,11 @@ class MW75WebSocketServer:
 
     def _handle_eeg_packet(self, packet: EEGPacket) -> None:
         """Handle processed EEG packet (called from main thread)"""
-        if not self.current_client:
+        if not self.clients:
             return
 
         try:
-            # Create async task to send EEG data
+            # Create async task to broadcast EEG data to all clients
             asyncio.create_task(self._send_eeg_data(packet))
         except Exception as e:
             self.logger.error(f"Error handling EEG packet: {e}")
@@ -703,15 +884,16 @@ class MW75WebSocketServer:
         """
         pass
 
-    async def _heartbeat_loop(self) -> None:
-        """Heartbeat loop to keep connection alive"""
+    async def _heartbeat_loop(self, websocket: WebSocketServerProtocol) -> None:
+        """Heartbeat loop to keep connection alive for a specific client"""
         try:
             while True:
                 await asyncio.sleep(self.heartbeat_interval)
 
-                # Send heartbeat ping (websockets lib handles connection health)
+                # Send heartbeat ping to this specific client
                 # Include battery level for periodic updates
-                await self._send_message(
+                await self._send_to_client(
+                    websocket,
                     msg_type="heartbeat",
                     data={"timestamp": time.time(), "battery_level": self._get_battery_level()},
                 )
@@ -721,13 +903,14 @@ class MW75WebSocketServer:
         except Exception as e:
             self.logger.error(f"Heartbeat error: {e}")
 
-    async def _send_message(
-        self, msg_type: str, data: Dict[str, Any], request_id: Optional[str] = None
+    async def _send_to_client(
+        self,
+        websocket: WebSocketServerProtocol,
+        msg_type: str,
+        data: Dict[str, Any],
+        request_id: Optional[str] = None,
     ) -> None:
-        """Send message to client"""
-        if not self.current_client:
-            return
-
+        """Send message to a specific client"""
         try:
             message = {
                 "id": request_id if request_id else str(uuid.uuid4()),
@@ -735,9 +918,33 @@ class MW75WebSocketServer:
                 "data": data,
             }
 
-            await self.current_client.send(json.dumps(message))
+            await websocket.send(json.dumps(message))
         except Exception as e:
-            self.logger.error(f"Error sending message: {e}")
+            self.logger.error(f"Error sending message to client: {e}")
+
+    async def _broadcast_message(
+        self,
+        msg_type: str,
+        data: Dict[str, Any],
+        request_id: Optional[str] = None,
+        exclude: Optional[WebSocketServerProtocol] = None,
+    ) -> None:
+        """Broadcast message to all connected clients, optionally excluding one"""
+        message = {
+            "id": request_id if request_id else str(uuid.uuid4()),
+            "type": msg_type,
+            "data": data,
+        }
+        message_json = json.dumps(message)
+
+        # Send to all clients except the excluded one
+        for client in list(self.clients):
+            if exclude and client == exclude:
+                continue
+            try:
+                await client.send(message_json)
+            except Exception as e:
+                self.logger.error(f"Error broadcasting to client: {e}")
 
     def _get_battery_level(self) -> Optional[int]:
         """Get current battery level from device"""
@@ -746,8 +953,8 @@ class MW75WebSocketServer:
         return None
 
     async def _send_status(self, state: str, message: str) -> None:
-        """Send status update to client"""
-        await self._send_message(
+        """Send status update to all clients"""
+        await self._broadcast_message(
             msg_type="status",
             data={
                 "state": state,
@@ -757,17 +964,9 @@ class MW75WebSocketServer:
             },
         )
 
-    async def _send_error(self, message: str, code: str, request_id: Optional[str] = None) -> None:
-        """Send error message to client"""
-        await self._send_message(
-            msg_type="error",
-            data={"message": message, "code": code, "timestamp": time.time()},
-            request_id=request_id,
-        )
-
     async def _send_log(self, level: str, message: str, logger_name: str) -> None:
-        """Send log message to client"""
-        await self._send_message(
+        """Send log message to all clients"""
+        await self._broadcast_message(
             msg_type="log",
             data={
                 "level": level,
@@ -778,7 +977,7 @@ class MW75WebSocketServer:
         )
 
     async def _send_eeg_data(self, packet: EEGPacket) -> None:
-        """Send EEG data packet to client"""
+        """Send EEG data packet to all clients"""
         eeg_data = {
             "timestamp": packet.timestamp,
             "event_id": packet.event_id,
@@ -789,4 +988,4 @@ class MW75WebSocketServer:
             "feature_status": packet.feature_status,
         }
 
-        await self._send_message(msg_type="eeg_data", data=eeg_data)
+        await self._broadcast_message(msg_type="eeg_data", data=eeg_data)
