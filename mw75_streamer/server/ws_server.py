@@ -919,6 +919,13 @@ class MW75WebSocketServer:
             }
 
             await websocket.send(json.dumps(message))
+        except websockets.exceptions.ConnectionClosed as e:
+            self.logger.warning(f"Client connection closed during send: {e}")
+            # Clean up the dead client
+            try:
+                await self._cleanup_client(websocket)
+            except Exception as cleanup_error:
+                self.logger.error(f"Error cleaning up dead client: {cleanup_error}")
         except Exception as e:
             self.logger.error(f"Error sending message to client: {e}")
 
@@ -937,14 +944,28 @@ class MW75WebSocketServer:
         }
         message_json = json.dumps(message)
 
+        # Collect dead clients for cleanup
+        dead_clients = []
+
         # Send to all clients except the excluded one
         for client in list(self.clients):
             if exclude and client == exclude:
                 continue
             try:
                 await client.send(message_json)
+            except websockets.exceptions.ConnectionClosed as e:
+                self.logger.warning(f"Client connection closed during broadcast: {e}")
+                dead_clients.append(client)
             except Exception as e:
                 self.logger.error(f"Error broadcasting to client: {e}")
+                dead_clients.append(client)
+
+        # Clean up dead clients after broadcast loop
+        for dead_client in dead_clients:
+            try:
+                await self._cleanup_client(dead_client)
+            except Exception as e:
+                self.logger.error(f"Error cleaning up dead client: {e}")
 
     def _get_battery_level(self) -> Optional[int]:
         """Get current battery level from device"""

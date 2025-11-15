@@ -7,7 +7,7 @@ using BLE activation and RFCOMM data streaming.
 Developed by Arctop (https://arctop.com)
 """
 
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 __author__ = "Eitan Kay"
 __email__ = "opensource@arctop.com"
 __maintainer__ = "Arctop"
