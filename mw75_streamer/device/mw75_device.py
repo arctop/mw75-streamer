@@ -7,11 +7,16 @@ Coordinates BLE activation and RFCOMM data streaming.
 
 import asyncio
 import signal
+import sys
 from typing import Any, Callable, Optional
 
 from ..utils.logging import get_logger
 from .ble_manager import BLEManager
-from .rfcomm_manager import RFCOMMManager
+
+if sys.platform == "win32":
+    from .windows_rfcomm_manager import RFCOMMManager
+else:
+    from .rfcomm_manager import RFCOMMManager
 
 
 class MW75Device:

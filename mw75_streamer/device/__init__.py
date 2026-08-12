@@ -18,6 +18,13 @@ if sys.platform == "darwin":
         "RFCOMMDelegate",
         "MW75Device",
     ]
+elif sys.platform == "win32":
+    from .ble_manager import BLEManager  # noqa: F401
+    from .windows_rfcomm_manager import RFCOMMManager  # noqa: F401
+    from .mw75_device import MW75Device  # noqa: F401
+
+    RFCOMMDelegate = None
+    __all__ = ["BLEManager", "RFCOMMManager", "MW75Device"]
 else:
     # On non-macOS platforms, these will be None
     BLEManager = None
