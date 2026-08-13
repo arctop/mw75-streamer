@@ -42,7 +42,7 @@ Help bring MW75 EEG streaming to Linux by implementing Bluetooth Classic (RFCOMM
 
 ### Other Contribution Opportunities
 
-- **Windows Support**: Implement Windows Bluetooth APIs for RFCOMM streaming
+- **Windows Hardening**: Extend test coverage and validate the Windows RFCOMM transport across Bluetooth stacks
 - **Protocol Analysis**: Support additional MW75 features and commands
 - **Testing Framework**: Add unit tests for data processing components
 - **Hardware Validation**: Test with different MW75 firmware versions

@@ -26,7 +26,7 @@ elif sys.platform == "win32":
     RFCOMMDelegate = None
     __all__ = ["BLEManager", "RFCOMMManager", "MW75Device"]
 else:
-    # On non-macOS platforms, these will be None
+    # On unsupported platforms, these will be None
     BLEManager = None
     RFCOMMManager = None
     RFCOMMDelegate = None

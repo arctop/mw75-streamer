@@ -92,6 +92,13 @@ class MW75Device:
             self.logger.info("Starting data streaming loop...")
             self.rfcomm_manager.run_until_stopped()
 
+            # The Windows manager records peer disconnects, read failures, and
+            # data stalls; treat those as a failed session so the CLI exits non-zero
+            stream_error = getattr(self.rfcomm_manager, "stream_error", None)
+            if stream_error:
+                self.logger.error(f"Data streaming ended unexpectedly: {stream_error}")
+                return False
+
             return True
 
         except Exception as e:

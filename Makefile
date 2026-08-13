@@ -68,8 +68,9 @@ install-hooks:
 
 # Code quality targets
 test:
-	@echo "Running tests..."
-	uv run -m mw75_streamer.testing
+	@echo "Running unit tests..."
+	uv run pytest tests/
+	@echo "For hardware integration testing, run: uv run -m mw75_streamer.testing --advanced"
 
 lint:
 	@echo "Running flake8..."

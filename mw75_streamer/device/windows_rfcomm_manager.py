@@ -4,11 +4,11 @@ import ctypes
 import socket
 import sys
 import threading
-from typing import Callable, Optional
+import time
+from typing import Callable, List, Optional, Tuple
 
-from ..config import RFCOMM_CHANNEL, RFCOMM_CONNECTION_TIMEOUT
+from ..config import DATA_PACKET_TIMEOUT, RFCOMM_CHANNEL, RFCOMM_CONNECTION_TIMEOUT
 from ..utils.logging import get_logger
-
 
 READ_TIMEOUT = 0.25
 READ_SIZE = 65536
@@ -90,35 +90,54 @@ class RFCOMMManager:
         self.data_callback = data_callback
         self.connected = False
         self.device_address: Optional[str] = None
+        self.stream_error: Optional[str] = None
         self.logger = get_logger(__name__)
         self._socket: Optional[socket.socket] = None
         self._stop_event = threading.Event()
         self._state_lock = threading.Lock()
 
+    @property
+    def should_stop(self) -> bool:
+        """Mirror the macOS manager's public stop flag."""
+        return self._stop_event.is_set()
+
+    @should_stop.setter
+    def should_stop(self, value: bool) -> None:
+        if value:
+            self._stop_event.set()
+        else:
+            self._stop_event.clear()
+
     def connect(self) -> bool:
         """Find the paired device and connect to its EEG RFCOMM channel."""
         self.close()
         self._stop_event.clear()
+        self.stream_error = None
         self.logger.info(f"Looking for paired Bluetooth device: {self.device_name}")
 
-        address = self._find_paired_device_address()
-        if address is None:
-            return False
+        for address in self._find_paired_device_addresses():
+            if self._connect_to_address(address):
+                return True
+        return False
 
+    def _connect_to_address(self, address: str) -> bool:
+        """Open the EEG RFCOMM channel to one candidate address."""
         rfcomm: Optional[socket.socket] = None
         try:
-            normalized_address = normalize_bluetooth_address(address)
-            family = getattr(socket, "AF_BLUETOOTH", None) or getattr(socket, "AF_BTH", None)
+            family = getattr(socket, "AF_BLUETOOTH", None)
             protocol = getattr(socket, "BTPROTO_RFCOMM", None)
             if family is None or protocol is None:
                 raise RuntimeError("This Python build does not expose AF_BLUETOOTH/BTPROTO_RFCOMM")
 
             rfcomm = socket.socket(family, socket.SOCK_STREAM, protocol)
-            rfcomm.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, RECEIVE_BUFFER_SIZE)
+            try:
+                rfcomm.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, RECEIVE_BUFFER_SIZE)
+            except OSError as error:
+                self.logger.warning(f"Could not set RFCOMM receive buffer size: {error}")
             rfcomm.settimeout(RFCOMM_CONNECTION_TIMEOUT)
-            rfcomm.connect((normalized_address, RFCOMM_CHANNEL))
+            rfcomm.connect((address, RFCOMM_CHANNEL))
             rfcomm.settimeout(READ_TIMEOUT)
-        except (OSError, RuntimeError, ValueError) as error:
+        except (OSError, RuntimeError) as error:
             self.logger.error(
                 f"RFCOMM connection failed for {address} channel {RFCOMM_CHANNEL}: {error}"
             )
@@ -132,24 +151,27 @@ class RFCOMMManager:
         with self._state_lock:
             self._socket = rfcomm
             self.connected = True
-            self.device_address = normalized_address
+            self.device_address = address
         self.logger.info(
-            f"RFCOMM connected to {self.device_name} "
-            f"({normalized_address}) on channel {RFCOMM_CHANNEL}"
+            f"RFCOMM connected to {self.device_name} ({address}) on channel {RFCOMM_CHANNEL}"
         )
         return True
 
-    def _find_paired_device_address(self) -> Optional[str]:
-        """Return the Classic Bluetooth address for a matching paired device."""
+    def _find_paired_device_addresses(self) -> List[str]:
+        """Return candidate Classic Bluetooth addresses for matching paired devices.
+
+        Candidates are ordered connected first, then authenticated, so a stale
+        remembered pairing record cannot shadow the live headset.
+        """
         if sys.platform != "win32":
             self.logger.error("Windows RFCOMM device discovery requires Windows")
-            return None
+            return []
 
         try:
             bthprops = ctypes.WinDLL("bthprops.cpl", use_last_error=True)
         except (AttributeError, OSError) as error:
             self.logger.error(f"Windows Bluetooth device discovery is unavailable: {error}")
-            return None
+            return []
 
         find_first = bthprops.BluetoothFindFirstDevice
         find_next = bthprops.BluetoothFindNextDevice
@@ -183,17 +205,17 @@ class RFCOMMManager:
                 "No paired Classic Bluetooth devices were available "
                 f"(Windows error {error_code})"
             )
-            return None
+            return []
 
+        candidates: List[Tuple[bool, bool, str, str]] = []
         try:
             while True:
                 name = info.szName
                 if name and self.device_name.upper() in name.upper():
-                    address = normalize_bluetooth_address(
-                        _format_bluetooth_address(info.Address.ullLong)
+                    address = _format_bluetooth_address(info.Address.ullLong)
+                    candidates.append(
+                        (bool(info.fConnected), bool(info.fAuthenticated), name, address)
                     )
-                    self.logger.info(f"Found matching paired device: {name} ({address})")
-                    return address
 
                 info = _BluetoothDeviceInfo()
                 info.dwSize = ctypes.sizeof(info)
@@ -202,12 +224,64 @@ class RFCOMMManager:
         finally:
             find_close(handle)
 
-        self.logger.error(f"No paired device found matching '{self.device_name}'")
-        self.logger.info("Pair the MW75 in Windows Settings > Bluetooth & devices")
-        return None
+        if not candidates:
+            self.logger.error(f"No paired device found matching '{self.device_name}'")
+            self.logger.info("Pair the MW75 in Windows Settings > Bluetooth & devices")
+            return []
+
+        candidates.sort(key=lambda candidate: (candidate[0], candidate[1]), reverse=True)
+        for is_connected, is_authenticated, name, address in candidates:
+            self.logger.info(
+                f"Found matching paired device: {name} ({address}) "
+                f"connected={is_connected} authenticated={is_authenticated}"
+            )
+        return [address for _, _, _, address in candidates]
+
+    def _set_high_priority(self) -> None:
+        """Raise scheduling priority for the ~500 Hz receive loop, best effort."""
+        if sys.platform != "win32":
+            return
+
+        try:
+            kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+            kernel32.GetCurrentProcess.restype = ctypes.c_void_p
+            kernel32.GetCurrentThread.restype = ctypes.c_void_p
+            kernel32.SetPriorityClass.argtypes = (ctypes.c_void_p, ctypes.c_uint32)
+            kernel32.SetPriorityClass.restype = ctypes.c_int32
+            kernel32.SetThreadPriority.argtypes = (ctypes.c_void_p, ctypes.c_int32)
+            kernel32.SetThreadPriority.restype = ctypes.c_int32
+
+            high_priority_class = 0x00000080
+            thread_priority_highest = 2
+            last_error = getattr(ctypes, "get_last_error", lambda: 0)
+            if kernel32.SetPriorityClass(kernel32.GetCurrentProcess(), high_priority_class):
+                self.logger.info("Process priority raised to high")
+            else:
+                self.logger.warning(
+                    f"Could not raise process priority (Windows error {last_error()})"
+                )
+            if kernel32.SetThreadPriority(kernel32.GetCurrentThread(), thread_priority_highest):
+                self.logger.info("Receive thread priority raised to highest")
+            else:
+                self.logger.warning(
+                    f"Could not raise receive thread priority (Windows error {last_error()})"
+                )
+        except (AttributeError, OSError) as error:
+            self.logger.warning(f"Priority adjustment failed: {error}")
+
+    def _record_stream_failure(self, message: str) -> None:
+        """Record an abnormal stream end unless a stop was requested."""
+        if self._stop_event.is_set():
+            return
+        self.stream_error = message
+        self.logger.error(message)
 
     def run_until_stopped(self) -> None:
-        """Receive raw RFCOMM chunks until stopped or the peer disconnects."""
+        """Receive raw RFCOMM chunks until stopped or the stream fails.
+
+        An abnormal end (peer disconnect, read failure, data stall) is recorded
+        in ``stream_error`` so callers can report the session as failed.
+        """
         with self._state_lock:
             rfcomm = self._socket
             connected = self.connected
@@ -216,20 +290,35 @@ class RFCOMMManager:
             return
 
         self.logger.info("Data streaming... Press Ctrl+C to stop")
+        self._set_high_priority()
+
+        last_data_time = time.monotonic()
         while not self._stop_event.is_set():
             try:
                 chunk = rfcomm.recv(READ_SIZE)
-            except (socket.timeout, TimeoutError):
+            except (socket.timeout, TimeoutError) as error:
+                # A benign settimeout expiry carries no errno; a link failure
+                # surfacing as WSAETIMEDOUT does (mapped to TimeoutError on 3.10+).
+                if getattr(error, "errno", None) is not None:
+                    self._record_stream_failure(f"RFCOMM read failed: {error}")
+                    break
+                idle_time = time.monotonic() - last_data_time
+                if idle_time > DATA_PACKET_TIMEOUT:
+                    self._record_stream_failure(
+                        f"No data received for {idle_time:.1f}s "
+                        f"(threshold {DATA_PACKET_TIMEOUT}s)"
+                    )
+                    break
                 continue
             except OSError as error:
-                if not self._stop_event.is_set():
-                    self.logger.error(f"RFCOMM read failed: {error}")
+                self._record_stream_failure(f"RFCOMM read failed: {error}")
                 break
 
             if not chunk:
-                self.logger.info("RFCOMM channel closed by device")
+                self._record_stream_failure("RFCOMM channel closed by device")
                 break
 
+            last_data_time = time.monotonic()
             try:
                 self.data_callback(chunk)
             except Exception as error:

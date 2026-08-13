@@ -178,6 +178,8 @@ Pair the MW75 Neuro in **Settings > Bluetooth & devices**, then run the normal s
 uv run -m mw75_streamer --csv eeg.csv
 ```
 
+The WebSocket server (`python -m mw75_streamer.server`) also supports real devices on Windows.
+
 **Wear the headset before starting.** On the firmware tested, activation is gated on
 head detection. Off-head, the raw-enable command receives no acknowledgement within the
 timeout; on-head, the identical sequence acknowledges and streams.

@@ -7,16 +7,9 @@ Command-line interface for starting the MW75 WebSocket server.
 import argparse
 import asyncio
 import sys
-from typing import TYPE_CHECKING
 
 from ..utils.logging import get_logger, setup_logging
-
-# Platform check
-if TYPE_CHECKING or sys.platform == "darwin":
-    from .ws_server import MW75WebSocketServer
-
-if sys.platform != "darwin":
-    MW75WebSocketServer = None  # type: ignore[assignment, misc]  # noqa: F811
+from .ws_server import MW75Device, MW75WebSocketServer
 
 
 async def main() -> None:
@@ -64,8 +57,8 @@ WebSocket Protocol:
     logger = get_logger(__name__)
 
     # Check platform support (skip check if using mock)
-    if not args.mock and MW75WebSocketServer is None:
-        logger.error("MW75 WebSocket server is only available on macOS")
+    if not args.mock and MW75Device is None:
+        logger.error("MW75 real-device mode is only available on macOS and Windows")
         logger.error("Current platform: %s", sys.platform)
         logger.info("Tip: Use --mock flag for development with synthetic data")
         sys.exit(1)

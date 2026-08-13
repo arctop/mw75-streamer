@@ -29,7 +29,7 @@ elif sys.platform == "win32":
     from .device.mw75_device import MW75Device  # noqa: F401
     from .device.windows_rfcomm_manager import RFCOMMManager  # noqa: F401
 else:
-    # On non-macOS platforms, these will be None
+    # On unsupported platforms, these will be None
     MW75Device = None
     BLEManager = None
     RFCOMMManager = None

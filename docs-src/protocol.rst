@@ -192,10 +192,17 @@ Uses PyObjC bindings for macOS Bluetooth frameworks:
 - **IOBluetoothDevice** for RFCOMM connections
 - **Core Bluetooth** integration via PyObjC
 
+Windows Implementation
+~~~~~~~~~~~~~~~~~~~~~~
+
+Uses the Python standard library only (no extra runtime dependency):
+
+- **AF_BLUETOOTH / BTPROTO_RFCOMM sockets** (CPython 3.9+ on Windows) for RFCOMM streaming
+- **Windows Bluetooth API** (``bthprops.cpl`` via ``ctypes``) for paired device discovery
+
 Future Platform Support
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Planned implementations for Linux and Windows:
+Planned implementation for Linux:
 
 - **Linux**: BlueZ via D-Bus or direct socket access
-- **Windows**: Windows Bluetooth API via pywin32

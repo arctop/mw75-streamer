@@ -30,25 +30,28 @@ except ImportError:
     else:
         WebSocketServerProtocol = Any  # type: ignore[misc, assignment]
 
+from ..data.packet_processor import EEGPacket, PacketProcessor
 from ..utils.logging import get_logger
 
 # Platform-specific imports
-# For type checking, always import the types; at runtime, only on macOS
+# For type checking, always resolve through mw75_device (it picks the platform's
+# RFCOMM manager); at runtime, import only on supported platforms
 if TYPE_CHECKING or sys.platform == "darwin":
     from Foundation import NSDate, NSRunLoop
 
-    from ..data.packet_processor import EEGPacket, PacketProcessor
-    from ..device.mw75_device import MW75Device
-    from ..device.rfcomm_manager import RFCOMMManager
+    from ..device.mw75_device import MW75Device, RFCOMMManager
+elif sys.platform == "win32":
+    from ..device.mw75_device import MW75Device, RFCOMMManager
 
-if sys.platform != "darwin":
-    # At runtime on non-macOS, these will be None
-    MW75Device = None  # type: ignore[assignment, misc]  # noqa: F811
-    RFCOMMManager = None  # type: ignore[assignment, misc]  # noqa: F811
-    PacketProcessor = None  # type: ignore[assignment, misc]  # noqa: F811
-    EEGPacket = None  # type: ignore[assignment, misc]  # noqa: F811
-    NSRunLoop = None  # noqa: F811
-    NSDate = None  # noqa: F811
+    # NSRunLoop pumping is macOS-only; Windows streams from a worker thread
+    NSRunLoop = None
+    NSDate = None
+else:
+    # At runtime on unsupported platforms, these will be None
+    MW75Device = None
+    RFCOMMManager = None
+    NSRunLoop = None
+    NSDate = None
 
 # Mock device support (cross-platform)
 from ..device.mock_rfcomm_manager import MockRFCOMMManager
@@ -112,7 +115,9 @@ class MW75WebSocketServer:
             raise ImportError("websockets library not found. Install with: pip install websockets")
 
         if not use_mock and MW75Device is None:
-            raise RuntimeError("MW75Device not available on this platform (macOS only)")
+            raise RuntimeError(
+                "MW75Device not available on this platform (requires macOS or Windows)"
+            )
 
         self.use_mock = use_mock
         self.host = host
@@ -897,10 +902,20 @@ class MW75WebSocketServer:
         """
         Run RFCOMM streaming loop interleaved with asyncio
 
-        NSRunLoop must run on main thread for delegates to fire,
+        On macOS, NSRunLoop must run on the main thread for delegates to fire,
         so we run it in small chunks and yield to asyncio between each chunk.
+        On Windows, the manager's blocking socket receive loop runs in a worker
+        thread instead; data callbacks are already thread-safe.
         """
         if not self.device or not self.device.rfcomm_manager:
+            return
+
+        if NSRunLoop is None:
+            rfcomm_manager = self.device.rfcomm_manager
+            await asyncio.get_running_loop().run_in_executor(None, rfcomm_manager.run_until_stopped)
+            stream_error = getattr(rfcomm_manager, "stream_error", None)
+            if stream_error:
+                self.logger.error(f"Data streaming ended unexpectedly: {stream_error}")
             return
 
         runloop = NSRunLoop.currentRunLoop()

@@ -63,14 +63,14 @@ Quick Usage
 Platform Support
 ----------------
 
-Currently supported on **macOS only**. The package uses macOS-specific Bluetooth frameworks (IOBluetooth via PyObjC) for BLE activation and RFCOMM streaming. Linux and Windows support are planned for future releases.
+Supported on **macOS** (IOBluetooth via PyObjC) and **Windows 11** (standard library Bluetooth sockets) for real devices. Linux supports mock mode only; native Linux support is planned for a future release.
 
 Requirements
 ------------
 
-* macOS (primary platform)
+* macOS or Windows 11
 * Python 3.9+
-* MW75 Neuro headphones paired in macOS Bluetooth settings
+* MW75 Neuro headphones paired in the system Bluetooth settings
 * Optional: WebSocket clients, LSL applications for real-time data consumption
 
 Project Links
