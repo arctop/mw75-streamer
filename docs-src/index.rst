@@ -69,7 +69,7 @@ Requirements
 ------------
 
 * macOS or Windows 11
-* Python 3.9+
+* Python 3.10+
 * MW75 Neuro headphones paired in the system Bluetooth settings
 * Optional: WebSocket clients, LSL applications for real-time data consumption
 

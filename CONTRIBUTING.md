@@ -75,7 +75,7 @@ flake8 mw75_streamer/
 - Follow existing code style and patterns
 - Add type annotations for all new code
 - Include docstrings for public functions
-- Maintain compatibility with Python 3.9+
+- Maintain compatibility with Python 3.10+
 
 ## Hardware Requirements
 

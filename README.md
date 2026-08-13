@@ -1,7 +1,7 @@
 # MW75 Neuro Streamer
 
 [![CI](https://github.com/arctop/mw75-streamer/actions/workflows/ci.yml/badge.svg)](https://github.com/arctop/mw75-streamer/actions/workflows/ci.yml)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Stream 12-channel EEG data from MW75 Neuro headphones with WebSocket, CSV, and LSL output support.
@@ -168,7 +168,7 @@ For complete protocol documentation and examples, see the [WebSocket Server docu
 
 - **Hardware**: MW75 Neuro headphones (paired via Bluetooth) - *not required for mock mode*
 - **OS**: macOS or Windows 11 for a real device; Linux supports mock mode
-- **Python**: 3.9+
+- **Python**: 3.10+
 
 ## Windows Setup
 

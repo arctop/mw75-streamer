@@ -5,7 +5,7 @@ System Requirements
 -------------------
 
 * **Platform**: macOS or Windows 11
-* **Python**: 3.9 or newer
+* **Python**: 3.10 or newer
 * **Hardware**: MW75 Neuro headphones paired in the system Bluetooth settings
 
 The MW75 EEG Streamer supports macOS (Bluetooth frameworks through PyObjC) and Windows 11 (standard library Bluetooth sockets). Linux supports mock mode only.

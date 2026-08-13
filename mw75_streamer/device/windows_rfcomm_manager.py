@@ -296,9 +296,9 @@ class RFCOMMManager:
         while not self._stop_event.is_set():
             try:
                 chunk = rfcomm.recv(READ_SIZE)
-            except (socket.timeout, TimeoutError) as error:
+            except TimeoutError as error:
                 # A benign settimeout expiry carries no errno; a link failure
-                # surfacing as WSAETIMEDOUT does (mapped to TimeoutError on 3.10+).
+                # surfacing as WSAETIMEDOUT does.
                 if getattr(error, "errno", None) is not None:
                     self._record_stream_failure(f"RFCOMM read failed: {error}")
                     break
