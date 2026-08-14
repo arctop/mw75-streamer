@@ -213,8 +213,8 @@ MW75 uses a 12-channel EEG layout:
 
 All examples require:
 - **Hardware**: MW75 Neuro headphones (paired via Bluetooth)
-- **OS**: macOS (Linux support planned)  
-- **Python**: 3.9+
+- **OS**: macOS or Windows 11 (Linux support planned)  
+- **Python**: 3.10+
 - **Installation**: `pip install "mw75-streamer[all]"`
 
 ## Performance Notes

@@ -7,11 +7,16 @@ Coordinates BLE activation and RFCOMM data streaming.
 
 import asyncio
 import signal
+import sys
 from typing import Any, Callable, Optional
 
 from ..utils.logging import get_logger
 from .ble_manager import BLEManager
-from .rfcomm_manager import RFCOMMManager
+
+if sys.platform == "win32":
+    from .windows_rfcomm_manager import RFCOMMManager
+else:
+    from .rfcomm_manager import RFCOMMManager
 
 
 class MW75Device:
@@ -86,6 +91,13 @@ class MW75Device:
             # Step 3: Start data streaming loop
             self.logger.info("Starting data streaming loop...")
             self.rfcomm_manager.run_until_stopped()
+
+            # The Windows manager records peer disconnects, read failures, and
+            # data stalls; treat those as a failed session so the CLI exits non-zero
+            stream_error = getattr(self.rfcomm_manager, "stream_error", None)
+            if stream_error:
+                self.logger.error(f"Data streaming ended unexpectedly: {stream_error}")
+                return False
 
             return True
 

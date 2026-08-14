@@ -7,7 +7,7 @@ Prerequisites
 -------------
 
 1. **MW75 Neuro headphones** paired with your Mac
-2. **Python 3.9+** installed
+2. **Python 3.10+** installed
 3. **uv package manager** installed (see `uv installation guide <https://docs.astral.sh/uv/getting-started/installation/>`_)
 4. **Package installed** with dependencies:
 

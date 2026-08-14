@@ -29,6 +29,8 @@ if TYPE_CHECKING:
 # Runtime platform detection
 if sys.platform == "darwin":
     from .device.mw75_device import MW75Device as _MW75Device  # noqa: F401
+elif sys.platform == "win32":
+    from .device.mw75_device import MW75Device as _MW75Device  # noqa: F401
 else:
     _MW75Device = None
 
@@ -443,7 +445,7 @@ async def main() -> None:
 
     # Check if running on supported platform (skip check if using mock)
     if not args.mock and _MW75Device is None:
-        logger.error("MW75 device support is only available on macOS")
+        logger.error("MW75 device support is only available on macOS and Windows")
         logger.error("Current platform: %s", sys.platform)
         logger.info("Tip: Use --mock flag for cross-platform development with synthetic data")
         logger.info(

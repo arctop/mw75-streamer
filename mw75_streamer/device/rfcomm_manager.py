@@ -178,16 +178,19 @@ class RFCOMMManager:
     def _set_high_priority(self) -> None:
         """Set high priority for the streaming process"""
         try:
+            # os.nice is looked up dynamically so type checking this
+            # macOS-only module under the Windows platform stays clean
+            nice = getattr(os, "nice")
             # Set high process priority (niceness = -10, requires sudo for < 0)
-            current_nice = os.nice(0)  # Get current niceness
+            current_nice = nice(0)  # Get current niceness
             try:
-                os.nice(-10)  # Try to set high priority
-                self.logger.info(f"Process priority increased from {current_nice} to {os.nice(0)}")
+                nice(-10)  # Try to set high priority
+                self.logger.info(f"Process priority increased from {current_nice} to {nice(0)}")
             except PermissionError:
                 # Fallback: set to highest priority we can without sudo
-                os.nice(-5)
+                nice(-5)
                 self.logger.info(
-                    f"Process priority increased from {current_nice} to {os.nice(0)} (limited by permissions)"
+                    f"Process priority increased from {current_nice} to {nice(0)} (limited by permissions)"
                 )
             except OSError:
                 self.logger.warning("Could not adjust process priority")

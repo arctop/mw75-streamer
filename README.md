@@ -167,8 +167,22 @@ For complete protocol documentation and examples, see the [WebSocket Server docu
 ## Requirements
 
 - **Hardware**: MW75 Neuro headphones (paired via Bluetooth) - *not required for mock mode*
-- **OS**: macOS (fully supported for real device), Linux/Windows (mock mode only - [contributions welcome](CONTRIBUTING.md))
+- **OS**: macOS or Windows 11 for a real device; Linux supports mock mode
 - **Python**: 3.10+
+
+## Windows Setup
+
+Pair the MW75 Neuro in **Settings > Bluetooth & devices**, then run the normal streamer:
+
+```powershell
+uv run -m mw75_streamer --csv eeg.csv
+```
+
+The WebSocket server (`python -m mw75_streamer.server`) also supports real devices on Windows.
+
+**Wear the headset before starting.** On the firmware tested, activation is gated on
+head detection. Off-head, the raw-enable command receives no acknowledgement within the
+timeout; on-head, the identical sequence acknowledges and streams.
 
 ## macOS Setup for LSL
 
